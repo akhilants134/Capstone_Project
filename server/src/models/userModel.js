@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['tech', 'medical', 'education', 'food', 'shelter', 'financial', ''],
+        enum: ['medical', 'education', 'food', 'shelter', 'financial', 'volunteering'],
         default: ''
     },
     bio: String,
