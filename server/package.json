@@ -1,0 +1,32 @@
+{
+  "name": "capstone_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "clear": "^0.1.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhilants134/Capstone_Project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/akhilants134/Capstone_Project/issues"
+  },
+  "homepage": "https://github.com/akhilants134/Capstone_Project#readme"
+}
