@@ -97,3 +97,47 @@ exports.updateMatchStatus = async (req, res) => {
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
+
+exports.getMyMatches = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        
+        // Find listings where user is owner OR where user is in matches array
+        const listings = await Listing.find({
+            $or: [
+                { user: userId },
+                { 'matches.user': userId }
+            ]
+        }).populate('user', 'name');
+
+        // Format for frontend
+        const matches = [];
+        listings.forEach(listing => {
+            listing.matches.forEach(m => {
+                // If I am owner, I see matches from others
+                // If I am applicant, I see my match on this listing
+                if (listing.user._id.toString() === userId || m.user.toString() === userId) {
+                    matches.push({
+                        id: m._id,
+                        listingId: listing._id,
+                        resource: listing.title,
+                        donor: listing.user.name,
+                        status: m.status,
+                        matchScore: m.score,
+                        date: listing.createdAt,
+                        desc: listing.description,
+                        category: listing.category
+                    });
+                }
+            });
+        });
+
+        res.status(200).json({
+            status: 'success',
+            results: matches.length,
+            data: { matches }
+        });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
+    }
+};
