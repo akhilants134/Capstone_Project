@@ -2,13 +2,14 @@
 import { useState } from 'react';
 
 const navItems = [
-  { id: 'dashboard',    icon: '⚡', label: 'Dashboard'       },
-  { id: 'browse',       icon: '🔍', label: 'Browse Listings'  },
-  { id: 'post-request', icon: '➕', label: 'Post a Request'   },
-  { id: 'matches',      icon: '🤝', label: 'My Matches'       },
-  { id: 'donations',    icon: '💝', label: 'Donations'        },
-  { id: 'messages',     icon: '💬', label: 'Messages'         },
-  { id: 'profile',      icon: '👤', label: 'My Profile'       },
+  { id: 'dashboard',       icon: '⚡', label: 'Dashboard'       },
+  { id: 'browse',          icon: '🔍', label: 'Browse Listings'  },
+  { id: 'post-request',    icon: '➕', label: 'Post a Request'   },
+  { id: 'share-something', icon: '🎁', label: 'Share Something'  },
+  { id: 'matches',         icon: '🤝', label: 'My Matches'       },
+  { id: 'donations',       icon: '💝', label: 'Donations'        },
+  { id: 'messages',        icon: '💬', label: 'Messages'         },
+  { id: 'profile',         icon: '👤', label: 'My Profile'       },
 ];
 
 export default function Sidebar({ currentPage, navigate, user, onLogout }) {

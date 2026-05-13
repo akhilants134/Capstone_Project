@@ -15,6 +15,7 @@ import MatchesPage from "./pages/MatchesPage";
 import ProfilePage from "./pages/ProfilePage";
 import MessagesPage from "./pages/MessagesPage";
 import DonationsPage from "./pages/DonationsPage";
+import ShareSomethingPage from "./pages/ShareSomethingPage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -66,6 +67,8 @@ function App() {
         return <MessagesPage navigate={navigate} user={user} />;
       case "donations":
         return <DonationsPage navigate={navigate} user={user} />;
+      case "share-something":
+        return <ShareSomethingPage navigate={navigate} user={user} />;
       default:
         return <DashboardPage navigate={navigate} user={user} />;
     }
