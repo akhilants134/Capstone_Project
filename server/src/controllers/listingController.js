@@ -7,6 +7,20 @@ exports.createListing = async (req, res) => {
 
         const newListing = await Listing.create(req.body);
 
+        // Gamification: Award points and badge
+        const User = require('../models/userModel');
+        const user = await User.findById(req.user.id);
+        if (user) {
+            user.points += 10;
+            const hasFirstShare = user.badges.some(b => b.name === 'First Share');
+            if (!hasFirstShare) {
+                user.badges.push({ name: 'First Share', icon: '⭐' });
+            }
+            await user.save();
+        }
+
+        // Notification logic could be added here too
+
         res.status(201).json({
             status: 'success',
             data: { listing: newListing }

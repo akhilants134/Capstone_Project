@@ -57,9 +57,34 @@ exports.updateMatchStatus = async (req, res) => {
 
         match.status = status;
         
-        // If accepted, mark listing as matched (optional logic)
+        // If accepted, mark listing as matched and award points
         if (status === 'accepted') {
             listing.status = 'matched';
+            
+            const User = require('../models/userModel');
+            const notificationController = require('./notificationController');
+            
+            // Award owner
+            const owner = await User.findById(currentUserId);
+            if (owner) {
+                owner.points += 50;
+                await owner.save();
+                await notificationController.createNotification(
+                    currentUserId, 'match', 'Match Accepted!', 
+                    `You have successfully matched your resource: ${listing.title}`, '/matches'
+                );
+            }
+            
+            // Award matched user
+            const matchedUser = await User.findById(matchUserId);
+            if (matchedUser) {
+                matchedUser.points += 30;
+                await matchedUser.save();
+                await notificationController.createNotification(
+                    matchUserId, 'match', 'Resource Match Found!', 
+                    `Your application for ${listing.title} has been accepted!`, '/matches'
+                );
+            }
         }
 
         await listing.save();
