@@ -29,7 +29,19 @@ const userSchema = new mongoose.Schema({
     },
     bio: String,
     location: String,
-    phone: String
+    phone: String,
+    points: {
+        type: Number,
+        default: 0
+    },
+    badges: [{
+        name: String,
+        icon: String,
+        earnedAt: {
+            type: Date,
+            default: Date.now()
+        }
+    }]
 }, {
     timestamps: true
 });

@@ -26,6 +26,7 @@ const apiRequest = async (endpoint, options = {}) => {
 export const login = (data) => apiRequest('/users/login', { method: 'POST', body: JSON.stringify(data) });
 export const signup = (data) => apiRequest('/users/signup', { method: 'POST', body: JSON.stringify(data) });
 export const logout = () => apiRequest('/users/logout');
+export const getMe = () => apiRequest('/users/me');
 
 // Listings
 export const getListings = (params = {}) => {
@@ -48,9 +49,14 @@ export const getConversations = () => apiRequest('/messages');
 export const getMessages = (userId) => apiRequest(`/messages/${userId}`);
 export const sendMessage = (data) => apiRequest('/messages', { method: 'POST', body: JSON.stringify(data) });
 
+// Notifications
+export const getNotifications = () => apiRequest('/notifications');
+export const markNotificationsRead = () => apiRequest('/notifications/mark-read', { method: 'PATCH' });
+
 export default {
-  login, signup, logout,
+  login, register: signup, logout, getMe,
   getListings, getListing, createListing, updateListing, deleteListing, getStats,
   applyForListing, updateMatchStatus, getMyMatches,
-  getConversations, getMessages, sendMessage
+  getConversations, getMessages, sendMessage,
+  getNotifications, markNotificationsRead
 };

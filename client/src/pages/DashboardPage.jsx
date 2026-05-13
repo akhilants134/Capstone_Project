@@ -1,21 +1,12 @@
-
-
 /* ===== Dashboard Page ===== */
 import { useState, useEffect } from 'react';
-import { getStats } from '../services/api';
+import { getStats, getMe } from '../services/api';
 
 const defaultStats = [
-  { label: 'Items Shared',      value: '42',   icon: '🎁', color: '#f97316', bg: 'rgba(249,115,22,0.1)',  change: '+5 this week' },
-  { label: 'Items Delivered',   value: '38',   icon: '🚚', color: '#10b981', bg: 'rgba(16,185,129,0.1)',  change: '+2 today' },
-  { label: 'People Helped',     value: '156',  icon: '👥', color: '#6366f1', bg: 'rgba(99,102,241,0.1)',  change: '+12 this month' },
-  { label: 'Total Quantity',    value: '1.2k', icon: '📊', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)',  change: '↑ 15% growth' },
-];
-
-const badges = [
-  { id: 1, icon: '⭐', name: 'First Share', color: '#f59e0b', desc: 'Listed your first item' },
-  { id: 2, icon: '🌟', name: 'Community Star', color: '#10b981', desc: 'Helped 50+ people' },
-  { id: 3, icon: '🤝', name: 'Super Matcher', color: '#6366f1', desc: '10+ successful matches' },
-  { id: 4, icon: '💎', name: 'Top Donor', color: '#ec4899', desc: 'Donated high-value items' },
+  { label: 'Items Shared',      value: '0',   icon: '🎁', color: '#f97316', bg: 'rgba(249,115,22,0.1)',  change: '+5 this week' },
+  { label: 'Items Delivered',   value: '0',   icon: '🚚', color: '#10b981', bg: 'rgba(16,185,129,0.1)',  change: '+2 today' },
+  { label: 'People Helped',     value: '0',  icon: '👥', color: '#6366f1', bg: 'rgba(99,102,241,0.1)',  change: '+12 this month' },
+  { label: 'Impact Points',     value: '0',  icon: '💎', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)',  change: '↑ 15% growth' },
 ];
 
 const impactStories = [
@@ -23,40 +14,45 @@ const impactStories = [
   { id: 2, name: 'John Martinez', text: 'The laptop donation enabled me to complete my online certification course.', avatar: 'JM' },
 ];
 
-export default function DashboardPage({ navigate, user }) {
+export default function DashboardPage({ navigate, user: initialUser }) {
   const [greeting] = useState(() => {
     const h = new Date().getHours();
     return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   });
 
+  const [user, setUser] = useState(initialUser);
   const [stats, setStats] = useState(defaultStats);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await getStats();
-        if (data.stats) {
+        const [statsRes, userRes] = await Promise.all([getStats(), getMe()]);
+        
+        if (statsRes.stats) {
           setStats([
-            { ...defaultStats[0], value: data.stats.totalItems || '42' },
-            { ...defaultStats[1], value: data.stats.deliveredItems || '38' },
-            { ...defaultStats[2], value: data.stats.peopleHelped || '156' },
-            { ...defaultStats[3], value: data.stats.totalQuantity || '1.2k' },
+            { ...defaultStats[0], value: statsRes.stats.totalItems || '0' },
+            { ...defaultStats[1], value: statsRes.stats.deliveredItems || '0' },
+            { ...defaultStats[2], value: statsRes.stats.peopleHelped || '0' },
+            { ...defaultStats[3], value: userRes.data.user.points || '0' },
           ]);
         }
+        if (userRes.data.user) {
+          setUser(userRes.data.user);
+        }
       } catch (err) {
-        console.error('Failed to fetch dashboard stats:', err);
+        console.error('Failed to fetch dashboard data:', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchData();
   }, []);
 
   return (
     <div style={{ animation: 'fadeInUp 0.5s ease' }}>
-      {/* Welcome banner with Orange-to-Red gradient */}
+      {/* Welcome banner */}
       <div style={{
         background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)',
         borderRadius: '24px',
@@ -73,7 +69,7 @@ export default function DashboardPage({ navigate, user }) {
               Welcome to Community Hub, {user?.name?.split(' ')[0] || 'Member'}!
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px', maxWidth: '500px', lineHeight: '1.6' }}>
-              Your contributions are making a real difference. You've helped {stats[2].value} community members this month!
+              Your contributions are making a real difference. You've earned {user?.points || 0} impact points so far!
             </p>
           </div>
           <div style={{ display: 'flex', gap: '16px' }}>
@@ -108,7 +104,6 @@ export default function DashboardPage({ navigate, user }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '32px' }}>
-        {/* Left column */}
         <div>
           {/* Badges Section */}
           <div style={{ marginBottom: '32px' }}>
@@ -119,13 +114,17 @@ export default function DashboardPage({ navigate, user }) {
               <button className="btn btn-secondary btn-sm" onClick={() => navigate('profile')}>View Profile →</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
-              {badges.map(badge => (
-                <div key={badge.id} className="card" style={{ padding: '20px', textAlign: 'center', background: 'rgba(19,21,43,0.4)', border: '1px solid rgba(99,102,241,0.15)' }}>
-                  <div style={{ fontSize: '40px', marginBottom: '12px', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}>{badge.icon}</div>
-                  <div style={{ fontSize: '14px', fontWeight: '700', color: '#f1f5f9', marginBottom: '4px' }}>{badge.name}</div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>{badge.desc}</div>
-                </div>
-              ))}
+              {(user?.badges || []).length === 0 ? (
+                <div className="card" style={{ padding: '20px', textAlign: 'center', color: '#64748b', gridColumn: '1 / -1' }}>No badges yet. Start sharing to earn!</div>
+              ) : (
+                user.badges.map((badge, idx) => (
+                  <div key={idx} className="card" style={{ padding: '20px', textAlign: 'center', background: 'rgba(19,21,43,0.4)', border: '1px solid rgba(99,102,241,0.15)' }}>
+                    <div style={{ fontSize: '40px', marginBottom: '12px' }}>{badge.icon || '🏅'}</div>
+                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#f1f5f9', marginBottom: '4px' }}>{badge.name}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b' }}>Earned {new Date(badge.earnedAt).toLocaleDateString()}</div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -158,9 +157,9 @@ export default function DashboardPage({ navigate, user }) {
             <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#f1f5f9', marginBottom: '12px' }}>Your Impact Score</h4>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{ flex: 1, height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px', overflow: 'hidden' }}>
-                <div style={{ width: '85%', height: '100%', background: 'linear-gradient(90deg, #6366f1, #10b981)', borderRadius: '5px' }} />
+                <div style={{ width: `${Math.min((user?.points || 0) / 10, 100)}%`, height: '100%', background: 'linear-gradient(90deg, #6366f1, #10b981)', borderRadius: '5px' }} />
               </div>
-              <span style={{ fontSize: '18px', fontWeight: '800', color: '#6366f1' }}>850</span>
+              <span style={{ fontSize: '18px', fontWeight: '800', color: '#6366f1' }}>{user?.points || 0}</span>
             </div>
             <p style={{ fontSize: '12px', color: '#64748b', marginTop: '12px' }}>You're in the top 5% of community donors this month! Keep it up. 🚀</p>
           </div>
@@ -188,5 +187,3 @@ export default function DashboardPage({ navigate, user }) {
     </div>
   );
 }
-
-

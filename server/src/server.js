@@ -7,6 +7,7 @@ const userRouter = require('./routes/userRoutes');
 const listingRouter = require('./routes/listingRoutes');
 const matchRouter = require('./routes/matchRoutes');
 const messageRouter = require('./routes/messageRoutes');
+const notificationRouter = require('./routes/notificationRoutes');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/listings', listingRouter);
 app.use('/api/v1/matches', matchRouter);
 app.use('/api/v1/messages', messageRouter);
+app.use('/api/v1/notifications', notificationRouter);
 
 // Basic Route
 app.get('/', (req, res) => {
