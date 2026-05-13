@@ -1,5 +1,5 @@
-/* ===== Register Page ===== */
 import { useState } from 'react';
+import { register } from '../services/api';
 
 export default function RegisterPage({ navigate, onLogin }) {
   const [step, setStep] = useState(1);
@@ -23,14 +23,29 @@ export default function RegisterPage({ navigate, onLogin }) {
   const nextStep = () => { if (validate()) setStep(s => s + 1); };
   const prevStep = () => setStep(s => s - 1);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const data = await register({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+        category: form.category,
+        bio: form.bio,
+        location: form.location
+      });
+      if (data.status === 'success') {
+        onLogin(data.data.user);
+      }
+    } catch (err) {
+      console.error('Registration failed:', err);
+      alert('Registration failed. Email might already exist.');
+    } finally {
       setLoading(false);
-      onLogin({ name: form.name, email: form.email, role: form.role, id: Date.now() });
-    }, 1200);
+    }
   };
 
   const categories = [

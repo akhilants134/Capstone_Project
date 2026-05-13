@@ -6,6 +6,7 @@ require('dotenv').config();
 const userRouter = require('./routes/userRoutes');
 const listingRouter = require('./routes/listingRoutes');
 const matchRouter = require('./routes/matchRoutes');
+const messageRouter = require('./routes/messageRoutes');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/listings', listingRouter);
 app.use('/api/v1/matches', matchRouter);
+app.use('/api/v1/messages', messageRouter);
 
 // Basic Route
 app.get('/', (req, res) => {

@@ -1,9 +1,10 @@
 
 
 /* ===== Dashboard Page ===== */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getStats } from '../services/api';
 
-const stats = [
+const defaultStats = [
   { label: 'Items Shared',      value: '42',   icon: '🎁', color: '#f97316', bg: 'rgba(249,115,22,0.1)',  change: '+5 this week' },
   { label: 'Items Delivered',   value: '38',   icon: '🚚', color: '#10b981', bg: 'rgba(16,185,129,0.1)',  change: '+2 today' },
   { label: 'People Helped',     value: '156',  icon: '👥', color: '#6366f1', bg: 'rgba(99,102,241,0.1)',  change: '+12 this month' },
@@ -22,18 +23,36 @@ const impactStories = [
   { id: 2, name: 'John Martinez', text: 'The laptop donation enabled me to complete my online certification course.', avatar: 'JM' },
 ];
 
-const recentActivity = [
-  { id: 1, type: 'match',    title: 'New match: Winter Clothes',       time: '2 min ago',  icon: '🤝', color: '#10b981' },
-  { id: 2, type: 'request',  title: 'Item delivered: Medical Kits',    time: '1 hr ago',   icon: '✅', color: '#6366f1' },
-  { id: 3, type: 'message',  title: 'Message from Hope Shelter',       time: '3 hrs ago',  icon: '💬', color: '#f59e0b' },
-  { id: 4, type: 'donation', title: 'New share: Canned Food x20',      time: 'Yesterday',  icon: '🍱', color: '#ef4444' },
-];
-
 export default function DashboardPage({ navigate, user }) {
   const [greeting] = useState(() => {
     const h = new Date().getHours();
     return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   });
+
+  const [stats, setStats] = useState(defaultStats);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        const data = await getStats();
+        if (data.stats) {
+          setStats([
+            { ...defaultStats[0], value: data.stats.totalItems || '42' },
+            { ...defaultStats[1], value: data.stats.deliveredItems || '38' },
+            { ...defaultStats[2], value: data.stats.peopleHelped || '156' },
+            { ...defaultStats[3], value: data.stats.totalQuantity || '1.2k' },
+          ]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch dashboard stats:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   return (
     <div style={{ animation: 'fadeInUp 0.5s ease' }}>
@@ -54,7 +73,7 @@ export default function DashboardPage({ navigate, user }) {
               Welcome to Community Hub, {user?.name?.split(' ')[0] || 'Member'}!
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px', maxWidth: '500px', lineHeight: '1.6' }}>
-              Your contributions are making a real difference. You've helped 156 community members this month!
+              Your contributions are making a real difference. You've helped {stats[2].value} community members this month!
             </p>
           </div>
           <div style={{ display: 'flex', gap: '16px' }}>
@@ -71,7 +90,7 @@ export default function DashboardPage({ navigate, user }) {
       {/* Stats grid */}
       <div className="grid-4" style={{ marginBottom: '32px' }}>
         {stats.map((s, i) => (
-          <div key={s.label} className="card" style={{ animationDelay: `${i * 0.1}s`, padding: '24px', position: 'relative' }}>
+          <div key={s.label} className="card" style={{ animationDelay: `${i * 0.1}s`, padding: '24px', position: 'relative', opacity: loading ? 0.7 : 1, transition: 'opacity 0.3s' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
                 {s.icon}
@@ -80,7 +99,9 @@ export default function DashboardPage({ navigate, user }) {
                 {s.change}
               </span>
             </div>
-            <div style={{ fontSize: '36px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', lineHeight: 1, marginBottom: '6px' }}>{s.value}</div>
+            <div style={{ fontSize: '36px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', lineHeight: 1, marginBottom: '6px' }}>
+              {loading ? '...' : s.value}
+            </div>
             <div style={{ fontSize: '14px', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
           </div>
         ))}
@@ -133,37 +154,7 @@ export default function DashboardPage({ navigate, user }) {
 
         {/* Right column */}
         <div>
-          <div style={{ marginBottom: '20px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '16px' }}>
-              ⚡ Recent Activity
-            </h3>
-            <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-              {recentActivity.map((item, i) => (
-                <div key={item.id} style={{
-                  display: 'flex', alignItems: 'center', gap: '16px',
-                  padding: '16px 20px',
-                  borderBottom: i < recentActivity.length - 1 ? '1px solid rgba(99,102,241,0.08)' : 'none',
-                  transition: 'background 0.2s',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.05)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                >
-                  <div style={{
-                    width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
-                    background: `${item.color}1a`, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '18px',
-                  }}>{item.icon}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '14px', color: '#f1f5f9', fontWeight: '600', margin: '0 0 2px 0' }}>{item.title}</p>
-                    <span style={{ fontSize: '12px', color: '#64748b' }}>{item.time}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="card" style={{ padding: '24px', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
+          <div className="card" style={{ padding: '24px', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', marginBottom: '24px' }}>
             <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#f1f5f9', marginBottom: '12px' }}>Your Impact Score</h4>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{ flex: 1, height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px', overflow: 'hidden' }}>
@@ -173,9 +164,29 @@ export default function DashboardPage({ navigate, user }) {
             </div>
             <p style={{ fontSize: '12px', color: '#64748b', marginTop: '12px' }}>You're in the top 5% of community donors this month! Keep it up. 🚀</p>
           </div>
+
+          <div className="card" style={{ padding: '24px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '16px' }}>⚡ Quick Actions</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {[
+                { label: '🎁 Share Something', page: 'share-something', color: '#f97316' },
+                { label: '🔍 Browse Requests', page: 'browse', color: '#6366f1' },
+                { label: '🤝 My Matches', page: 'matches', color: '#10b981' },
+                { label: '💬 Messages', page: 'messages', color: '#8b5cf6' },
+              ].map(a => (
+                <button key={a.page} onClick={() => navigate(a.page)}
+                  style={{ width: '100%', padding: '12px 16px', border: `1px solid ${a.color}33`, borderRadius: '12px', background: `${a.color}0d`, color: '#f1f5f9', cursor: 'pointer', textAlign: 'left', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = `${a.color}1a`; e.currentTarget.style.transform = 'translateX(4px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = `${a.color}0d`; e.currentTarget.style.transform = 'none'; }}>
+                  <span style={{ fontSize: '18px' }}>{a.label.split(' ')[0]}</span> {a.label.split(' ').slice(1).join(' ')}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
 

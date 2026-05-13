@@ -1,12 +1,11 @@
 /* ===== Donations Page ===== */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getStats } from '../services/api';
 
-const DONATIONS = [
+const defaultDonations = [
   { id: 1, title: 'Laptop Donation — 5 Units',       recipient: 'Rural School, Bihar',    amount: '$1,200', date: 'May 3, 2026',  status: 'delivered',  cat: '💻', impact: '5 students empowered with tech access' },
   { id: 2, title: 'Medical Kit Contribution',          recipient: 'HealthFirst NGO',        amount: '$800',   date: 'Apr 28, 2026', status: 'in-transit', cat: '💊', impact: '50 families to receive medical aid' },
   { id: 3, title: 'Online Course Sponsorship',         recipient: 'EduGrant Org',           amount: '$400',   date: 'Apr 20, 2026', status: 'delivered',  cat: '📚', impact: '20 students accessed premium courses' },
-  { id: 4, title: 'Emergency Food Package',            recipient: 'FoodBank India',         amount: '$600',   date: 'Apr 15, 2026', status: 'delivered',  cat: '🍱', impact: '100 families received nutritious meals' },
-  { id: 5, title: 'STEM Scholarship Grant',            recipient: 'DevFund',                amount: '$2,000', date: 'Mar 30, 2026', status: 'processing', cat: '🎓', impact: '1 student full bootcamp scholarship' },
 ];
 
 const statusStyle = {
@@ -18,8 +17,30 @@ const statusStyle = {
 export default function DonationsPage({ navigate }) {
   const [showModal, setShowModal] = useState(false);
   const [donateForm, setDonateForm] = useState({ title: '', amount: '', category: 'tech', description: '' });
+  const [stats, setStats] = useState({ totalDonated: '2,400', totalCount: '3', livesImpacted: '176', successRate: '96%' });
+  const [loading, setLoading] = useState(true);
 
-  const totalDonated = DONATIONS.reduce((sum, d) => sum + parseInt(d.amount.replace(/\D/g, '')), 0);
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        const data = await getStats();
+        if (data.stats) {
+          setStats({
+            totalDonated: data.stats.totalQuantity || '2,400',
+            totalCount: data.stats.totalItems || '3',
+            livesImpacted: data.stats.peopleHelped || '176',
+            successRate: '96%'
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch donation stats:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   return (
     <div style={{ animation: 'fadeInUp 0.4s ease' }}>
@@ -32,16 +53,16 @@ export default function DonationsPage({ navigate }) {
       </div>
 
       {/* Impact summary */}
-      <div style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '16px', padding: '24px', marginBottom: '24px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05))', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '16px', padding: '24px', marginBottom: '24px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
         {[
-          { label: 'Total Donated', val: `$${totalDonated.toLocaleString()}`, icon: '💰', color: '#10b981' },
-          { label: 'Donations Made', val: DONATIONS.length, icon: '📦', color: '#6366f1' },
-          { label: 'Lives Impacted', val: '176+', icon: '❤️', color: '#ef4444' },
-          { label: 'Success Rate', val: '96%', icon: '⭐', color: '#f59e0b' },
+          { label: 'Total Donated', val: `$${stats.totalDonated}`, icon: '💰', color: '#10b981' },
+          { label: 'Donations Made', val: stats.totalCount, icon: '📦', color: '#6366f1' },
+          { label: 'Lives Impacted', val: stats.livesImpacted, icon: '❤️', color: '#ef4444' },
+          { label: 'Success Rate', val: stats.successRate, icon: '⭐', color: '#f59e0b' },
         ].map(s => (
           <div key={s.label} style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '24px', marginBottom: '6px' }}>{s.icon}</div>
-            <div style={{ fontSize: '24px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: s.color, lineHeight: 1, marginBottom: '4px' }}>{s.val}</div>
+            <div style={{ fontSize: '24px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: s.color, lineHeight: 1, marginBottom: '4px' }}>{loading ? '...' : s.val}</div>
             <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '500' }}>{s.label}</div>
           </div>
         ))}

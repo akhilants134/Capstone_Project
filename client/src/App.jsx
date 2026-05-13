@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./App.css";
 
 // Components
@@ -18,8 +18,14 @@ import DonationsPage from "./pages/DonationsPage";
 import ShareSomethingPage from "./pages/ShareSomethingPage";
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [currentPage, setCurrentPage] = useState("login");
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [currentPage, setCurrentPage] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? "dashboard" : "login";
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Simple routing logic
@@ -32,22 +38,23 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
     setCurrentPage("dashboard");
   };
 
   const handleLogout = () => {
     setUser(null);
+    localStorage.removeItem("user");
     setCurrentPage("login");
   };
 
-  // Auth Guard
-  useEffect(() => {
-    if (!user && currentPage !== "login" && currentPage !== "register") {
-      setCurrentPage("login");
-    }
-  }, [user, currentPage]);
 
   const renderPage = () => {
+    // Auth Guard
+    if (!user && currentPage !== "login" && currentPage !== "register") {
+      return <LoginPage navigate={navigate} onLogin={handleLogin} />;
+    }
+
     switch (currentPage) {
       case "login":
         return <LoginPage navigate={navigate} onLogin={handleLogin} />;
@@ -58,7 +65,7 @@ function App() {
       case "browse":
         return <BrowsePage navigate={navigate} user={user} />;
       case "post-request":
-        return <PostRequestPage navigate={navigate} user={user} />;
+        return <PostRequestPage navigate={navigate} />;
       case "matches":
         return <MatchesPage navigate={navigate} user={user} />;
       case "profile":
@@ -68,7 +75,7 @@ function App() {
       case "donations":
         return <DonationsPage navigate={navigate} user={user} />;
       case "share-something":
-        return <ShareSomethingPage navigate={navigate} user={user} />;
+        return <ShareSomethingPage navigate={navigate} />;
       default:
         return <DashboardPage navigate={navigate} user={user} />;
     }

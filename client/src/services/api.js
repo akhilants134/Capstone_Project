@@ -32,17 +32,25 @@ export const getListings = (params = {}) => {
   const query = new URLSearchParams(params).toString();
   return apiRequest(`/listings?${query}`);
 };
+export const getStats = () => apiRequest('/listings/stats');
 export const getListing = (id) => apiRequest(`/listings/${id}`);
 export const createListing = (data) => apiRequest('/listings', { method: 'POST', body: JSON.stringify(data) });
 export const updateListing = (id, data) => apiRequest(`/listings/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
 export const deleteListing = (id) => apiRequest(`/listings/${id}`, { method: 'DELETE' });
 
 // Matches
+export const getMyMatches = () => apiRequest('/matches/my-matches');
 export const applyForListing = (data) => apiRequest('/matches/apply', { method: 'POST', body: JSON.stringify(data) });
 export const updateMatchStatus = (data) => apiRequest('/matches/update-status', { method: 'PATCH', body: JSON.stringify(data) });
 
+// Messages
+export const getConversations = () => apiRequest('/messages');
+export const getMessages = (userId) => apiRequest(`/messages/${userId}`);
+export const sendMessage = (data) => apiRequest('/messages', { method: 'POST', body: JSON.stringify(data) });
+
 export default {
   login, signup, logout,
-  getListings, getListing, createListing, updateListing, deleteListing,
-  applyForListing, updateMatchStatus
+  getListings, getListing, createListing, updateListing, deleteListing, getStats,
+  applyForListing, updateMatchStatus, getMyMatches,
+  getConversations, getMessages, sendMessage
 };

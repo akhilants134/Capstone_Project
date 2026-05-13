@@ -1,5 +1,6 @@
 /* ===== Profile Page ===== */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getStats } from '../services/api';
 
 export default function ProfilePage({ user, navigate }) {
   const [editing, setEditing] = useState(false);
@@ -13,6 +14,31 @@ export default function ProfilePage({ user, navigate }) {
     website: 'https://alexjohnson.dev',
   });
   const [saved, setSaved] = useState(false);
+  const [profileStats, setProfileStats] = useState({
+    requests: '12',
+    matches: '8',
+    delivered: '24',
+    score: '94'
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getStats();
+        if (data.stats) {
+          setProfileStats({
+            requests: data.stats.totalItems || '12',
+            matches: data.stats.deliveredItems || '8',
+            delivered: data.stats.peopleHelped || '24',
+            score: '850'
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile stats:', err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const handleSave = () => {
     setSaved(true);
@@ -21,10 +47,10 @@ export default function ProfilePage({ user, navigate }) {
   };
 
   const stats = [
-    { label: 'Requests Posted', val: '12', icon: '📋', color: '#6366f1' },
-    { label: 'Matches Made',    val: '8',  icon: '🤝', color: '#10b981' },
-    { label: 'Resources Got',   val: '24', icon: '📦', color: '#f59e0b' },
-    { label: 'Impact Score',    val: '94', icon: '⭐', color: '#8b5cf6' },
+    { label: 'Total Posts', val: profileStats.requests, icon: '📋', color: '#6366f1' },
+    { label: 'Matches', val: profileStats.matches, icon: '🤝', color: '#10b981' },
+    { label: 'Impact Made', val: profileStats.delivered, icon: '📦', color: '#f59e0b' },
+    { label: 'Impact Score', val: profileStats.score, icon: '⭐', color: '#8b5cf6' },
   ];
 
   const badges = [
@@ -41,138 +67,122 @@ export default function ProfilePage({ user, navigate }) {
   ];
 
   return (
-    <div style={{ animation: 'fadeInUp 0.4s ease', maxWidth: '900px' }}>
+    <div style={{ animation: 'fadeInUp 0.4s ease', maxWidth: '1000px' }}>
       {saved && (
-        <div className="toast toast-success" style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999 }}>
+        <div style={{ position: 'fixed', top: '24px', right: '24px', background: '#10b981', color: 'white', padding: '12px 24px', borderRadius: '12px', boxShadow: '0 10px 30px rgba(16,185,129,0.3)', zIndex: 1000, fontWeight: '700', animation: 'fadeInUp 0.3s ease' }}>
           ✅ Profile updated successfully!
         </div>
       )}
 
       {/* Profile header */}
-      <div className="card" style={{ padding: '32px', marginBottom: '24px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100px', background: 'linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.15))', borderBottom: '1px solid rgba(99,102,241,0.15)' }} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px', marginBottom: '20px', flexWrap: 'wrap' }}>
-            <div style={{ width: '88px', height: '88px', borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1, #10b981)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', fontWeight: '700', color: 'white', fontFamily: 'Outfit,sans-serif', border: '4px solid rgba(99,102,241,0.4)', boxShadow: '0 8px 30px rgba(99,102,241,0.3)', marginTop: '40px' }}>
-              {form.name?.[0]?.toUpperCase() || 'U'}
+      <div className="card" style={{ padding: '0', marginBottom: '32px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ height: '160px', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', opacity: 0.8 }} />
+        <div style={{ padding: '0 32px 32px 32px', marginTop: '-44px', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '24px', flexWrap: 'wrap' }}>
+            <div style={{ width: '120px', height: '120px', borderRadius: '30px', background: 'white', padding: '4px', boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}>
+              <div style={{ width: '100%', height: '100%', borderRadius: '26px', background: 'linear-gradient(135deg, #6366f1, #10b981)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', fontWeight: '800', color: 'white', fontFamily: 'Outfit,sans-serif' }}>
+                {form.name?.[0]?.toUpperCase() || 'U'}
+              </div>
             </div>
-            <div style={{ flex: 1, minWidth: '200px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: '22px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', margin: 0 }}>{form.name}</h1>
-                <span style={{ padding: '3px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '600', background: user?.role === 'donor' ? 'rgba(16,185,129,0.2)' : 'rgba(99,102,241,0.2)', color: user?.role === 'donor' ? '#34d399' : '#818cf8', border: `1px solid ${user?.role === 'donor' ? 'rgba(16,185,129,0.3)' : 'rgba(99,102,241,0.3)'}` }}>
+            <div style={{ flex: 1, paddingBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                <h1 style={{ fontSize: '28px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', margin: 0 }}>{form.name}</h1>
+                <span style={{ padding: '4px 12px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', background: user?.role === 'donor' ? 'rgba(16,185,129,0.2)' : 'rgba(99,102,241,0.2)', color: user?.role === 'donor' ? '#34d399' : '#818cf8', border: '1px solid currentColor', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   {user?.role === 'donor' ? '💰 Donor' : '🙋 Client'}
                 </span>
-                <span style={{ padding: '3px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '600', background: 'rgba(16,185,129,0.1)', color: '#34d399', border: '1px solid rgba(16,185,129,0.25)' }}>✓ Verified</span>
+                <span style={{ fontSize: '12px', color: '#10b981', fontWeight: '700', background: 'rgba(16,185,129,0.1)', padding: '4px 12px', borderRadius: '9999px' }}>✓ Verified Account</span>
               </div>
-              <p style={{ color: '#64748b', fontSize: '13px', margin: 0 }}>📍 {form.location} · 🗓 Joined May 2025</p>
+              <p style={{ color: '#64748b', fontSize: '14px', margin: 0, fontWeight: '500' }}>📍 {form.location} · 🗓 Joined Community Hub May 2025</p>
             </div>
-            <button className={`btn ${editing ? 'btn-success' : 'btn-secondary'} btn-sm`} onClick={editing ? handleSave : () => setEditing(true)}>
-              {editing ? '💾 Save Changes' : '✏️ Edit Profile'}
+            <button className={`btn ${editing ? 'btn-primary' : 'btn-secondary'}`} style={{ marginBottom: '8px' }} onClick={editing ? handleSave : () => setEditing(true)}>
+              {editing ? '💾 Save Profile' : '✏️ Edit Profile'}
             </button>
-          </div>
-
-          {/* Badges */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {badges.map(b => (
-              <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 12px', background: 'rgba(19,21,43,0.8)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '9999px', fontSize: '12px', fontWeight: '600', color: b.color }}>
-                {b.icon} {b.label}
-              </div>
-            ))}
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}>
         {/* Left column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           {/* About */}
-          <div className="card" style={{ padding: '24px' }}>
-            <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px', fontFamily: 'Outfit,sans-serif' }}>👤 About</h3>
+          <div className="card" style={{ padding: '28px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#f1f5f9', marginBottom: '20px', fontFamily: 'Outfit,sans-serif' }}>👤 Professional Bio</h3>
             {editing ? (
-              <textarea className="form-input" style={{ minHeight: '100px' }} value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} />
+              <textarea className="form-input" style={{ minHeight: '120px', fontSize: '14px' }} value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} />
             ) : (
-              <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.7', margin: 0 }}>{form.bio}</p>
+              <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: '1.8', margin: 0 }}>{form.bio}</p>
             )}
           </div>
 
-          {/* Contact info */}
-          <div className="card" style={{ padding: '24px' }}>
-            <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px', fontFamily: 'Outfit,sans-serif' }}>📬 Contact Information</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {/* Contact Details */}
+          <div className="card" style={{ padding: '28px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#f1f5f9', marginBottom: '24px', fontFamily: 'Outfit,sans-serif' }}>📬 Contact Information</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               {[
-                { icon: '📧', label: 'Email', field: 'email', type: 'email' },
-                { icon: '📱', label: 'Phone', field: 'phone', type: 'tel' },
-                { icon: '📍', label: 'Location', field: 'location', type: 'text' },
-                { icon: '🌐', label: 'Website', field: 'website', type: 'url' },
+                { icon: '📧', label: 'Email Address', field: 'email', type: 'email' },
+                { icon: '📱', label: 'Phone Number', field: 'phone', type: 'tel' },
+                { icon: '📍', label: 'Current Location', field: 'location', type: 'text' },
+                { icon: '🌐', label: 'Personal Website', field: 'website', type: 'url' },
               ].map(f => (
-                <div key={f.field} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontSize: '18px', width: '28px', textAlign: 'center' }}>{f.icon}</span>
+                <div key={f.field}>
+                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>{f.icon}</span> {f.label}
+                  </div>
                   {editing ? (
-                    <input type={f.type} className="form-input" style={{ flex: 1, padding: '8px 12px' }} value={form[f.field]} onChange={e => setForm(p => ({ ...p, [f.field]: e.target.value }))} />
+                    <input type={f.type} className="form-input" style={{ padding: '10px 14px' }} value={form[f.field]} onChange={e => setForm(p => ({ ...p, [f.field]: e.target.value }))} />
                   ) : (
-                    <div>
-                      <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{f.label}</div>
-                      <div style={{ fontSize: '13px', color: '#f1f5f9' }}>{form[f.field] || '—'}</div>
-                    </div>
+                    <div style={{ fontSize: '14px', color: '#f1f5f9', fontWeight: '600' }}>{form[f.field] || '—'}</div>
                   )}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Recent requests */}
-          <div className="card" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#f1f5f9', fontFamily: 'Outfit,sans-serif', margin: 0 }}>📋 Recent Requests</h3>
-              <button className="btn btn-secondary btn-sm" onClick={() => navigate('browse')}>View All</button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {recentRequests.map(r => (
-                <div key={r.title} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: 'rgba(19,21,43,0.5)', borderRadius: '10px', border: '1px solid rgba(99,102,241,0.1)' }}>
-                  <span style={{ fontSize: '20px' }}>{r.cat}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#f1f5f9' }}>{r.title}</div>
-                    <div style={{ fontSize: '11px', color: '#64748b' }}>{r.date}</div>
-                  </div>
-                  <span style={{ padding: '3px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: '600', background: r.status === 'completed' ? 'rgba(16,185,129,0.15)' : r.status === 'matched' ? 'rgba(99,102,241,0.15)' : 'rgba(245,158,11,0.15)', color: r.status === 'completed' ? '#34d399' : r.status === 'matched' ? '#818cf8' : '#fbbf24' }}>
-                    {r.status === 'completed' ? '✅' : r.status === 'matched' ? '🤝' : '⏳'} {r.status}
-                  </span>
+          {/* Badges Section */}
+          <div className="card" style={{ padding: '28px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#f1f5f9', marginBottom: '20px', fontFamily: 'Outfit,sans-serif' }}>🏅 Community Badges</h3>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              {badges.map(b => (
+                <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '14px', fontSize: '13px', fontWeight: '700', color: b.color, transition: 'all 0.2s' }}>
+                  <span style={{ fontSize: '20px' }}>{b.icon}</span> {b.label}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right column — stats */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="card" style={{ padding: '20px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px', fontFamily: 'Outfit,sans-serif' }}>📊 Your Stats</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {/* Right column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {/* Stats */}
+          <div className="card" style={{ padding: '28px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#f1f5f9', marginBottom: '24px', fontFamily: 'Outfit,sans-serif' }}>📊 Impact Analytics</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {stats.map(s => (
-                <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: `${s.color}1a`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>{s.icon}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '500' }}>{s.label}</div>
-                    <div style={{ fontSize: '20px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: s.color, lineHeight: 1 }}>{s.val}</div>
+                <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: `${s.color}15`, border: `1px solid ${s.color}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>{s.icon}</div>
+                  <div>
+                    <div style={{ fontSize: '26px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: s.color, lineHeight: 1, marginBottom: '4px' }}>{s.val}</div>
+                    <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>{s.label}</div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="card" style={{ padding: '20px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#f1f5f9', marginBottom: '12px', fontFamily: 'Outfit,sans-serif' }}>⚡ Quick Actions</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {/* Quick links */}
+          <div className="card" style={{ padding: '28px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#f1f5f9', marginBottom: '20px', fontFamily: 'Outfit,sans-serif' }}>⚡ Quick Actions</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
-                { label: '➕ Post Request', page: 'post-request' },
+                { label: '🎁 Share Resource', page: 'share-something' },
                 { label: '🔍 Browse Listings', page: 'browse' },
-                { label: '🤝 View Matches', page: 'matches' },
+                { label: '🤝 My Matches', page: 'matches' },
                 { label: '💬 Messages', page: 'messages' },
               ].map(a => (
                 <button key={a.page} onClick={() => navigate(a.page)}
-                  style={{ width: '100%', padding: '10px 14px', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '8px', background: 'transparent', color: '#94a3b8', cursor: 'pointer', textAlign: 'left', fontSize: '13px', fontWeight: '500', fontFamily: 'Inter,sans-serif', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.1)'; e.currentTarget.style.color = '#f1f5f9'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}>
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', background: 'rgba(99,102,241,0.05)', color: '#94a3b8', cursor: 'pointer', textAlign: 'left', fontSize: '14px', fontWeight: '600', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.15)'; e.currentTarget.style.color = '#f1f5f9'; e.currentTarget.style.transform = 'translateX(4px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.05)'; e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.transform = 'none'; }}>
                   {a.label}
                 </button>
               ))}
@@ -183,3 +193,4 @@ export default function ProfilePage({ user, navigate }) {
     </div>
   );
 }
+

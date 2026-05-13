@@ -1,5 +1,6 @@
 /* ===== Share Something Page ===== */
 import { useState } from 'react';
+import { createListing } from '../services/api';
 
 const CATEGORIES = [
   { val: 'food', label: '🍱 Food & Essentials', desc: 'Canned food, dry goods, toiletries' },
@@ -10,19 +11,34 @@ const CATEGORIES = [
   { val: 'other', label: '✨ Other', desc: 'Anything else that might help' },
 ];
 
-export default function ShareSomethingPage({ navigate, user }) {
+export default function ShareSomethingPage({ navigate }) {
   const [form, setForm] = useState({ title: '', category: '', quantity: '1', condition: 'new', neighborhood: '', description: '', image: null });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.title || !form.category) {
+      alert('Please select a category and provide a title.');
+      return;
+    }
+
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await createListing({
+        ...form,
+        type: 'donation', // Donors share resources
+      });
+      setMessage('Successfully listed your contribution!');
       setSubmitted(true);
-    }, 1500);
+      setTimeout(() => navigate('browse'), 3000);
+    } catch (err) {
+      console.error('Failed to create listing:', err);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) return (
@@ -35,7 +51,7 @@ export default function ShareSomethingPage({ navigate, user }) {
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
           <button className="btn btn-primary" onClick={() => navigate('dashboard')}>Back to Dashboard</button>
-          <button className="btn btn-secondary" onClick={() => navigate('matches')}>Track Matches</button>
+          <button className="btn btn-secondary" onClick={() => navigate('browse')}>View Listings</button>
         </div>
       </div>
     </div>
@@ -43,6 +59,12 @@ export default function ShareSomethingPage({ navigate, user }) {
 
   return (
     <div style={{ animation: 'fadeInUp 0.4s ease', maxWidth: '800px' }}>
+      {message && (
+        <div style={{ position: 'fixed', top: '24px', right: '24px', background: '#10b981', color: 'white', padding: '12px 24px', borderRadius: '12px', boxShadow: '0 10px 30px rgba(16,185,129,0.3)', zIndex: 1000, fontWeight: '700', animation: 'fadeInUp 0.3s ease' }}>
+          ✅ {message}
+        </div>
+      )}
+
       <div style={{ marginBottom: '32px' }}>
         <h1 style={{ fontSize: '28px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '8px' }}>Share Something 🎁</h1>
         <p style={{ color: '#64748b', fontSize: '16px' }}>List an item you'd like to donate and help someone in your community.</p>
@@ -113,7 +135,7 @@ export default function ShareSomethingPage({ navigate, user }) {
         <div style={{ display: 'flex', gap: '16px' }}>
           <button type="button" className="btn btn-secondary" style={{ flex: 1 }} onClick={() => navigate('dashboard')}>Cancel</button>
           <button type="submit" className="btn" disabled={loading}
-            style={{ flex: 2, background: '#f97316', color: 'white', fontWeight: '700', padding: '14px', borderRadius: '12px', border: 'none', cursor: 'pointer' }}>
+            style={{ flex: 2, background: '#f97316', color: 'white', fontWeight: '700', padding: '14px', borderRadius: '12px', border: 'none', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}>
             {loading ? 'Processing...' : '🚀 List Item for Sharing'}
           </button>
         </div>

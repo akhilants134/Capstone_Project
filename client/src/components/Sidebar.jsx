@@ -1,5 +1,4 @@
 /* ===== Sidebar Component ===== */
-import { useState } from 'react';
 
 const navItems = [
   { id: 'dashboard',       icon: '⚡', label: 'Dashboard'       },
@@ -13,7 +12,6 @@ const navItems = [
 ];
 
 export default function Sidebar({ currentPage, navigate, user, onLogout }) {
-  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <aside
@@ -79,6 +77,14 @@ export default function Sidebar({ currentPage, navigate, user, onLogout }) {
           }}>
             {user?.role === 'donor' ? '💰 Donor' : '🙋 Client'}
           </div>
+        </div>
+      </div>
+
+      {/* Search box */}
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(99,102,241,0.1)' }}>
+        <div style={{ position: 'relative' }}>
+          <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '12px', opacity: 0.6 }}>🔍</span>
+          <input type="text" placeholder="Global Search..." style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '8px', padding: '8px 10px 8px 30px', fontSize: '12px', color: '#f1f5f9', outline: 'none' }} />
         </div>
       </div>
 

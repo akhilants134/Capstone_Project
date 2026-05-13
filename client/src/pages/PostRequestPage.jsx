@@ -1,5 +1,6 @@
 /* ===== Post Request Page ===== */
 import { useState } from 'react';
+import { createListing } from '../services/api';
 
 const CATEGORIES = [
   { val: 'tech', label: '💻 Technology', desc: 'Devices, software, hardware' },
@@ -16,7 +17,7 @@ const URGENCY = [
   { val: 'urgent', label: '🔴 Urgent', desc: 'Needed immediately' },
 ];
 
-export default function PostRequestPage({ navigate, user }) {
+export default function PostRequestPage({ navigate }) {
   const [form, setForm] = useState({ title: '', category: '', urgency: '', quantity: '1', estimatedValue: '', description: '', location: '', deadline: '', contactPreference: 'platform', tags: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,11 +33,23 @@ export default function PostRequestPage({ navigate, user }) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+    
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSubmitted(true); }, 1500);
+    try {
+      await createListing({
+        ...form,
+        type: 'request', // Clients "request" resources
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Failed to post request:', err);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) return (
