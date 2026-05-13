@@ -21,8 +21,19 @@ exports.getAllListings = async (req, res) => {
         const filter = {};
         if (req.query.type) filter.type = req.query.type;
         if (req.query.category) filter.category = req.query.category;
+        if (req.query.urgency) filter.urgency = req.query.urgency;
+        
+        // Search functionality
+        if (req.query.search) {
+            filter.$or = [
+                { title: { $regex: req.query.search, $options: 'i' } },
+                { description: { $regex: req.query.search, $options: 'i' } }
+            ];
+        }
 
-        const listings = await Listing.find(filter).populate('user', 'name role');
+        const listings = await Listing.find(filter)
+            .populate('user', 'name role')
+            .sort('-createdAt');
 
         res.status(200).json({
             status: 'success',

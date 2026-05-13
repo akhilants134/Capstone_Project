@@ -28,28 +28,28 @@ export default function BrowsePage({ navigate }) {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // In a real app, this would be a real API call.
-        // For 60% demo, we use the service and it returns mock data if backend isn't ready.
-        const data = await getListings({ category: cat !== 'all' ? cat : undefined });
-        setListings(data.listings || []);
+        const data = await getListings({ 
+          category: cat !== 'all' ? cat : undefined,
+          search: search || undefined
+        });
+        setListings(data.data.listings || []);
       } catch (err) {
         console.error('Failed to fetch listings:', err);
-        setError('Unable to load real-world data. Showing offline listings.');
-        // Fallback to static data for demonstration
+        setError('Unable to load data. Showing offline fallback.');
         setListings([
-          { id: 1, title: 'MacBook Pro 2021 (M1)', category: 'tech', donor: 'TechCorp Inc.', value: '$1,200', urgency: 'high', desc: '16GB RAM, 512GB SSD, excellent condition. Perfect for developers or students.', tags: ['laptop', 'apple'], matches: 3, posted: '2 days ago', status: 'active' },
-          { id: 2, title: '50 Basic Medical Kits', category: 'medical', donor: 'HealthFirst NGO', value: '$800', urgency: 'urgent', desc: 'Complete first-aid kits including bandages, antiseptics, medications.', tags: ['medical', 'first-aid'], matches: 7, posted: '1 day ago', status: 'matched' },
-          { id: 4, title: 'Emergency Food Packages', category: 'food', donor: 'FoodBank India', value: '$600', urgency: 'urgent', desc: '100 nutritious meal packages for families in need.', tags: ['food', 'emergency'], matches: 12, posted: '3 hrs ago', status: 'completed' },
+          { id: 1, title: 'MacBook Pro 2021 (M1)', category: 'tech', donor: 'TechCorp Inc.', value: '$1,200', urgency: 'high', desc: '16GB RAM, 512GB SSD, excellent condition.', tags: ['laptop', 'apple'], matches: 3, posted: '2 days ago', status: 'active' },
         ]);
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
-  }, [cat]);
+    const timer = setTimeout(() => {
+      fetchData();
+    }, 300); // Debounce search
+    return () => clearTimeout(timer);
+  }, [cat, search]);
 
   const items = listings
-    .filter(l => !search || l.title.toLowerCase().includes(search.toLowerCase()) || l.donor.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => sort === 'matches' ? b.matches - a.matches : 0);
 
   return (
