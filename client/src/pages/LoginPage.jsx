@@ -1,5 +1,5 @@
-/* ===== Login Page ===== */
 import { useState } from 'react';
+import { login } from '../services/api';
 
 export default function LoginPage({ navigate, onLogin }) {
   const [form, setForm] = useState({ email: '', password: '', role: 'client' });
@@ -12,11 +12,23 @@ export default function LoginPage({ navigate, onLogin }) {
     if (!form.email || !form.password) { setError('Please fill in all fields.'); return; }
     setError('');
     setLoading(true);
-    // Simulate auth
-    setTimeout(() => {
-      setLoading(false);
-      onLogin({ name: form.email.split('@')[0], email: form.email, role: form.role, id: Date.now() });
-    }, 1200);
+    
+    try {
+      const response = await login(form);
+      onLogin({ ...response.user, role: form.role });
+    } catch (err) {
+      console.error('Login failed:', err);
+      // Fallback for demo if backend is not running
+      if (err.message.includes('Failed to fetch')) {
+        setTimeout(() => {
+          setLoading(false);
+          onLogin({ name: form.email.split('@')[0], email: form.email, role: form.role, id: Date.now() });
+        }, 1000);
+      } else {
+        setError(err.message || 'Login failed. Please try again.');
+        setLoading(false);
+      }
+    }
   };
 
   return (
