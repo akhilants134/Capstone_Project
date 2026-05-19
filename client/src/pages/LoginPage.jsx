@@ -15,7 +15,7 @@ export default function LoginPage({ navigate, onLogin }) {
     
     try {
       const response = await login(form);
-      onLogin({ ...response.user, role: form.role });
+      onLogin({ ...response.data.user, token: response.token, role: form.role });
     } catch (err) {
       console.error('Login failed:', err);
       // Fallback for demo if backend is not running

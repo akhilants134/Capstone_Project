@@ -12,10 +12,24 @@ const handleResponse = async (response) => {
 
 const apiRequest = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
+  
+  // Get token from localStorage user object
+  const userStr = localStorage.getItem("user");
+  let token = null;
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      token = user.token;
+    } catch (e) {
+      console.error("Failed to parse user from localStorage");
+    }
+  }
+
   const response = await fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       ...options.headers,
     },
   });
@@ -25,6 +39,7 @@ const apiRequest = async (endpoint, options = {}) => {
 // Auth
 export const login = (data) => apiRequest('/users/login', { method: 'POST', body: JSON.stringify(data) });
 export const signup = (data) => apiRequest('/users/signup', { method: 'POST', body: JSON.stringify(data) });
+export const register = signup;
 export const logout = () => apiRequest('/users/logout');
 export const getMe = () => apiRequest('/users/me');
 

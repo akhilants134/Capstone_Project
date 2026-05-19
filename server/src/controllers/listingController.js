@@ -112,3 +112,22 @@ exports.deleteListing = async (req, res) => {
         res.status(400).json({ status: 'fail', message: err.message });
     }
 };
+
+exports.getStats = async (req, res) => {
+    try {
+        const totalListings = await Listing.countDocuments();
+        const activeMatches = await Listing.countDocuments({ status: 'matched' });
+        // Generate some basic mock stats for the dashboard
+        res.status(200).json({
+            status: 'success',
+            data: {
+                totalListings,
+                activeMatches,
+                totalUsers: 150,
+                successRate: 94
+            }
+        });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
+    }
+};

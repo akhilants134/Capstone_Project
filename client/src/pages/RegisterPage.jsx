@@ -38,7 +38,7 @@ export default function RegisterPage({ navigate, onLogin }) {
         location: form.location
       });
       if (data.status === 'success') {
-        onLogin(data.data.user);
+        onLogin({ ...data.data.user, token: data.token });
       }
     } catch (err) {
       console.error('Registration failed:', err);

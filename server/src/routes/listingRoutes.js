@@ -6,6 +6,7 @@ const router = express.Router();
 
 // Public routes
 router.get('/', listingController.getAllListings);
+router.get('/stats', listingController.getStats);
 router.get('/:id', listingController.getListing);
 
 // Protected routes
