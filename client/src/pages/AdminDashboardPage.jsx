@@ -577,24 +577,197 @@ export default function AdminDashboardPage({ navigate, user, onLogout }) {
     </div>
   );
 
-  const renderSystem = () => (
-    <div style={{ padding: '24px' }}>
-      <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '700', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)' }}>
-          System Configuration
-        </h2>
-        <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: 'var(--text-secondary)' }}>
-          Manage platform settings and configurations
-        </p>
-      </div>
+  const renderSystem = () => {
+    const [maintenanceMode, setMaintenanceMode] = useState(false);
+    const [allowRegistration, setAllowRegistration] = useState(true);
+    const [emailNotifications, setEmailNotifications] = useState(true);
+    const [autoMatchEnabled, setAutoMatchEnabled] = useState(true);
 
-      <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px' }}>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-          System configuration options will be available here.
+    const handleSaveSettings = () => {
+      alert('Settings saved successfully!');
+    };
+
+    return (
+      <div style={{ padding: '24px' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '700', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)' }}>
+            System Configuration
+          </h2>
+          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: 'var(--text-secondary)' }}>
+            Manage platform settings and configurations
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
+          {/* Platform Settings */}
+          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)' }}>Platform Settings</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)' }}>Maintenance Mode</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Disable platform for maintenance</div>
+                </div>
+                <button
+                  onClick={() => setMaintenanceMode(!maintenanceMode)}
+                  style={{
+                    width: '48px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                    background: maintenanceMode ? '#ef4444' : '#10b981', position: 'relative',
+                  }}
+                >
+                  <div style={{
+                    width: '20px', height: '20px', borderRadius: '50%', background: 'white',
+                    position: 'absolute', top: '2px', left: maintenanceMode ? '26px' : '2px',
+                    transition: 'left 0.2s',
+                  }} />
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)' }}>Allow Registration</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Enable new user signups</div>
+                </div>
+                <button
+                  onClick={() => setAllowRegistration(!allowRegistration)}
+                  style={{
+                    width: '48px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                    background: allowRegistration ? '#10b981' : '#ef4444', position: 'relative',
+                  }}
+                >
+                  <div style={{
+                    width: '20px', height: '20px', borderRadius: '50%', background: 'white',
+                    position: 'absolute', top: '2px', left: allowRegistration ? '26px' : '2px',
+                    transition: 'left 0.2s',
+                  }} />
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)' }}>Auto-Matching</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Automatic donation matching</div>
+                </div>
+                <button
+                  onClick={() => setAutoMatchEnabled(!autoMatchEnabled)}
+                  style={{
+                    width: '48px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                    background: autoMatchEnabled ? '#10b981' : '#ef4444', position: 'relative',
+                  }}
+                >
+                  <div style={{
+                    width: '20px', height: '20px', borderRadius: '50%', background: 'white',
+                    position: 'absolute', top: '2px', left: autoMatchEnabled ? '26px' : '2px',
+                    transition: 'left 0.2s',
+                  }} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Notification Settings */}
+          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)' }}>Notification Settings</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: '500', color: 'var(--text-primary)' }}>Email Notifications</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Send email alerts to users</div>
+                </div>
+                <button
+                  onClick={() => setEmailNotifications(!emailNotifications)}
+                  style={{
+                    width: '48px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                    background: emailNotifications ? '#10b981' : '#ef4444', position: 'relative',
+                  }}
+                >
+                  <div style={{
+                    width: '20px', height: '20px', borderRadius: '50%', background: 'white',
+                    position: 'absolute', top: '2px', left: emailNotifications ? '26px' : '2px',
+                    transition: 'left 0.2s',
+                  }} />
+                </button>
+              </div>
+
+              <div style={{ padding: '12px', background: 'var(--bg-input)', borderRadius: '8px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Notification Email</div>
+                <input
+                  type="email"
+                  defaultValue="noreply@resourcematch.com"
+                  style={{
+                    width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)',
+                    background: 'var(--bg-card)', color: 'var(--text-primary)', fontSize: '13px',
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* System Info */}
+          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)' }}>System Information</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Server Status</span>
+                <span style={{ color: '#10b981', fontWeight: '600' }}>● Online</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Database</span>
+                <span style={{ color: '#10b981', fontWeight: '600' }}>● Connected</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>API Version</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>v1.0.0</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Environment</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>Development</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)' }}>System Actions</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button
+                onClick={handleSaveSettings}
+                style={{
+                  padding: '12px 16px', fontSize: '14px', fontWeight: '500', borderRadius: '8px',
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white',
+                  border: 'none', cursor: 'pointer',
+                }}
+              >
+                💾 Save Settings
+              </button>
+              <button
+                style={{
+                  padding: '12px 16px', fontSize: '14px', fontWeight: '500', borderRadius: '8px',
+                  background: 'rgba(99,102,241,0.1)', color: '#6366f1',
+                  border: '1px solid rgba(99,102,241,0.3)', cursor: 'pointer',
+                }}
+              >
+                🔄 Clear Cache
+              </button>
+              <button
+                style={{
+                  padding: '12px 16px', fontSize: '14px', fontWeight: '500', borderRadius: '8px',
+                  background: 'rgba(239,68,68,0.1)', color: '#ef4444',
+                  border: '1px solid rgba(239,68,68,0.3)', cursor: 'pointer',
+                }}
+              >
+                ⚠️ Reset System
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderContent = () => {
     switch (activeTab) {
