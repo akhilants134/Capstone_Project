@@ -146,12 +146,9 @@ exports.toggleUserVerification = async (req, res) => {
         if (action === 'approve') {
             user.isVerified = true;
         } else if (action === 'reject') {
-            // For rejection, you might want to delete the user or mark them as rejected
-            // For now, we'll just keep them unverified
-            return res.status(400).json({
-                status: 'error',
-                message: 'Reject functionality not implemented yet'
-            });
+            // Mark user as rejected by keeping isVerified false
+            // Could add a rejection reason field in the future
+            user.isVerified = false;
         }
 
         await user.save();

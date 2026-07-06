@@ -80,9 +80,8 @@ app.get("/", (req, res) => {
   res.json({ message: "Resource & Donation Matcher API (Lite) is running..." });
 });
 
-// Database Connection
-const DB =
-  process.env.DATABASE_URL || "mongodb://localhost:27017/resourcematcher";
+// Database Connection - Force local MongoDB for development
+const DB = "mongodb://127.0.0.1:27017/resourcematcher";
 mongoose
   .connect(DB)
   .then(() => console.log("✅ MongoDB connection successful"))

@@ -20,6 +20,10 @@ export default function AdminDashboardPage({ navigate, user, onLogout }) {
   const [stats, setStats] = useState(null);
   const [verifications, setVerifications] = useState([]);
   const [topDonors, setTopDonors] = useState([]);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [allowRegistration, setAllowRegistration] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [autoMatchEnabled, setAutoMatchEnabled] = useState(true);
 
   // Fetch all data
   const fetchAllData = async () => {
@@ -578,11 +582,6 @@ export default function AdminDashboardPage({ navigate, user, onLogout }) {
   );
 
   const renderSystem = () => {
-    const [maintenanceMode, setMaintenanceMode] = useState(false);
-    const [allowRegistration, setAllowRegistration] = useState(true);
-    const [emailNotifications, setEmailNotifications] = useState(true);
-    const [autoMatchEnabled, setAutoMatchEnabled] = useState(true);
-
     const handleSaveSettings = () => {
       alert('Settings saved successfully!');
     };
