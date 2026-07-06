@@ -17,6 +17,7 @@ import MessagesPage from "./pages/MessagesPage";
 import DonationsPage from "./pages/DonationsPage";
 import ShareSomethingPage from "./pages/ShareSomethingPage";
 import SettingsPage from "./pages/SettingsPage";
+import TwoFAChallengePage from "./pages/TwoFAChallengePage";
 
 function App() {
   const getInitialTheme = () => {
@@ -54,6 +55,8 @@ function App() {
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [themeMode, setThemeMode] = useState(getInitialTheme);
+  // 2FA pending state — set when login responds with requires2FA
+  const [pending2FA, setPending2FA] = useState(null); // { preAuthToken, partialUser }
 
   useEffect(() => {
     document.documentElement.dataset.theme = themeMode;
@@ -70,14 +73,29 @@ function App() {
   };
 
   const handleLogin = (userData) => {
+    // If the server indicated 2FA is required, show the challenge page
+    if (userData && userData.requires2FA) {
+      setPending2FA({ preAuthToken: userData.preAuthToken, partialUser: userData.data?.user });
+      return;
+    }
     const profile = normalizeStoredUser(userData);
     setUser(profile);
     localStorage.setItem("user", JSON.stringify(profile));
+    setPending2FA(null);
+    setCurrentPage("dashboard");
+  };
+
+  const handle2FASuccess = (userData) => {
+    const profile = normalizeStoredUser(userData);
+    setUser(profile);
+    localStorage.setItem("user", JSON.stringify(profile));
+    setPending2FA(null);
     setCurrentPage("dashboard");
   };
 
   const handleLogout = () => {
     setUser(null);
+    setPending2FA(null);
     localStorage.removeItem("user");
     setCurrentPage("login");
   };
@@ -122,6 +140,20 @@ function App() {
         return <DashboardPage navigate={navigate} user={user} />;
     }
   };
+
+  // Show 2FA challenge screen when pending
+  if (pending2FA) {
+    return (
+      <div className="auth-wrapper">
+        <TwoFAChallengePage
+          preAuthToken={pending2FA.preAuthToken}
+          partialUser={pending2FA.partialUser}
+          onSuccess={handle2FASuccess}
+          onBack={() => { setPending2FA(null); setCurrentPage("login"); }}
+        />
+      </div>
+    );
+  }
 
   // Auth pages layout
   if (currentPage === "login" || currentPage === "register") {

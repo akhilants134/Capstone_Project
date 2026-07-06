@@ -24,6 +24,18 @@ const userSchema = new mongoose.Schema({
         minlength: 8,
         select: false
     },
+    twoFactorSecret: {
+        type: String,
+        select: false
+    },
+    twoFactorEnabled: {
+        type: Boolean,
+        default: false
+    },
+    twoFactorBackupCodes: {
+        type: [String],
+        select: false
+    },
     category: {
         type: String,
         enum: ['medical', 'education', 'food', 'shelter', 'financial', 'volunteering'],

@@ -36,6 +36,18 @@ export const register = signup;
 export const logout = () => apiRequest("/users/logout");
 export const getMe = () => apiRequest("/users/me");
 
+// 2FA
+export const setup2FA = () =>
+  apiRequest("/users/2fa/setup", { method: "POST" });
+export const enable2FA = (code) =>
+  apiRequest("/users/2fa/enable", { method: "POST", body: JSON.stringify({ code }) });
+export const disable2FA = (code) =>
+  apiRequest("/users/2fa/disable", { method: "POST", body: JSON.stringify({ code }) });
+export const verify2FA = (preAuthToken, code) =>
+  apiRequest("/users/2fa/verify", { method: "POST", body: JSON.stringify({ preAuthToken, code }) });
+export const regenerateBackupCodes = (code) =>
+  apiRequest("/users/2fa/backup-codes", { method: "POST", body: JSON.stringify({ code }) });
+
 // Listings
 export const getListings = (params = {}) => {
   const query = new URLSearchParams(params).toString();
@@ -79,6 +91,11 @@ export default {
   register: signup,
   logout,
   getMe,
+  setup2FA,
+  enable2FA,
+  disable2FA,
+  verify2FA,
+  regenerateBackupCodes,
   getListings,
   getListing,
   createListing,
