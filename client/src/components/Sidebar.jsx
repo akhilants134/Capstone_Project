@@ -13,10 +13,6 @@ const navItems = [
 
 export default function Sidebar({ currentPage, navigate, user, onLogout }) {
   const isSettingsActive = currentPage === "settings";
-  const isAdmin = user?.role === "admin";
-  const visibleNavItems = isAdmin
-    ? [...navItems, { id: "admin", icon: "🛡️", label: "Admin Panel" }]
-    : navItems;
 
   return (
     <aside
@@ -126,18 +122,12 @@ export default function Sidebar({ currentPage, navigate, user, onLogout }) {
               color:
                 user?.role === "donor"
                   ? "var(--secondary-light)"
-                  : user?.role === "admin"
-                  ? "#f59e0b"
                   : "var(--primary-light)",
               fontWeight: "600",
               textTransform: "capitalize",
             }}
           >
-            {user?.role === "admin"
-              ? "🛡️ Admin"
-              : user?.role === "donor"
-              ? "💰 Donor"
-              : "🙋 Client"}
+            {user?.role === "donor" ? "💰 Donor" : "🙋 Client"}
           </div>
         </div>
       </div>
@@ -181,7 +171,7 @@ export default function Sidebar({ currentPage, navigate, user, onLogout }) {
 
       {/* Nav items */}
       <nav style={{ flex: 1, padding: "12px 12px", overflowY: "auto" }}>
-        {visibleNavItems.map((item) => {
+        {navItems.map((item) => {
           const isActive = currentPage === item.id;
           return (
             <button

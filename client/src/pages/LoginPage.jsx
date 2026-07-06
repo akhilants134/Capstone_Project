@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { login } from '../services/api';
 
 export default function LoginPage({ navigate, onLogin }) {
-  const [form, setForm] = useState({ email: '', password: '', role: 'client' });
+  const [form, setForm] = useState({ email: '', password: '', role: 'community' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -15,7 +15,7 @@ export default function LoginPage({ navigate, onLogin }) {
     
     try {
       const response = await login(form);
-      onLogin({ ...response.data.user, token: response.token });
+      onLogin({ ...response.data.user, token: response.token, role: form.role });
     } catch (err) {
       console.error('Login failed:', err);
       // Fallback for demo if backend is not running
@@ -130,25 +130,46 @@ export default function LoginPage({ navigate, onLogin }) {
           {/* Role toggle */}
           <div style={{
             background: 'var(--bg-input)', borderRadius: '12px',
-            padding: '4px', display: 'flex', marginBottom: '24px',
+            padding: '4px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px', marginBottom: '24px',
             border: '1px solid var(--border)',
           }}>
-            {[{ val: 'client', label: '🙋 Client', desc: 'Need Resources' }, { val: 'donor', label: '💰 Donor', desc: 'Give Resources' }].map(r => (
+            {[
+              { val: 'community', label: '🌍 Community', desc: 'Browse & Request' },
+              { val: 'donor', label: '💰 Donor', desc: 'Give Resources' },
+              { val: 'recipient', label: '🤝 Recipient', desc: 'Receive Resources' },
+              { val: 'admin', label: '⚙️ Admin', desc: 'Manage Platform' }
+            ].map(r => (
               <button
                 key={r.val}
                 onClick={() => setForm(p => ({ ...p, role: r.val }))}
                 style={{
-                  flex: 1, padding: '10px', border: 'none', borderRadius: '10px', cursor: 'pointer',
+                  padding: '12px 8px', border: 'none', borderRadius: '8px', cursor: 'pointer',
                   fontFamily: 'Inter,sans-serif', transition: 'all 0.2s ease',
                   background: form.role === r.val ? 'var(--gradient-btn)' : 'transparent',
                   color: form.role === r.val ? 'white' : 'var(--text-secondary)',
-                  fontSize: '13px', fontWeight: '600',
+                  fontSize: '12px', fontWeight: '600', textAlign: 'center',
                 }}
               >
-                {r.label}
+                <div>{r.label}</div>
+                <div style={{ fontSize: '10px', fontWeight: '400', opacity: 0.8 }}>{r.desc}</div>
               </button>
             ))}
           </div>
+
+          {/* Role description */}
+          {form.role === 'admin' && (
+            <div style={{
+              background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)',
+              borderRadius: '8px', padding: '12px', marginBottom: '20px',
+            }}>
+              <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--primary)', marginBottom: '6px' }}>Admin Platform</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                • Manage all users<br />
+                • View platform analytics<br />
+                • System configuration
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             {/* Email */}
@@ -200,7 +221,7 @@ export default function LoginPage({ navigate, onLogin }) {
                   <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                   Signing in...
                 </span>
-              ) : 'Sign In →'}
+              ) : form.role === 'admin' ? 'Sign In as Admin →' : 'Sign In →'}
             </button>
 
             {/* Divider */}
@@ -213,27 +234,28 @@ export default function LoginPage({ navigate, onLogin }) {
             {/* Demo login */}
             <button
               type="button"
-              onClick={() => onLogin({ name: 'Alex Johnson', email: 'alex@demo.com', role: form.role, id: 1 })}
+              onClick={() => {
+                if (form.role === 'admin') {
+                  onLogin({ name: 'Admin', email: 'admin@resourcematch.com', role: 'admin', id: 1 });
+                } else {
+                  onLogin({ name: 'Alex Johnson', email: 'alex@demo.com', role: form.role, id: 1 });
+                }
+              }}
               className="btn btn-secondary btn-full"
-              style={{ marginBottom: '10px' }}
+              style={{ marginBottom: '16px' }}
             >
               🚀 Continue with Demo Account
             </button>
 
-            <button
-              type="button"
-              onClick={() => onLogin({ name: 'Admin', email: 'admin@resourcematch.com', role: 'admin', id: 999 })}
-              className="btn btn-full"
-              style={{
-                marginBottom: '24px',
-                background: 'transparent',
-                color: 'var(--text-secondary)',
-                border: '1px dashed var(--border)',
-                fontWeight: '600',
-              }}
-            >
-              🛡️ Admin Demo Login
-            </button>
+            {form.role === 'admin' && (
+              <div style={{
+                background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.2)',
+                borderRadius: '8px', padding: '10px', marginBottom: '16px', fontSize: '11px',
+                color: 'var(--text-secondary)', textAlign: 'center',
+              }}>
+                Demo: user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>admin</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>admin123</span>
+              </div>
+            )}
 
             <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)' }}>
               Don't have an account?{' '}

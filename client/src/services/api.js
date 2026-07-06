@@ -86,31 +86,6 @@ export const getNotifications = () => apiRequest("/notifications");
 export const markNotificationsRead = () =>
   apiRequest("/notifications/mark-read", { method: "PATCH" });
 
-// Admin
-export const getAdminStats = () => apiRequest("/admin/stats");
-export const getAdminUsers = (params = {}) => {
-  const query = new URLSearchParams(params).toString();
-  return apiRequest(`/admin/users?${query}`);
-};
-export const updateUserRole = (id, role) =>
-  apiRequest(`/admin/users/${id}/role`, {
-    method: "PATCH",
-    body: JSON.stringify({ role }),
-  });
-export const deleteUser = (id) => apiRequest(`/admin/users/${id}`, { method: "DELETE" });
-export const getAdminListings = (params = {}) => {
-  const query = new URLSearchParams(params).toString();
-  return apiRequest(`/admin/listings?${query}`);
-};
-export const deleteAdminListing = (id) =>
-  apiRequest(`/admin/listings/${id}`, { method: "DELETE" });
-export const toggleAdminListingStatus = (id, status) =>
-  apiRequest(`/admin/listings/${id}/status`, {
-    method: "PATCH",
-    body: JSON.stringify({ status }),
-  });
-export const seedAdminUser = () => apiRequest("/admin/seed", { method: "POST" });
-
 export default {
   login,
   register: signup,
@@ -135,12 +110,4 @@ export default {
   sendMessage,
   getNotifications,
   markNotificationsRead,
-  getAdminStats,
-  getAdminUsers,
-  updateUserRole,
-  deleteUser,
-  getAdminListings,
-  deleteAdminListing,
-  toggleAdminListingStatus,
-  seedAdminUser,
 };

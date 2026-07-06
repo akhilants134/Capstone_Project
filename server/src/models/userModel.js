@@ -55,7 +55,15 @@ const userSchema = new mongoose.Schema({
             type: Date,
             default: Date.now()
         }
-    }]
+    }],
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    isBanned: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true
 });

@@ -148,6 +148,20 @@ exports.login = async (req, res) => {
       return res.status(401).json({ status: "fail", message: "Incorrect email or password" });
     }
 
+    if (user.role === "admin") {
+      return res.status(403).json({
+        status: "fail",
+        message: "Admin accounts must sign in through the admin portal.",
+      });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({
+        status: "fail",
+        message: "This account has been suspended. Contact support for help.",
+      });
+    }
+
     // If 2FA is enabled, send a pre-auth token instead of a full session
     if (user.twoFactorEnabled) {
       const preAuthToken = signPreAuthToken(user._id);
@@ -157,6 +171,42 @@ exports.login = async (req, res) => {
         requires2FA: true,
         preAuthToken,
         data: { user: { _id: user._id, name: user.name, email: user.email } },
+      });
+    }
+
+    const token = signToken(user._id);
+    setAuthCookie(res, token);
+    user.password = undefined;
+
+    res.status(200).json({ status: "success", token, data: { user } });
+  } catch (err) {
+    res.status(400).json({ status: "fail", message: err.message });
+  }
+};
+
+exports.adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ status: "fail", message: "Please provide email and password!" });
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+    if (!user || !(await user.correctPassword(password, user.password))) {
+      return res.status(401).json({ status: "fail", message: "Incorrect email or password" });
+    }
+
+    if (user.role !== "admin") {
+      return res.status(403).json({
+        status: "fail",
+        message: "This portal is restricted to administrator accounts.",
+      });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({
+        status: "fail",
+        message: "This admin account has been suspended.",
       });
     }
 
@@ -210,6 +260,14 @@ exports.protect = async (req, res, next) => {
 
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ status: "fail", message: "User no longer exists" });
+    if (user.isBanned) {
+      clearAuthCookie(res);
+      return res.status(403).json({
+        status: "fail",
+        message: "This account has been suspended.",
+      });
+    }
+
     req.user = user;
     next();
   } catch {
