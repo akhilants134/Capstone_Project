@@ -67,7 +67,10 @@ export default function AdminDashboardPage({ navigate, user, onLogout }) {
       await fetchAllData(); // Refresh data
     } catch (err) {
       console.error('Error verifying user:', err);
-      alert('Failed to verify user');
+      // Only show alert if it's a real error, not just missing backend
+      if (err.message && !err.message.includes('Failed to fetch')) {
+        alert(`Failed to verify user: ${err.message}`);
+      }
     }
   };
 

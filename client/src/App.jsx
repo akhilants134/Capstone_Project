@@ -52,7 +52,11 @@ function App() {
   });
   const [currentPage, setCurrentPage] = useState(() => {
     const savedUser = localStorage.getItem("user");
-    return savedUser ? "dashboard" : "login";
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      return user.role === 'admin' ? "admin-dashboard" : "dashboard";
+    }
+    return "login";
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [themeMode, setThemeMode] = useState(getInitialTheme);
