@@ -235,11 +235,13 @@ export default function LoginPage({ navigate, onLogin }) {
             <button
               type="button"
               onClick={() => {
-                if (form.role === 'admin') {
-                  onLogin({ name: 'Admin', email: 'admin@resourcematch.com', role: 'admin', id: 1 });
-                } else {
-                  onLogin({ name: 'Alex Johnson', email: 'alex@demo.com', role: form.role, id: 1 });
-                }
+                const demoUsers = {
+                  community: { name: 'Community User', email: 'community@demo.com', role: 'community', id: 1 },
+                  donor: { name: 'Donor User', email: 'donor@demo.com', role: 'donor', id: 2 },
+                  recipient: { name: 'Recipient User', email: 'recipient@demo.com', role: 'recipient', id: 3 },
+                  admin: { name: 'Admin', email: 'admin@resourcematch.com', role: 'admin', id: 4 },
+                };
+                onLogin(demoUsers[form.role]);
               }}
               className="btn btn-secondary btn-full"
               style={{ marginBottom: '16px' }}
@@ -247,15 +249,20 @@ export default function LoginPage({ navigate, onLogin }) {
               🚀 Continue with Demo Account
             </button>
 
-            {form.role === 'admin' && (
-              <div style={{
-                background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.2)',
-                borderRadius: '8px', padding: '10px', marginBottom: '16px', fontSize: '11px',
-                color: 'var(--text-secondary)', textAlign: 'center',
-              }}>
-                Demo: user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>admin</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>admin123</span>
+            {/* Demo credentials */}
+            <div style={{
+              background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.2)',
+              borderRadius: '8px', padding: '12px', marginBottom: '16px', fontSize: '11px',
+              color: 'var(--text-secondary)',
+            }}>
+              <div style={{ fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>Demo Credentials:</div>
+              <div style={{ display: 'grid', gap: '6px' }}>
+                <div>🌍 <strong>Community:</strong> user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>community</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>demo123</span></div>
+                <div>💰 <strong>Donor:</strong> user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>donor</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>demo123</span></div>
+                <div>🤝 <strong>Recipient:</strong> user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>recipient</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>demo123</span></div>
+                <div>⚙️ <strong>Admin:</strong> user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>admin</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>admin123</span></div>
               </div>
-            )}
+            </div>
 
             <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)' }}>
               Don't have an account?{' '}

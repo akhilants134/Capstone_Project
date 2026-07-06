@@ -164,6 +164,11 @@ function App() {
     return <div className="auth-wrapper">{renderPage()}</div>;
   }
 
+  // Admin dashboard has its own layout (no Sidebar/Navbar)
+  if (currentPage === "admin-dashboard") {
+    return renderPage();
+  }
+
   return (
     <div className="app-layout">
       <Sidebar
