@@ -15,7 +15,7 @@ export default function LoginPage({ navigate, onLogin }) {
     
     try {
       const response = await login(form);
-      onLogin({ ...response.data.user, token: response.token, role: form.role });
+      onLogin({ ...response.data.user, token: response.token });
     } catch (err) {
       console.error('Login failed:', err);
       // Fallback for demo if backend is not running
@@ -215,9 +215,24 @@ export default function LoginPage({ navigate, onLogin }) {
               type="button"
               onClick={() => onLogin({ name: 'Alex Johnson', email: 'alex@demo.com', role: form.role, id: 1 })}
               className="btn btn-secondary btn-full"
-              style={{ marginBottom: '24px' }}
+              style={{ marginBottom: '10px' }}
             >
               🚀 Continue with Demo Account
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onLogin({ name: 'Admin', email: 'admin@resourcematch.com', role: 'admin', id: 999 })}
+              className="btn btn-full"
+              style={{
+                marginBottom: '24px',
+                background: 'transparent',
+                color: 'var(--text-secondary)',
+                border: '1px dashed var(--border)',
+                fontWeight: '600',
+              }}
+            >
+              🛡️ Admin Demo Login
             </button>
 
             <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)' }}>

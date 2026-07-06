@@ -217,6 +217,15 @@ exports.protect = async (req, res, next) => {
   }
 };
 
+exports.restrictTo = (...roles) => (req, res, next) => {
+  if (!req.user || !roles.includes(req.user.role)) {
+    return res
+      .status(403)
+      .json({ status: "fail", message: "You do not have permission." });
+  }
+  next();
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 2FA — verify code during login (uses pre-auth token)
 // ─────────────────────────────────────────────────────────────────────────────

@@ -18,6 +18,7 @@ import DonationsPage from "./pages/DonationsPage";
 import ShareSomethingPage from "./pages/ShareSomethingPage";
 import SettingsPage from "./pages/SettingsPage";
 import TwoFAChallengePage from "./pages/TwoFAChallengePage";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
   const getInitialTheme = () => {
@@ -66,7 +67,11 @@ function App() {
 
   // Simple routing logic
   const navigate = (page) => {
-    setCurrentPage(page);
+    if (page === "admin" && user?.role !== "admin") {
+      setCurrentPage("dashboard");
+    } else {
+      setCurrentPage(page);
+    }
     if (window.innerWidth <= 768) {
       setIsSidebarOpen(false);
     }
@@ -82,7 +87,7 @@ function App() {
     setUser(profile);
     localStorage.setItem("user", JSON.stringify(profile));
     setPending2FA(null);
-    setCurrentPage("dashboard");
+    setCurrentPage(profile?.role === "admin" ? "admin" : "dashboard");
   };
 
   const handle2FASuccess = (userData) => {
@@ -90,7 +95,7 @@ function App() {
     setUser(profile);
     localStorage.setItem("user", JSON.stringify(profile));
     setPending2FA(null);
-    setCurrentPage("dashboard");
+    setCurrentPage(profile?.role === "admin" ? "admin" : "dashboard");
   };
 
   const handleLogout = () => {
@@ -136,6 +141,9 @@ function App() {
             onThemeChange={setThemeMode}
           />
         );
+      case "admin":
+        if (user?.role !== "admin") return <DashboardPage navigate={navigate} user={user} />;
+        return <AdminPage navigate={navigate} user={user} />;
       default:
         return <DashboardPage navigate={navigate} user={user} />;
     }

@@ -34,8 +34,10 @@ export default function Navbar({ currentPage, navigate, user }) {
 
   const pageLabels = {
     dashboard: "Dashboard",
+    admin: "Admin Control Panel",
     browse: "Browse Listings",
     "post-request": "Post a Request",
+    "share-something": "Share Something",
     matches: "My Matches",
     donations: "Donations",
     messages: "Messages",
