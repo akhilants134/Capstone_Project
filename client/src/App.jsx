@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 // Components
@@ -16,17 +16,50 @@ import ProfilePage from "./pages/ProfilePage";
 import MessagesPage from "./pages/MessagesPage";
 import DonationsPage from "./pages/DonationsPage";
 import ShareSomethingPage from "./pages/ShareSomethingPage";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
+  const getInitialTheme = () => {
+    const savedTheme = localStorage.getItem("themeMode");
+    if (savedTheme === "light" || savedTheme === "dark") {
+      return savedTheme;
+    }
+
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: light)").matches
+    ) {
+      return "light";
+    }
+
+    return "dark";
+  };
+
+  const normalizeStoredUser = (storedUser) => {
+    if (!storedUser || typeof storedUser !== "object") {
+      return null;
+    }
+
+    const { token: _, ...profile } = storedUser;
+    return profile;
+  };
+
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
+    return saved ? normalizeStoredUser(JSON.parse(saved)) : null;
   });
   const [currentPage, setCurrentPage] = useState(() => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? "dashboard" : "login";
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [themeMode, setThemeMode] = useState(getInitialTheme);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = themeMode;
+    document.documentElement.style.colorScheme = themeMode;
+    localStorage.setItem("themeMode", themeMode);
+  }, [themeMode]);
 
   // Simple routing logic
   const navigate = (page) => {
@@ -37,8 +70,9 @@ function App() {
   };
 
   const handleLogin = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+    const profile = normalizeStoredUser(userData);
+    setUser(profile);
+    localStorage.setItem("user", JSON.stringify(profile));
     setCurrentPage("dashboard");
   };
 
@@ -47,7 +81,6 @@ function App() {
     localStorage.removeItem("user");
     setCurrentPage("login");
   };
-
 
   const renderPage = () => {
     // Auth Guard
@@ -76,6 +109,15 @@ function App() {
         return <DonationsPage navigate={navigate} user={user} />;
       case "share-something":
         return <ShareSomethingPage navigate={navigate} />;
+      case "settings":
+        return (
+          <SettingsPage
+            navigate={navigate}
+            user={user}
+            themeMode={themeMode}
+            onThemeChange={setThemeMode}
+          />
+        );
       default:
         return <DashboardPage navigate={navigate} user={user} />;
     }
@@ -88,23 +130,21 @@ function App() {
 
   return (
     <div className="app-layout">
-      <Sidebar 
-        currentPage={currentPage} 
-        navigate={navigate} 
-        user={user} 
+      <Sidebar
+        currentPage={currentPage}
+        navigate={navigate}
+        user={user}
         onLogout={handleLogout}
         className={isSidebarOpen ? "open" : ""}
       />
       <div className="app-main">
-        <Navbar 
-          currentPage={currentPage} 
-          navigate={navigate} 
-          user={user} 
+        <Navbar
+          currentPage={currentPage}
+          navigate={navigate}
+          user={user}
           toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         />
-        <main className="app-content">
-          {renderPage()}
-        </main>
+        <main className="app-content">{renderPage()}</main>
       </div>
     </div>
   );

@@ -60,12 +60,6 @@ export default function ProfilePage({ user, navigate }) {
     { icon: '🚀', label: 'Power User',       color: '#8b5cf6' },
   ];
 
-  const recentRequests = [
-    { title: 'Laptops for Students', status: 'matched',   date: '2 days ago',  cat: '💻' },
-    { title: 'Medical Supplies',     status: 'pending',   date: '5 days ago',  cat: '💊' },
-    { title: 'Food Aid Packages',    status: 'completed', date: '2 weeks ago', cat: '🍱' },
-  ];
-
   return (
     <div style={{ animation: 'fadeInUp 0.4s ease', maxWidth: '1000px' }}>
       {saved && (

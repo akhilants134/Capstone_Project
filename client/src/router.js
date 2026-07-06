@@ -1,7 +1,5 @@
-import { useState } from 'react';
-
 /* ── Simple hash-based router ── */
-function Router({ page, navigate }) {
+function Router({ page }) {
   switch (page) {
     case 'login':       return <div />;  // handled by AuthContext
     case 'register':    return <div />;

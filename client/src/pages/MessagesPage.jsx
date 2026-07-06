@@ -41,6 +41,7 @@ export default function MessagesPage({ navigate }) {
       }
     };
     fetchConvos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch messages for active conversation
