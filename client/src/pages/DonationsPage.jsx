@@ -74,12 +74,12 @@ export default function DonationsPage({ navigate }) {
       try {
         setLoading(true);
         const data = await getStats();
-        if (data.stats) {
+        if (data.data) {
           setStats({
-            totalDonated: data.stats.totalQuantity || "2,400",
-            totalCount: data.stats.totalItems || "3",
-            livesImpacted: data.stats.peopleHelped || "176",
-            successRate: "96%",
+            totalDonated: String(data.data.totalListings || "2,400"),
+            totalCount: String(data.data.activeMatches || "3"),
+            livesImpacted: String(data.data.totalUsers || "176"),
+            successRate: `${data.data.successRate || 96}%`,
           });
         }
       } catch (err) {

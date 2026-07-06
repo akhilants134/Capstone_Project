@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function AdminDashboardPage({ navigate, user }) {
+export default function AdminDashboardPage({ navigate, user, onLogout }) {
   const [activeTab, setActiveTab] = useState('overview');
 
   const tabs = [
@@ -539,7 +539,7 @@ export default function AdminDashboardPage({ navigate, user }) {
             fontSize: '12px', fontWeight: '600', padding: '4px 10px', borderRadius: '6px',
             background: 'rgba(99,102,241,0.1)', color: '#6366f1',
           }}>Admin</span>
-          <button onClick={() => { localStorage.removeItem('user'); navigate('login'); }} style={{
+          <button onClick={() => { if (onLogout) onLogout(); else { localStorage.removeItem('user'); navigate('login'); } }} style={{
             padding: '8px 16px', fontSize: '13px', fontWeight: '500', borderRadius: '8px',
             background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', cursor: 'pointer',
           }}>Logout</button>

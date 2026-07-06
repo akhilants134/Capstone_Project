@@ -20,7 +20,7 @@ export default function MessagesPage({ navigate }) {
       try {
         setLoading(true);
         const data = await getConversations();
-        const formatted = data.conversations?.map(c => ({
+        const formatted = data.data?.conversations?.map(c => ({
           id: c.user._id,
           name: c.user.name,
           initial: c.user.name.charAt(0),
@@ -50,7 +50,7 @@ export default function MessagesPage({ navigate }) {
     const fetchMessages = async () => {
       try {
         const data = await getMessages(active.id);
-        const formatted = data.messages?.map(m => ({
+        const formatted = data.data?.messages?.map(m => ({
           from: m.sender === active.id ? 'them' : 'me',
           text: m.text,
           time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })

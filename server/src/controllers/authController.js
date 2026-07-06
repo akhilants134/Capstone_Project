@@ -24,6 +24,9 @@ const getEncryptionKey = () => {
   if (envKey && /^[0-9a-fA-F]{64}$/.test(envKey)) {
     return Buffer.from(envKey, "hex");
   }
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("TWO_FACTOR_ENCRYPTION_KEY must be set in production");
+  }
   // Dev fallback — deterministic so restarts don't break existing secrets
   if (!getEncryptionKey._devKey) {
     console.warn(
@@ -56,6 +59,9 @@ const decryptSecret = (ciphertext) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // JWT helpers
 // ─────────────────────────────────────────────────────────────────────────────
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error("JWT_SECRET must be set in production");
+}
 const JWT_SECRET =
   process.env.JWT_SECRET || "super-secret-and-ultra-long-development-key-12345";
 
@@ -120,7 +126,7 @@ exports.signup = async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
-      role: req.body.role,
+      role: ['client', 'donor'].includes(req.body.role) ? req.body.role : 'client',
       category: req.body.category,
       bio: req.body.bio,
       location: req.body.location,

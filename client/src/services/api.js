@@ -30,6 +30,8 @@ const apiRequest = async (endpoint, options = {}) => {
 // Auth
 export const login = (data) =>
   apiRequest("/users/login", { method: "POST", body: JSON.stringify(data) });
+export const adminLogin = (data) =>
+  apiRequest("/users/admin-login", { method: "POST", body: JSON.stringify(data) });
 export const signup = (data) =>
   apiRequest("/users/signup", { method: "POST", body: JSON.stringify(data) });
 export const register = signup;
@@ -88,6 +90,7 @@ export const markNotificationsRead = () =>
 
 export default {
   login,
+  adminLogin,
   register: signup,
   logout,
   getMe,

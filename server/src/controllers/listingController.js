@@ -2,10 +2,11 @@ const Listing = require('../models/listingModel');
 
 exports.createListing = async (req, res) => {
     try {
-        // Add user ID to listing
-        if (!req.body.user) req.body.user = req.user.id;
-
-        const newListing = await Listing.create(req.body);
+        const { title, description, category, type, urgency, quantity, estimatedValue, location, tags } = req.body;
+        const newListing = await Listing.create({
+            title, description, category, type, urgency, quantity, estimatedValue, location, tags,
+            user: req.user.id
+        });
 
         // Gamification: Award points and badge
         const User = require('../models/userModel');
@@ -37,11 +38,12 @@ exports.getAllListings = async (req, res) => {
         if (req.query.category) filter.category = req.query.category;
         if (req.query.urgency) filter.urgency = req.query.urgency;
         
-        // Search functionality
+        // Search functionality (escape regex special chars to prevent ReDoS)
         if (req.query.search) {
+            const escaped = req.query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             filter.$or = [
-                { title: { $regex: req.query.search, $options: 'i' } },
-                { description: { $regex: req.query.search, $options: 'i' } }
+                { title: { $regex: escaped, $options: 'i' } },
+                { description: { $regex: escaped, $options: 'i' } }
             ];
         }
 
@@ -78,14 +80,19 @@ exports.getListing = async (req, res) => {
 
 exports.updateListing = async (req, res) => {
     try {
-        const listing = await Listing.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
-
-        if (!listing) {
+        const existing = await Listing.findById(req.params.id);
+        if (!existing) {
             return res.status(404).json({ status: 'fail', message: 'No listing found with that ID' });
         }
+        if (existing.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return res.status(403).json({ status: 'fail', message: 'You do not own this listing' });
+        }
+
+        const { title, description, category, type, urgency, quantity, estimatedValue, location, tags, status } = req.body;
+        const listing = await Listing.findByIdAndUpdate(req.params.id,
+            { title, description, category, type, urgency, quantity, estimatedValue, location, tags, status },
+            { new: true, runValidators: true }
+        );
 
         res.status(200).json({
             status: 'success',
@@ -98,11 +105,15 @@ exports.updateListing = async (req, res) => {
 
 exports.deleteListing = async (req, res) => {
     try {
-        const listing = await Listing.findByIdAndDelete(req.params.id);
-
-        if (!listing) {
+        const existing = await Listing.findById(req.params.id);
+        if (!existing) {
             return res.status(404).json({ status: 'fail', message: 'No listing found with that ID' });
         }
+        if (existing.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return res.status(403).json({ status: 'fail', message: 'You do not own this listing' });
+        }
+
+        await Listing.findByIdAndDelete(req.params.id);
 
         res.status(204).json({
             status: 'success',

@@ -25,12 +25,12 @@ export default function ProfilePage({ user, navigate }) {
     const fetchStats = async () => {
       try {
         const data = await getStats();
-        if (data.stats) {
+        if (data.data) {
           setProfileStats({
-            requests: data.stats.totalItems || '12',
-            matches: data.stats.deliveredItems || '8',
-            delivered: data.stats.peopleHelped || '24',
-            score: '850'
+            requests: String(data.data.totalListings || '12'),
+            matches: String(data.data.activeMatches || '8'),
+            delivered: String(data.data.totalUsers || '24'),
+            score: String(data.data.successRate || '850')
           });
         }
       } catch (err) {

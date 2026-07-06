@@ -92,7 +92,7 @@ function App() {
     setUser(profile);
     localStorage.setItem("user", JSON.stringify(profile));
     setPending2FA(null);
-    setCurrentPage("dashboard");
+    setCurrentPage(profile.role === 'admin' ? 'admin-dashboard' : 'dashboard');
   };
 
   const handleLogout = () => {
@@ -139,7 +139,7 @@ function App() {
           />
         );
       case "admin-dashboard":
-        return <AdminDashboardPage navigate={navigate} user={user} />;
+        return <AdminDashboardPage navigate={navigate} user={user} onLogout={handleLogout} />;
       default:
         return <DashboardPage navigate={navigate} user={user} />;
     }

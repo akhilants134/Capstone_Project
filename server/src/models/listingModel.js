@@ -13,7 +13,7 @@ const listingSchema = new mongoose.Schema({
     category: {
         type: String,
         required: [true, 'A listing must have a category'],
-        enum: ['tech', 'medical', 'education', 'food', 'shelter', 'financial']
+        enum: ['tech', 'medical', 'education', 'food', 'shelter', 'financial', 'clothing', 'household', 'other']
     },
     type: {
         type: String,

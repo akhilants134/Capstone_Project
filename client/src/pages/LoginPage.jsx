@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { login } from '../services/api';
+import { login, adminLogin } from '../services/api';
 
 export default function LoginPage({ navigate, onLogin }) {
   const [form, setForm] = useState({ email: '', password: '', role: 'community' });
@@ -14,8 +14,9 @@ export default function LoginPage({ navigate, onLogin }) {
     setLoading(true);
     
     try {
-      const response = await login(form);
-      onLogin({ ...response.data.user, token: response.token, role: form.role });
+      const loginFn = form.role === 'admin' ? adminLogin : login;
+      const response = await loginFn(form);
+      onLogin({ ...response.data.user, token: response.token });
     } catch (err) {
       console.error('Login failed:', err);
       // Fallback for demo if backend is not running

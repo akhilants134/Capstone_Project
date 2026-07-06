@@ -30,12 +30,12 @@ export default function DashboardPage({ navigate, user: initialUser }) {
         setLoading(true);
         const [statsRes, userRes] = await Promise.all([getStats(), getMe()]);
         
-        if (statsRes.stats) {
+        if (statsRes.data) {
           setStats([
-            { ...defaultStats[0], value: statsRes.stats.totalItems || '0' },
-            { ...defaultStats[1], value: statsRes.stats.deliveredItems || '0' },
-            { ...defaultStats[2], value: statsRes.stats.peopleHelped || '0' },
-            { ...defaultStats[3], value: userRes.data.user.points || '0' },
+            { ...defaultStats[0], value: String(statsRes.data.totalListings || 0) },
+            { ...defaultStats[1], value: String(statsRes.data.activeMatches || 0) },
+            { ...defaultStats[2], value: String(statsRes.data.totalUsers || 0) },
+            { ...defaultStats[3], value: String(userRes.data?.user?.points || 0) },
           ]);
         }
         if (userRes.data.user) {

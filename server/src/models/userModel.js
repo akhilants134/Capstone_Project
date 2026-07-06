@@ -38,8 +38,8 @@ const userSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['medical', 'education', 'food', 'shelter', 'financial', 'volunteering'],
-        default: ''
+        enum: ['medical', 'education', 'food', 'shelter', 'financial', 'volunteering', 'tech'],
+        default: undefined
     },
     bio: String,
     location: String,
@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema({
         icon: String,
         earnedAt: {
             type: Date,
-            default: Date.now()
+            default: Date.now
         }
     }],
     isVerified: {

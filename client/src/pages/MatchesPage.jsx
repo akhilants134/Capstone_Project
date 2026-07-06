@@ -26,7 +26,8 @@ export default function MatchesPage({ navigate }) {
     try {
       setLoading(true);
       const data = await getMyMatches();
-      setMatches(data.matches?.length > 0 ? data.matches : defaultMatches);
+      const matchList = data.data?.matches || data.matches || [];
+      setMatches(matchList.length > 0 ? matchList : defaultMatches);
     } catch (err) {
       console.error('Failed to fetch matches:', err);
       setMatches(defaultMatches);
@@ -43,7 +44,8 @@ export default function MatchesPage({ navigate }) {
     e.stopPropagation();
     try {
       setUpdating(matchId);
-      await updateMatchStatus({ matchId, status: newStatus });
+      const match = matches.find(m => m.id === matchId);
+      await updateMatchStatus({ listingId: match?.listingId, matchUserId: match?.matchUserId, status: newStatus });
       setMessage(`Match ${newStatus} successfully!`);
       setTimeout(() => setMessage(''), 3000);
       fetchMatches(); // Refresh list
