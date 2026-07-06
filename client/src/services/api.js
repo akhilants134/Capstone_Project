@@ -88,6 +88,17 @@ export const getNotifications = () => apiRequest("/notifications");
 export const markNotificationsRead = () =>
   apiRequest("/notifications/mark-read", { method: "PATCH" });
 
+// Admin
+export const adminGetAllUsers = () => apiRequest("/admin/users");
+export const adminToggleBanUser = (userId) =>
+  apiRequest(`/admin/users/${userId}/ban`, { method: "PATCH" });
+export const adminGetAllListings = () => apiRequest("/admin/listings");
+export const adminGetStats = () => apiRequest("/admin/stats");
+export const adminGetUnverifiedUsers = () => apiRequest("/admin/verifications");
+export const adminToggleUserVerification = (userId, action) =>
+  apiRequest(`/admin/verifications/${userId}/verify`, { method: "PATCH", body: JSON.stringify({ action }) });
+export const adminGetTopDonors = () => apiRequest("/admin/top-donors");
+
 export default {
   login,
   adminLogin,
@@ -113,4 +124,11 @@ export default {
   sendMessage,
   getNotifications,
   markNotificationsRead,
+  adminGetAllUsers,
+  adminToggleBanUser,
+  adminGetAllListings,
+  adminGetStats,
+  adminGetUnverifiedUsers,
+  adminToggleUserVerification,
+  adminGetTopDonors,
 };

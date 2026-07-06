@@ -10,6 +10,7 @@ const listingRouter = require("./routes/listingRoutes");
 const matchRouter = require("./routes/matchRoutes");
 const messageRouter = require("./routes/messageRoutes");
 const notificationRouter = require("./routes/notificationRoutes");
+const adminRouter = require("./routes/adminRoutes");
 
 const app = express();
 app.disable("x-powered-by");
@@ -72,6 +73,7 @@ app.use("/api/v1/listings", listingRouter);
 app.use("/api/v1/matches", matchRouter);
 app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/notifications", notificationRouter);
+app.use("/api/v1/admin", adminRouter);
 
 // Basic Route
 app.get("/", (req, res) => {
