@@ -95,10 +95,10 @@ export default function DashboardPage({ navigate, user: initialUser }) {
                 {s.change}
               </span>
             </div>
-            <div style={{ fontSize: '36px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', lineHeight: 1, marginBottom: '6px' }}>
+            <div style={{ fontSize: '36px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '6px' }}>
               {loading ? '...' : s.value}
             </div>
-            <div style={{ fontSize: '14px', color: '#64748b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
+            <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -108,20 +108,20 @@ export default function DashboardPage({ navigate, user: initialUser }) {
           {/* Badges Section */}
           <div style={{ marginBottom: '32px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)' }}>
                 🏅 Your Badges
               </h3>
               <button className="btn btn-secondary btn-sm" onClick={() => navigate('profile')}>View Profile →</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
               {(user?.badges || []).length === 0 ? (
-                <div className="card" style={{ padding: '20px', textAlign: 'center', color: '#64748b', gridColumn: '1 / -1' }}>No badges yet. Start sharing to earn!</div>
+                <div className="card" style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)', gridColumn: '1 / -1' }}>No badges yet. Start sharing to earn!</div>
               ) : (
                 user.badges.map((badge, idx) => (
-                  <div key={idx} className="card" style={{ padding: '20px', textAlign: 'center', background: 'rgba(19,21,43,0.4)', border: '1px solid rgba(99,102,241,0.15)' }}>
+                  <div key={idx} className="card" style={{ padding: '20px', textAlign: 'center', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                     <div style={{ fontSize: '40px', marginBottom: '12px' }}>{badge.icon || '🏅'}</div>
-                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#f1f5f9', marginBottom: '4px' }}>{badge.name}</div>
-                    <div style={{ fontSize: '11px', color: '#64748b' }}>Earned {new Date(badge.earnedAt).toLocaleDateString()}</div>
+                    <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px' }}>{badge.name}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Earned {new Date(badge.earnedAt).toLocaleDateString()}</div>
                   </div>
                 ))
               )}
@@ -130,7 +130,7 @@ export default function DashboardPage({ navigate, user: initialUser }) {
 
           {/* Impact Stories */}
           <div>
-            <h3 style={{ fontSize: '20px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '20px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '20px' }}>
               ✨ Community Impact
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -141,8 +141,8 @@ export default function DashboardPage({ navigate, user: initialUser }) {
                       {story.avatar}
                     </div>
                     <div>
-                      <p style={{ color: '#f1f5f9', fontSize: '15px', fontStyle: 'italic', marginBottom: '12px', lineHeight: '1.6' }}>"{story.text}"</p>
-                      <p style={{ color: '#818cf8', fontSize: '13px', fontWeight: '700', margin: 0 }}>— {story.name}</p>
+                      <p style={{ color: 'var(--text-primary)', fontSize: '15px', fontStyle: 'italic', marginBottom: '12px', lineHeight: '1.6' }}>"{story.text}"</p>
+                      <p style={{ color: 'var(--text-accent)', fontSize: '13px', fontWeight: '700', margin: 0 }}>— {story.name}</p>
                     </div>
                   </div>
                 </div>
@@ -154,18 +154,18 @@ export default function DashboardPage({ navigate, user: initialUser }) {
         {/* Right column */}
         <div>
           <div className="card" style={{ padding: '24px', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '15px', fontWeight: '700', color: '#f1f5f9', marginBottom: '12px' }}>Your Impact Score</h4>
+            <h4 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '12px' }}>Your Impact Score</h4>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{ flex: 1, height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px', overflow: 'hidden' }}>
                 <div style={{ width: `${Math.min((user?.points || 0) / 10, 100)}%`, height: '100%', background: 'linear-gradient(90deg, #6366f1, #10b981)', borderRadius: '5px' }} />
               </div>
               <span style={{ fontSize: '18px', fontWeight: '800', color: '#6366f1' }}>{user?.points || 0}</span>
             </div>
-            <p style={{ fontSize: '12px', color: '#64748b', marginTop: '12px' }}>You're in the top 5% of community donors this month! Keep it up. 🚀</p>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '12px' }}>You're in the top 5% of community donors this month! Keep it up. 🚀</p>
           </div>
 
           <div className="card" style={{ padding: '24px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '16px' }}>⚡ Quick Actions</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '16px' }}>⚡ Quick Actions</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
                 { label: '🎁 Share Something', page: 'share-something', color: '#f97316' },
@@ -174,7 +174,7 @@ export default function DashboardPage({ navigate, user: initialUser }) {
                 { label: '💬 Messages', page: 'messages', color: '#8b5cf6' },
               ].map(a => (
                 <button key={a.page} onClick={() => navigate(a.page)}
-                  style={{ width: '100%', padding: '12px 16px', border: `1px solid ${a.color}33`, borderRadius: '12px', background: `${a.color}0d`, color: '#f1f5f9', cursor: 'pointer', textAlign: 'left', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px', transition: 'all 0.2s' }}
+                  style={{ width: '100%', padding: '12px 16px', border: `1px solid ${a.color}33`, borderRadius: '12px', background: `${a.color}0d`, color: 'var(--text-primary)', cursor: 'pointer', textAlign: 'left', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px', transition: 'all 0.2s' }}
                   onMouseEnter={e => { e.currentTarget.style.background = `${a.color}1a`; e.currentTarget.style.transform = 'translateX(4px)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = `${a.color}0d`; e.currentTarget.style.transform = 'none'; }}>
                   <span style={{ fontSize: '18px' }}>{a.label.split(' ')[0]}</span> {a.label.split(' ').slice(1).join(' ')}

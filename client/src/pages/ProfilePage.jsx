@@ -80,13 +80,13 @@ export default function ProfilePage({ user, navigate }) {
             </div>
             <div style={{ flex: 1, paddingBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: '28px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', margin: 0 }}>{form.name}</h1>
-                <span style={{ padding: '4px 12px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', background: user?.role === 'donor' ? 'rgba(16,185,129,0.2)' : 'rgba(99,102,241,0.2)', color: user?.role === 'donor' ? '#34d399' : '#818cf8', border: '1px solid currentColor', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <h1 style={{ fontSize: '28px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', margin: 0 }}>{form.name}</h1>
+                <span style={{ padding: '4px 12px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', background: user?.role === 'donor' ? 'rgba(16,185,129,0.2)' : 'rgba(99,102,241,0.2)', color: user?.role === 'donor' ? '#34d399' : 'var(--text-accent)', border: '1px solid currentColor', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   {user?.role === 'donor' ? '💰 Donor' : '🙋 Client'}
                 </span>
                 <span style={{ fontSize: '12px', color: '#10b981', fontWeight: '700', background: 'rgba(16,185,129,0.1)', padding: '4px 12px', borderRadius: '9999px' }}>✓ Verified Account</span>
               </div>
-              <p style={{ color: '#64748b', fontSize: '14px', margin: 0, fontWeight: '500' }}>📍 {form.location} · 🗓 Joined Community Hub May 2025</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', margin: 0, fontWeight: '500' }}>📍 {form.location} · 🗓 Joined Community Hub May 2025</p>
             </div>
             <button className={`btn ${editing ? 'btn-primary' : 'btn-secondary'}`} style={{ marginBottom: '8px' }} onClick={editing ? handleSave : () => setEditing(true)}>
               {editing ? '💾 Save Profile' : '✏️ Edit Profile'}
@@ -100,17 +100,17 @@ export default function ProfilePage({ user, navigate }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           {/* About */}
           <div className="card" style={{ padding: '28px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#f1f5f9', marginBottom: '20px', fontFamily: 'Outfit,sans-serif' }}>👤 Professional Bio</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px', fontFamily: 'Outfit,sans-serif' }}>👤 Professional Bio</h3>
             {editing ? (
               <textarea className="form-input" style={{ minHeight: '120px', fontSize: '14px' }} value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} />
             ) : (
-              <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: '1.8', margin: 0 }}>{form.bio}</p>
+              <p style={{ fontSize: '15px', color: 'var(--text-secondary)', lineHeight: '1.8', margin: 0 }}>{form.bio}</p>
             )}
           </div>
 
           {/* Contact Details */}
           <div className="card" style={{ padding: '28px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#f1f5f9', marginBottom: '24px', fontFamily: 'Outfit,sans-serif' }}>📬 Contact Information</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '24px', fontFamily: 'Outfit,sans-serif' }}>📬 Contact Information</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               {[
                 { icon: '📧', label: 'Email Address', field: 'email', type: 'email' },
@@ -119,13 +119,13 @@ export default function ProfilePage({ user, navigate }) {
                 { icon: '🌐', label: 'Personal Website', field: 'website', type: 'url' },
               ].map(f => (
                 <div key={f.field}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span>{f.icon}</span> {f.label}
                   </div>
                   {editing ? (
                     <input type={f.type} className="form-input" style={{ padding: '10px 14px' }} value={form[f.field]} onChange={e => setForm(p => ({ ...p, [f.field]: e.target.value }))} />
                   ) : (
-                    <div style={{ fontSize: '14px', color: '#f1f5f9', fontWeight: '600' }}>{form[f.field] || '—'}</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: '600' }}>{form[f.field] || '—'}</div>
                   )}
                 </div>
               ))}
@@ -134,7 +134,7 @@ export default function ProfilePage({ user, navigate }) {
 
           {/* Badges Section */}
           <div className="card" style={{ padding: '28px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#f1f5f9', marginBottom: '20px', fontFamily: 'Outfit,sans-serif' }}>🏅 Community Badges</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px', fontFamily: 'Outfit,sans-serif' }}>🏅 Community Badges</h3>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {badges.map(b => (
                 <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '14px', fontSize: '13px', fontWeight: '700', color: b.color, transition: 'all 0.2s' }}>
@@ -149,14 +149,14 @@ export default function ProfilePage({ user, navigate }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           {/* Stats */}
           <div className="card" style={{ padding: '28px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#f1f5f9', marginBottom: '24px', fontFamily: 'Outfit,sans-serif' }}>📊 Impact Analytics</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '24px', fontFamily: 'Outfit,sans-serif' }}>📊 Impact Analytics</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {stats.map(s => (
                 <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: `${s.color}15`, border: `1px solid ${s.color}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>{s.icon}</div>
                   <div>
                     <div style={{ fontSize: '26px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: s.color, lineHeight: 1, marginBottom: '4px' }}>{s.val}</div>
-                    <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>{s.label}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase' }}>{s.label}</div>
                   </div>
                 </div>
               ))}
@@ -165,7 +165,7 @@ export default function ProfilePage({ user, navigate }) {
 
           {/* Quick links */}
           <div className="card" style={{ padding: '28px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#f1f5f9', marginBottom: '20px', fontFamily: 'Outfit,sans-serif' }}>⚡ Quick Actions</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px', fontFamily: 'Outfit,sans-serif' }}>⚡ Quick Actions</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
                 { label: '🎁 Share Resource', page: 'share-something' },
@@ -174,9 +174,9 @@ export default function ProfilePage({ user, navigate }) {
                 { label: '💬 Messages', page: 'messages' },
               ].map(a => (
                 <button key={a.page} onClick={() => navigate(a.page)}
-                  style={{ width: '100%', padding: '12px 16px', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '12px', background: 'rgba(99,102,241,0.05)', color: '#94a3b8', cursor: 'pointer', textAlign: 'left', fontSize: '14px', fontWeight: '600', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.15)'; e.currentTarget.style.color = '#f1f5f9'; e.currentTarget.style.transform = 'translateX(4px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.05)'; e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.transform = 'none'; }}>
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '12px', background: 'rgba(99,102,241,0.05)', color: 'var(--text-secondary)', cursor: 'pointer', textAlign: 'left', fontSize: '14px', fontWeight: '600', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.15)'; e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.05)'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.transform = 'none'; }}>
                   {a.label}
                 </button>
               ))}

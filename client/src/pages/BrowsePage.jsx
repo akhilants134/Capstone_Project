@@ -55,8 +55,8 @@ export default function BrowsePage({ navigate }) {
   return (
     <div style={{ animation: 'fadeInUp 0.4s ease' }}>
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '4px' }}>Browse Listings 🔍</h1>
-        <p style={{ color: '#64748b', fontSize: '14px' }}>Discover resources and donations available for matching</p>
+        <h1 style={{ fontSize: '24px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '4px' }}>Browse Listings 🔍</h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Discover resources and donations available for matching</p>
       </div>
 
       {/* Filters */}
@@ -75,7 +75,7 @@ export default function BrowsePage({ navigate }) {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {CATS.map(c => (
             <button key={c.val} onClick={() => setCat(c.val)}
-              style={{ padding: '7px 14px', border: `1px solid ${cat === c.val ? '#6366f1' : 'rgba(99,102,241,0.2)'}`, borderRadius: '9999px', background: cat === c.val ? 'rgba(99,102,241,0.2)' : 'transparent', color: cat === c.val ? '#818cf8' : '#64748b', cursor: 'pointer', fontSize: '12px', fontWeight: '600', fontFamily: 'Inter,sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              style={{ padding: '7px 14px', border: `1px solid ${cat === c.val ? '#6366f1' : 'rgba(99,102,241,0.2)'}`, borderRadius: '9999px', background: cat === c.val ? 'rgba(99,102,241,0.2)' : 'transparent', color: cat === c.val ? 'var(--text-accent)' : 'var(--text-secondary)', cursor: 'pointer', fontSize: '12px', fontWeight: '600', fontFamily: 'Inter,sans-serif', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '4px' }}>
               {c.icon} {c.label}
             </button>
           ))}
@@ -84,7 +84,7 @@ export default function BrowsePage({ navigate }) {
 
       {error && <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', padding: '12px', borderRadius: '10px', marginBottom: '20px', fontSize: '13px' }}>⚠️ {error}</div>}
 
-      <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>Showing <span style={{ color: '#818cf8', fontWeight: '700' }}>{items.length}</span> listings</p>
+      <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>Showing <span style={{ color: 'var(--text-accent)', fontWeight: '700' }}>{items.length}</span> listings</p>
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
@@ -110,18 +110,18 @@ export default function BrowsePage({ navigate }) {
                   </span>
                 </div>
               </div>
-              <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#f1f5f9', marginBottom: '6px', fontFamily: 'Outfit,sans-serif' }}>{listing.title}</h3>
-              <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '10px' }}>Shared by <span style={{ color: '#818cf8' }}>{listing.donor}</span></p>
-              <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '16px', lineHeight: '1.6', height: '44px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{listing.desc}</p>
+              <h3 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '6px', fontFamily: 'Outfit,sans-serif' }}>{listing.title}</h3>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '10px' }}>Shared by <span style={{ color: 'var(--text-accent)' }}>{listing.donor}</span></p>
+              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.6', height: '44px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{listing.desc}</p>
               <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', flexWrap: 'wrap' }}>
                 {listing.tags?.map(tag => (
-                  <span key={tag} style={{ padding: '3px 10px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '9999px', fontSize: '11px', color: '#818cf8', fontWeight: '600' }}>#{tag}</span>
+                  <span key={tag} style={{ padding: '3px 10px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '9999px', fontSize: '11px', color: 'var(--text-accent)', fontWeight: '600' }}>#{tag}</span>
                 ))}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
                 <div>
                   <div style={{ fontSize: '18px', fontWeight: '800', color: '#10b981' }}>{listing.value}</div>
-                  <div style={{ fontSize: '12px', color: '#64748b' }}>{listing.posted}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{listing.posted}</div>
                 </div>
                 <button className="btn btn-primary" style={{ padding: '10px 20px' }} onClick={() => navigate('matches')}>Apply Now</button>
               </div>
@@ -133,8 +133,8 @@ export default function BrowsePage({ navigate }) {
       {!loading && items.length === 0 && (
         <div style={{ textAlign: 'center', padding: '80px 20px' }}>
           <div style={{ fontSize: '64px', marginBottom: '24px' }}>🔍</div>
-          <h3 style={{ fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', fontSize: '20px', marginBottom: '12px' }}>No resources found</h3>
-          <p style={{ fontSize: '16px', color: '#64748b', maxWidth: '400px', margin: '0 auto' }}>Try adjusting your search or category filters to find what you need.</p>
+          <h3 style={{ fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', fontSize: '20px', marginBottom: '12px' }}>No resources found</h3>
+          <p style={{ fontSize: '16px', color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto' }}>Try adjusting your search or category filters to find what you need.</p>
         </div>
       )}
     </div>
