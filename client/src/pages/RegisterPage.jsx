@@ -58,17 +58,17 @@ export default function RegisterPage({ navigate, onLogin }) {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0a0b1a 0%, #1a0535 50%, #0a1628 100%)', padding: '40px 20px' }}>
-      <div style={{ width: '100%', maxWidth: '520px', background: 'rgba(13,15,34,0.95)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '24px', padding: '40px', animation: 'fadeInUp 0.5s ease' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gradient-hero)', padding: '40px 20px' }}>
+      <div style={{ width: '100%', maxWidth: '520px', background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: '24px', padding: '40px', animation: 'fadeInUp 0.5s ease' }}>
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{ fontSize: '36px', marginBottom: '10px' }}>🌐</div>
-          <h2 style={{ fontSize: '24px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '4px' }}>Create your account</h2>
-          <p style={{ color: '#64748b', fontSize: '13px' }}>Step {step} of 3 — {step === 1 ? 'Account Details' : step === 2 ? 'Focus Area' : 'Profile Setup'}</p>
+          <h2 style={{ fontSize: '24px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '4px' }}>Create your account</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Step {step} of 3 — {step === 1 ? 'Account Details' : step === 2 ? 'Focus Area' : 'Profile Setup'}</p>
         </div>
 
         <div style={{ display: 'flex', gap: '8px', marginBottom: '28px' }}>
           {[1, 2, 3].map(s => (
-            <div key={s} style={{ flex: 1, height: '4px', borderRadius: '9999px', background: s <= step ? 'linear-gradient(90deg, #6366f1, #8b5cf6)' : 'rgba(99,102,241,0.15)', transition: 'all 0.3s ease' }} />
+            <div key={s} style={{ flex: 1, height: '4px', borderRadius: '9999px', background: s <= step ? 'var(--gradient-btn)' : 'var(--border)', transition: 'all 0.3s ease' }} />
           ))}
         </div>
 
@@ -77,10 +77,10 @@ export default function RegisterPage({ navigate, onLogin }) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
               {[{ val: 'client', emoji: '🙋', title: 'Client', desc: 'Need resources' }, { val: 'donor', emoji: '💰', title: 'Donor', desc: 'Give resources' }].map(r => (
                 <button key={r.val} type="button" onClick={() => setForm(p => ({ ...p, role: r.val }))}
-                  style={{ padding: '14px', border: `2px solid ${form.role === r.val ? '#6366f1' : 'rgba(99,102,241,0.2)'}`, borderRadius: '12px', background: form.role === r.val ? 'rgba(99,102,241,0.15)' : 'rgba(19,21,43,0.5)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}>
+                  style={{ padding: '14px', border: `2px solid ${form.role === r.val ? '#6366f1' : 'var(--border)'}`, borderRadius: '12px', background: form.role === r.val ? 'rgba(99,102,241,0.15)' : 'var(--bg-card)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}>
                   <div style={{ fontSize: '22px', marginBottom: '4px' }}>{r.emoji}</div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#f1f5f9' }}>{r.title}</div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>{r.desc}</div>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{r.title}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{r.desc}</div>
                 </button>
               ))}
             </div>
@@ -116,9 +116,9 @@ export default function RegisterPage({ navigate, onLogin }) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px' }}>
               {categories.map(cat => (
                 <button key={cat.val} type="button" onClick={() => setForm(p => ({ ...p, category: cat.val }))}
-                  style={{ padding: '12px', border: `2px solid ${form.category === cat.val ? '#6366f1' : 'rgba(99,102,241,0.2)'}`, borderRadius: '10px', background: form.category === cat.val ? 'rgba(99,102,241,0.15)' : 'rgba(19,21,43,0.5)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '600', color: '#f1f5f9' }}>{cat.label}</div>
-                  <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{cat.desc}</div>
+                  style={{ padding: '12px', border: `2px solid ${form.category === cat.val ? '#6366f1' : 'var(--border)'}`, borderRadius: '10px', background: form.category === cat.val ? 'rgba(99,102,241,0.15)' : 'var(--bg-card)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{cat.label}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>{cat.desc}</div>
                 </button>
               ))}
             </div>
@@ -149,9 +149,9 @@ export default function RegisterPage({ navigate, onLogin }) {
           </form>
         )}
 
-        <p style={{ textAlign: 'center', marginTop: '24px', fontSize: '13px', color: '#64748b' }}>
+        <p style={{ textAlign: 'center', marginTop: '24px', fontSize: '13px', color: 'var(--text-secondary)' }}>
           Already have an account?{' '}
-          <span style={{ color: '#818cf8', fontWeight: '600', cursor: 'pointer' }} onClick={() => navigate('login')}>Sign in</span>
+          <span style={{ color: 'var(--text-accent)', fontWeight: '600', cursor: 'pointer' }} onClick={() => navigate('login')}>Sign in</span>
         </p>
       </div>
     </div>

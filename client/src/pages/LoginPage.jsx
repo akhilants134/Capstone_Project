@@ -35,7 +35,7 @@ export default function LoginPage({ navigate, onLogin }) {
     <div style={{
       minHeight: '100vh',
       display: 'flex',
-      background: 'linear-gradient(135deg, #0a0b1a 0%, #1a0535 50%, #0a1628 100%)',
+      background: 'var(--gradient-hero)',
       position: 'relative',
       overflow: 'hidden',
     }}>
@@ -58,18 +58,18 @@ export default function LoginPage({ navigate, onLogin }) {
               fontSize: '26px', boxShadow: '0 8px 30px rgba(99,102,241,0.4)',
             }}>🌐</div>
             <div>
-              <div style={{ fontSize: '22px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9' }}>ResourceMatch</div>
-              <div style={{ fontSize: '12px', color: '#6366f1', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>Platform</div>
+              <div style={{ fontSize: '22px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)' }}>ResourceMatch</div>
+              <div style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>Platform</div>
             </div>
           </div>
 
-          <h1 style={{ fontSize: '42px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', lineHeight: '1.15', marginBottom: '16px', color: '#f1f5f9' }}>
+          <h1 style={{ fontSize: '42px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', lineHeight: '1.15', marginBottom: '16px', color: 'var(--text-primary)' }}>
             Connect. Donate.{' '}
             <span style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Transform.
             </span>
           </h1>
-          <p style={{ fontSize: '16px', color: '#94a3b8', lineHeight: '1.8', marginBottom: '40px' }}>
+          <p style={{ fontSize: '16px', color: 'var(--text-secondary)', lineHeight: '1.8', marginBottom: '40px' }}>
             A platform where clients connect with donors and developers to match resources, fund projects, and build meaningful solutions together.
           </p>
 
@@ -81,11 +81,11 @@ export default function LoginPage({ navigate, onLogin }) {
               { num: '94%',    label: 'Match Rate' },
             ].map(stat => (
               <div key={stat.label} style={{
-                background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)',
+                background: 'rgba(99,102,241,0.08)', border: '1px solid var(--border)',
                 borderRadius: '12px', padding: '16px', textAlign: 'center',
               }}>
                 <div style={{ fontSize: '22px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{stat.num}</div>
-                <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '500', marginTop: '4px' }}>{stat.label}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '500', marginTop: '4px' }}>{stat.label}</div>
               </div>
             ))}
           </div>
@@ -99,9 +99,9 @@ export default function LoginPage({ navigate, onLogin }) {
               { emoji: '🍱', text: 'Food Aid' },
             ].map(tag => (
               <div key={tag.text} style={{
-                background: 'rgba(19,21,43,0.8)', border: '1px solid rgba(99,102,241,0.2)',
+                background: 'var(--bg-glass)', border: '1px solid var(--border)',
                 borderRadius: '20px', padding: '6px 14px', fontSize: '12px', fontWeight: '500',
-                color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px',
+                color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px',
               }}>
                 <span>{tag.emoji}</span> {tag.text}
               </div>
@@ -115,23 +115,23 @@ export default function LoginPage({ navigate, onLogin }) {
         width: '440px', flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '40px 32px',
-        borderLeft: '1px solid rgba(99,102,241,0.12)',
-        background: 'rgba(10,11,26,0.8)',
+        borderLeft: '1px solid var(--border)',
+        background: 'var(--bg-glass)',
         backdropFilter: 'blur(20px)',
       }}>
         <div style={{ width: '100%', maxWidth: '380px', animation: 'fadeInUp 0.5s ease' }}>
           <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '28px', fontWeight: '700', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '8px' }}>
+            <h2 style={{ fontSize: '28px', fontWeight: '700', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '8px' }}>
               Welcome back 👋
             </h2>
-            <p style={{ color: '#64748b', fontSize: '14px' }}>Sign in to your ResourceMatch account</p>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Sign in to your ResourceMatch account</p>
           </div>
 
           {/* Role toggle */}
           <div style={{
-            background: 'rgba(19,21,43,0.8)', borderRadius: '12px',
+            background: 'var(--bg-input)', borderRadius: '12px',
             padding: '4px', display: 'flex', marginBottom: '24px',
-            border: '1px solid rgba(99,102,241,0.15)',
+            border: '1px solid var(--border)',
           }}>
             {[{ val: 'client', label: '🙋 Client', desc: 'Need Resources' }, { val: 'donor', label: '💰 Donor', desc: 'Give Resources' }].map(r => (
               <button
@@ -140,8 +140,8 @@ export default function LoginPage({ navigate, onLogin }) {
                 style={{
                   flex: 1, padding: '10px', border: 'none', borderRadius: '10px', cursor: 'pointer',
                   fontFamily: 'Inter,sans-serif', transition: 'all 0.2s ease',
-                  background: form.role === r.val ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'transparent',
-                  color: form.role === r.val ? 'white' : '#64748b',
+                  background: form.role === r.val ? 'var(--gradient-btn)' : 'transparent',
+                  color: form.role === r.val ? 'white' : 'var(--text-secondary)',
                   fontSize: '13px', fontWeight: '600',
                 }}
               >
@@ -205,9 +205,9 @@ export default function LoginPage({ navigate, onLogin }) {
 
             {/* Divider */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div style={{ flex: 1, height: '1px', background: 'rgba(99,102,241,0.15)' }} />
-              <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>OR</span>
-              <div style={{ flex: 1, height: '1px', background: 'rgba(99,102,241,0.15)' }} />
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500' }}>OR</span>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
             </div>
 
             {/* Demo login */}
@@ -220,9 +220,9 @@ export default function LoginPage({ navigate, onLogin }) {
               🚀 Continue with Demo Account
             </button>
 
-            <p style={{ textAlign: 'center', fontSize: '13px', color: '#64748b' }}>
+            <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)' }}>
               Don't have an account?{' '}
-              <span style={{ color: '#818cf8', fontWeight: '600', cursor: 'pointer' }} onClick={() => navigate('register')}>
+              <span style={{ color: 'var(--text-accent)', fontWeight: '600', cursor: 'pointer' }} onClick={() => navigate('register')}>
                 Sign up free
               </span>
             </p>

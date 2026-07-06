@@ -45,8 +45,8 @@ export default function ShareSomethingPage({ navigate }) {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', animation: 'fadeInUp 0.5s ease' }}>
       <div style={{ textAlign: 'center', maxWidth: '480px' }}>
         <div style={{ fontSize: '72px', marginBottom: '24px' }}>🌈</div>
-        <h2 style={{ fontSize: '28px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '12px' }}>Thank You for Sharing!</h2>
-        <p style={{ color: '#94a3b8', fontSize: '15px', marginBottom: '32px', lineHeight: '1.7' }}>
+        <h2 style={{ fontSize: '28px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '12px' }}>Thank You for Sharing!</h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: '32px', lineHeight: '1.7' }}>
           Your contribution <strong style={{ color: '#f97316' }}>"{form.title}"</strong> has been listed. We'll notify you as soon as a match is found in your neighborhood.
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
@@ -66,8 +66,8 @@ export default function ShareSomethingPage({ navigate }) {
       )}
 
       <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: '#f1f5f9', marginBottom: '8px' }}>Share Something 🎁</h1>
-        <p style={{ color: '#64748b', fontSize: '16px' }}>List an item you'd like to donate and help someone in your community.</p>
+        <h1 style={{ fontSize: '28px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '8px' }}>Share Something 🎁</h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '16px' }}>List an item you'd like to donate and help someone in your community.</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -85,11 +85,11 @@ export default function ShareSomethingPage({ navigate }) {
                 <button key={c.val} type="button" onClick={() => setForm(p => ({ ...p, category: c.val }))}
                   style={{
                     padding: '16px', textAlign: 'left', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s',
-                    background: form.category === c.val ? 'rgba(249,115,22,0.15)' : 'rgba(19,21,43,0.5)',
-                    border: `2px solid ${form.category === c.val ? '#f97316' : 'rgba(249,115,22,0.1)'}`,
+                    background: form.category === c.val ? 'rgba(249,115,22,0.15)' : 'var(--bg-card)',
+                    border: `2px solid ${form.category === c.val ? '#f97316' : 'var(--border)'}`,
                   }}>
-                  <div style={{ fontSize: '15px', fontWeight: '700', color: '#f1f5f9' }}>{c.label}</div>
-                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>{c.desc}</div>
+                  <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.label}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{c.desc}</div>
                 </button>
               ))}
             </div>
@@ -115,9 +115,9 @@ export default function ShareSomethingPage({ navigate }) {
                 <button key={cond} type="button" onClick={() => setForm(p => ({ ...p, condition: cond.toLowerCase() }))}
                   style={{
                     flex: 1, padding: '10px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '600',
-                    background: form.condition === cond.toLowerCase() ? '#f97316' : 'rgba(255,255,255,0.05)',
-                    color: form.condition === cond.toLowerCase() ? 'white' : '#94a3b8',
-                    border: 'none', transition: 'all 0.2s'
+                    background: form.condition === cond.toLowerCase() ? '#f97316' : 'rgba(99,102,241,0.05)',
+                    color: form.condition === cond.toLowerCase() ? 'white' : 'var(--text-secondary)',
+                    border: form.condition === cond.toLowerCase() ? 'none' : '1px solid var(--border)', transition: 'all 0.2s'
                   }}>
                   {cond}
                 </button>
