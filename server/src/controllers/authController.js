@@ -126,7 +126,7 @@ exports.signup = async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
-      role: ['client', 'donor'].includes(req.body.role) ? req.body.role : 'client',
+      role: ['community', 'donor', 'recipient'].includes(req.body.role) ? req.body.role : 'community',
       category: req.body.category,
       bio: req.body.bio,
       location: req.body.location,

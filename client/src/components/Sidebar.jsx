@@ -1,18 +1,47 @@
 /* ===== Sidebar Component ===== */
 
-const navItems = [
+const donorNavItems = [
+  { id: "dashboard", icon: "⚡", label: "Dashboard" },
+  { id: "share-something", icon: "🎁", label: "Share Something" },
+  { id: "donations", icon: "💝", label: "My Donations" },
+  { id: "browse", icon: "🔍", label: "Browse Requests" },
+  { id: "matches", icon: "🤝", label: "My Matches" },
+  { id: "messages", icon: "💬", label: "Messages" },
+  { id: "profile", icon: "👤", label: "My Profile" },
+];
+
+const recipientNavItems = [
+  { id: "dashboard", icon: "⚡", label: "Dashboard" },
+  { id: "post-request", icon: "➕", label: "Post a Request" },
+  { id: "browse", icon: "🔍", label: "Browse Donations" },
+  { id: "matches", icon: "🤝", label: "My Matches" },
+  { id: "messages", icon: "💬", label: "Messages" },
+  { id: "profile", icon: "👤", label: "My Profile" },
+];
+
+const communityNavItems = [
   { id: "dashboard", icon: "⚡", label: "Dashboard" },
   { id: "browse", icon: "🔍", label: "Browse Listings" },
-  { id: "post-request", icon: "➕", label: "Post a Request" },
   { id: "share-something", icon: "🎁", label: "Share Something" },
+  { id: "post-request", icon: "➕", label: "Post a Request" },
   { id: "matches", icon: "🤝", label: "My Matches" },
   { id: "donations", icon: "💝", label: "Donations" },
   { id: "messages", icon: "💬", label: "Messages" },
   { id: "profile", icon: "👤", label: "My Profile" },
 ];
 
+function getNavItems(role) {
+  switch (role) {
+    case 'donor': return donorNavItems;
+    case 'recipient': return recipientNavItems;
+    case 'community':
+    default: return communityNavItems;
+  }
+}
+
 export default function Sidebar({ currentPage, navigate, user, onLogout }) {
   const isSettingsActive = currentPage === "settings";
+  const navItems = getNavItems(user?.role);
 
   return (
     <aside
@@ -127,7 +156,7 @@ export default function Sidebar({ currentPage, navigate, user, onLogout }) {
               textTransform: "capitalize",
             }}
           >
-            {user?.role === "donor" ? "💰 Donor" : "🙋 Client"}
+            {user?.role === "donor" ? "💰 Donor" : user?.role === "recipient" ? "🙋 Recipient" : "🌐 Community"}
           </div>
         </div>
       </div>

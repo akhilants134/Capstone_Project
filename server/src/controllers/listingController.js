@@ -126,16 +126,23 @@ exports.deleteListing = async (req, res) => {
 
 exports.getStats = async (req, res) => {
     try {
+        const User = require('../models/userModel');
+
         const totalListings = await Listing.countDocuments();
+        const totalDonations = await Listing.countDocuments({ type: 'donation' });
+        const totalRequests = await Listing.countDocuments({ type: 'request' });
         const activeMatches = await Listing.countDocuments({ status: 'matched' });
-        // Generate some basic mock stats for the dashboard
+        const totalUsers = await User.countDocuments();
+
         res.status(200).json({
             status: 'success',
             data: {
                 totalListings,
+                totalDonations,
+                totalRequests,
                 activeMatches,
-                totalUsers: 150,
-                successRate: 94
+                totalUsers,
+                successRate: totalListings > 0 ? Math.round(activeMatches / totalListings * 100) : 0,
             }
         });
     } catch (err) {
