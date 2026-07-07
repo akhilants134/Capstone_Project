@@ -3,7 +3,7 @@ import { register } from '../services/api';
 
 export default function RegisterPage({ navigate, onLogin }) {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'client', category: '', bio: '', location: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'community', category: '', bio: '', location: '' });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -74,8 +74,12 @@ export default function RegisterPage({ navigate, onLogin }) {
 
         {step === 1 && (
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
-              {[{ val: 'client', emoji: '🙋', title: 'Client', desc: 'Need resources' }, { val: 'donor', emoji: '💰', title: 'Donor', desc: 'Give resources' }].map(r => (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '20px' }}>
+              {[
+                { val: 'donor', emoji: '💰', title: 'Donor', desc: 'Give & share resources' },
+                { val: 'recipient', emoji: '🙋', title: 'Recipient', desc: 'Request resources' },
+                { val: 'community', emoji: '🌐', title: 'Community', desc: 'Connect & engage' },
+              ].map(r => (
                 <button key={r.val} type="button" onClick={() => setForm(p => ({ ...p, role: r.val }))}
                   style={{ padding: '14px', border: `2px solid ${form.role === r.val ? '#6366f1' : 'var(--border)'}`, borderRadius: '12px', background: form.role === r.val ? 'rgba(99,102,241,0.15)' : 'var(--bg-card)', cursor: 'pointer', textAlign: 'center', transition: 'all 0.2s' }}>
                   <div style={{ fontSize: '22px', marginBottom: '4px' }}>{r.emoji}</div>
@@ -111,7 +115,7 @@ export default function RegisterPage({ navigate, onLogin }) {
         {step === 2 && (
           <div>
             <label className="form-label" style={{ marginBottom: '12px', display: 'block' }}>
-              {form.role === 'client' ? 'What resources do you need?' : 'What area do you want to support?'}
+              {form.role === 'recipient' ? 'What resources do you need?' : form.role === 'donor' ? 'What area do you want to support?' : 'What area interests you most?'}
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px' }}>
               {categories.map(cat => (
