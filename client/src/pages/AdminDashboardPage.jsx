@@ -79,13 +79,13 @@ export default function AdminDashboardPage({ navigate, user, onLogout }) {
   };
 
   const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'verifications', label: 'Verifications' },
-    { id: 'users', label: 'Users' },
-    { id: 'donations', label: 'Donations' },
-    { id: 'top-donors', label: 'Top Donors' },
-    { id: 'categories', label: 'Categories' },
-    { id: 'system', label: 'System' },
+    { id: 'overview', icon: '⚡', label: 'Overview' },
+    { id: 'verifications', icon: '✅', label: 'Verifications' },
+    { id: 'users', icon: '👥', label: 'Users' },
+    { id: 'donations', icon: '💝', label: 'Donations' },
+    { id: 'top-donors', icon: '🏆', label: 'Top Donors' },
+    { id: 'categories', icon: '📂', label: 'Categories' },
+    { id: 'system', icon: '🔧', label: 'System' },
   ];
 
   // Fallback mock data (used when API fails)
@@ -782,72 +782,170 @@ export default function AdminDashboardPage({ navigate, user, onLogout }) {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      {/* Header */}
-      <header style={{
-        background: 'var(--bg-card)', borderBottom: '1px solid var(--border)',
-        padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex' }}>
+      {/* Sidebar */}
+      <aside style={{
+        width: '260px', flexShrink: 0,
+        background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)',
+        display: 'flex', flexDirection: 'column', padding: 0,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        {/* Logo */}
+        <div style={{
+          padding: '24px 20px', borderBottom: '1px solid var(--border)',
+          display: 'flex', alignItems: 'center', gap: '12px',
+        }}>
           <div style={{
-            width: '36px', height: '36px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            width: '40px', height: '40px', borderRadius: '12px',
+            background: 'var(--gradient-btn)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '18px',
-          }}>⚙️</div>
+            fontSize: '20px', boxShadow: 'var(--shadow-btn)', flexShrink: 0,
+          }}>🌐</div>
           <div>
-            <div style={{ fontSize: '18px', fontWeight: '700', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)' }}>Admin Dashboard</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500' }}>Admin Portal</div>
+            <div style={{ fontSize: '14px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)' }}>ResourceMatch</div>
+            <div style={{ fontSize: '10px', color: 'var(--primary-light)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Admin Portal</div>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <button 
+
+        {/* Admin user info */}
+        <div style={{
+          padding: '16px 20px', borderBottom: '1px solid var(--border)',
+          display: 'flex', alignItems: 'center', gap: '12px',
+        }}>
+          <div style={{
+            width: '36px', height: '36px', borderRadius: '50%',
+            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '16px', fontWeight: '700', color: 'white', flexShrink: 0,
+          }}>{user?.name?.[0]?.toUpperCase() || 'A'}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user?.name || 'Admin'}
+            </div>
+            <div style={{ fontSize: '11px', color: '#6366f1', fontWeight: '600' }}>⚙️ Administrator</div>
+          </div>
+        </div>
+
+        {/* Search box */}
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ position: 'relative' }}>
+            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '12px', opacity: 0.6 }}>🔍</span>
+            <input
+              type="text" placeholder="Search..."
+              style={{
+                width: '100%', background: 'var(--bg-input)', border: '1px solid var(--border)',
+                borderRadius: '8px', padding: '8px 10px 8px 30px', fontSize: '12px',
+                color: 'var(--text-primary)', outline: 'none',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Nav items */}
+        <nav style={{ flex: 1, padding: '12px 12px', overflowY: 'auto' }}>
+          {tabs.map(tab => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: '12px',
+                  padding: '11px 14px', borderRadius: '10px', border: 'none',
+                  background: isActive ? 'var(--primary-glow)' : 'transparent',
+                  borderLeft: isActive ? '3px solid var(--primary)' : '3px solid transparent',
+                  color: isActive ? 'var(--primary-light)' : 'var(--text-secondary)',
+                  cursor: 'pointer', marginBottom: '4px', transition: 'all 0.2s ease', textAlign: 'left',
+                }}
+                onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = 'rgba(99,102,241,0.08)'; e.currentTarget.style.color = 'var(--text-primary)'; } }}
+                onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; } }}
+              >
+                <span style={{ fontSize: '16px' }}>{tab.icon}</span>
+                <span style={{ fontSize: '13px', fontWeight: isActive ? '600' : '500' }}>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Bottom actions */}
+        <div style={{ padding: '16px 12px', borderTop: '1px solid var(--border)' }}>
+          <button
             onClick={fetchAllData}
             disabled={loading}
             style={{
-              padding: '8px 16px', fontSize: '13px', fontWeight: '500', borderRadius: '8px',
-              background: 'rgba(99,102,241,0.1)', color: '#6366f1', border: '1px solid rgba(99,102,241,0.3)', cursor: loading ? 'not-allowed' : 'pointer',
+              width: '100%', display: 'flex', alignItems: 'center', gap: '12px',
+              padding: '11px 14px', borderRadius: '10px', border: 'none',
+              background: 'transparent', color: 'var(--text-secondary)',
+              cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '4px', transition: 'all 0.2s ease', textAlign: 'left',
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99,102,241,0.08)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
           >
-            {loading ? 'Refreshing...' : '🔄 Refresh'}
+            <span style={{ fontSize: '16px' }}>🔄</span>
+            <span style={{ fontSize: '13px', fontWeight: '500' }}>{loading ? 'Refreshing...' : 'Refresh Data'}</span>
           </button>
-          <span style={{
-            fontSize: '12px', fontWeight: '600', padding: '4px 10px', borderRadius: '6px',
-            background: 'rgba(99,102,241,0.1)', color: '#6366f1',
-          }}>Admin</span>
-          <button onClick={() => { if (onLogout) onLogout(); else { localStorage.removeItem('user'); navigate('login'); } }} style={{
-            padding: '8px 16px', fontSize: '13px', fontWeight: '500', borderRadius: '8px',
-            background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', cursor: 'pointer',
-          }}>Logout</button>
+          <button
+            onClick={() => { if (onLogout) onLogout(); else { localStorage.removeItem('user'); navigate('login'); } }}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: '12px',
+              padding: '11px 14px', borderRadius: '10px', border: 'none',
+              background: 'transparent', color: 'var(--danger)',
+              cursor: 'pointer', transition: 'all 0.2s ease', opacity: '0.7',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.opacity = '1'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.opacity = '0.7'; }}
+          >
+            <span style={{ fontSize: '16px' }}>🚪</span>
+            <span style={{ fontSize: '13px', fontWeight: '500' }}>Logout</span>
+          </button>
         </div>
-      </header>
+      </aside>
 
-      {/* Navigation Tabs */}
-      <div style={{
-        background: 'var(--bg-card)', borderBottom: '1px solid var(--border)',
-        padding: '0 24px', overflowX: 'auto',
-      }}>
-        <div style={{ display: 'flex', gap: '4px' }}>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                padding: '12px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer',
-                fontFamily: 'Inter,sans-serif', fontSize: '13px', fontWeight: '500',
-                background: activeTab === tab.id ? 'var(--gradient-btn)' : 'transparent',
-                color: activeTab === tab.id ? 'white' : 'var(--text-secondary)',
-                transition: 'all 0.2s ease', whiteSpace: 'nowrap',
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+      {/* Main content area */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+        {/* Top header bar */}
+        <header style={{
+          background: 'var(--bg-card)', borderBottom: '1px solid var(--border)',
+          padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '700', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)' }}>
+              {tabs.find(t => t.id === activeTab)?.label || 'Overview'}
+            </h2>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontSize: '12px', opacity: 0.6 }}>🔍</span>
+              <input
+                type="text" placeholder="Search resources..."
+                style={{
+                  background: 'var(--bg-input)', border: '1px solid var(--border)',
+                  borderRadius: '8px', padding: '8px 12px 8px 30px', fontSize: '12px',
+                  color: 'var(--text-primary)', outline: 'none', width: '200px',
+                }}
+              />
+            </div>
+            <button style={{
+              width: '36px', height: '36px', borderRadius: '10px', border: '1px solid var(--border)',
+              background: 'var(--bg-card)', cursor: 'pointer', fontSize: '16px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>🔔</button>
+            <div style={{
+              width: '36px', height: '36px', borderRadius: '50%',
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '14px', fontWeight: '700', color: 'white', cursor: 'pointer',
+            }}>{user?.name?.[0]?.toUpperCase() || 'A'}</div>
+          </div>
+        </header>
+
+        {/* Content */}
+        <main style={{ flex: 1, overflow: 'auto' }}>
+          {renderContent()}
+        </main>
       </div>
-
-      {/* Content */}
-      {renderContent()}
     </div>
   );
 }
