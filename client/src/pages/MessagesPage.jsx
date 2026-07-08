@@ -30,12 +30,75 @@ export default function MessagesPage({ navigate }) {
           unread: c.unread,
           online: true
         })) || defaultConvos;
-        setConvos(formatted);
-        if (formatted.length > 0 && !active) setActive(formatted[0]);
+
+        // Check if we have a redirected recipient from Matches page
+        const redirectedStr = localStorage.getItem('active_chat_recipient');
+        if (redirectedStr) {
+          localStorage.removeItem('active_chat_recipient');
+          try {
+            const redirected = JSON.parse(redirectedStr);
+            const existing = formatted.find(c => c.id === redirected.id);
+            if (existing) {
+              setConvos(formatted);
+              setActive(existing);
+            } else {
+              const newConvo = {
+                id: redirected.id,
+                name: redirected.name,
+                initial: redirected.initial,
+                color: '#6366f1',
+                lastMsg: 'Start messaging...',
+                time: 'Now',
+                unread: 0,
+                online: true
+              };
+              setConvos([newConvo, ...formatted]);
+              setActive(newConvo);
+            }
+          } catch (e) {
+            console.error('Failed to parse redirected recipient:', e);
+            setConvos(formatted);
+            if (formatted.length > 0 && !active) setActive(formatted[0]);
+          }
+        } else {
+          setConvos(formatted);
+          if (formatted.length > 0 && !active) setActive(formatted[0]);
+        }
       } catch (err) {
         console.error('Failed to fetch conversations:', err);
-        setConvos(defaultConvos);
-        if (defaultConvos.length > 0 && !active) setActive(defaultConvos[0]);
+        const formatted = defaultConvos;
+        const redirectedStr = localStorage.getItem('active_chat_recipient');
+        if (redirectedStr) {
+          localStorage.removeItem('active_chat_recipient');
+          try {
+            const redirected = JSON.parse(redirectedStr);
+            const existing = formatted.find(c => c.id === redirected.id);
+            if (existing) {
+              setConvos(formatted);
+              setActive(existing);
+            } else {
+              const newConvo = {
+                id: redirected.id,
+                name: redirected.name,
+                initial: redirected.initial,
+                color: '#6366f1',
+                lastMsg: 'Start messaging...',
+                time: 'Now',
+                unread: 0,
+                online: true
+              };
+              setConvos([newConvo, ...formatted]);
+              setActive(newConvo);
+            }
+          } catch (e) {
+            console.error('Failed to parse redirected recipient in fallback:', e);
+            setConvos(formatted);
+            if (formatted.length > 0 && !active) setActive(formatted[0]);
+          }
+        } else {
+          setConvos(formatted);
+          if (formatted.length > 0 && !active) setActive(formatted[0]);
+        }
       } finally {
         setLoading(false);
       }

@@ -108,20 +108,31 @@ exports.getMyMatches = async (req, res) => {
                 { user: userId },
                 { 'matches.user': userId }
             ]
-        }).populate('user', 'name');
+        }).populate('user', 'name').populate('matches.user', 'name');
 
         // Format for frontend
         const matches = [];
         listings.forEach(listing => {
             listing.matches.forEach(m => {
+                const matchUserObj = m.user;
+                if (!matchUserObj) return;
+                
+                const matchUserIdStr = matchUserObj._id ? matchUserObj._id.toString() : matchUserObj.toString();
+                const isOwner = listing.user._id.toString() === userId;
+                
                 // If I am owner, I see matches from others
                 // If I am applicant, I see my match on this listing
-                if (listing.user._id.toString() === userId || m.user.toString() === userId) {
+                if (isOwner || matchUserIdStr === userId) {
+                    const partnerName = isOwner ? (matchUserObj.name || 'Community Member') : listing.user.name;
+                    const partnerId = isOwner ? matchUserIdStr : listing.user._id.toString();
+
                     matches.push({
                         id: m._id,
                         listingId: listing._id,
+                        matchUserId: matchUserIdStr,
+                        donorId: partnerId,
+                        donor: partnerName,
                         resource: listing.title,
-                        donor: listing.user.name,
                         status: m.status,
                         matchScore: m.score,
                         date: listing.createdAt,
