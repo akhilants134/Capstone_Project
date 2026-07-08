@@ -11,6 +11,13 @@ try {
   execSync('npm run build --prefix client', { stdio: 'inherit' });
   console.log('✅ Client Production Build Passed!');
 
+  console.log('\n3. Checking Backend API Integration and MongoDB Storage...');
+  execSync('node test-backend-api.js', { 
+    env: { ...process.env, NODE_PATH: './server/node_modules' }, 
+    stdio: 'inherit' 
+  });
+  console.log('✅ Backend API Integration Passed!');
+
   console.log('\n🎉 All sanity checks passed successfully!');
 } catch (error) {
   console.error('\n❌ Test execution failed.');
