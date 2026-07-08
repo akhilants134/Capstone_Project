@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   adminGetAllUsers,
   adminToggleBanUser,
@@ -9,7 +9,60 @@ import {
   adminGetTopDonors
 } from '../services/api';
 
-export default function AdminDashboardPage({ navigate, user, onLogout }) {
+// Fallback mock data (used when API fails or database is empty)
+const mockStats = [
+  { title: 'Total Donations', value: '18', change: '+12%', label: 'All time donations', icon: '📦' },
+  { title: 'Active Requests', value: '7', change: '+24%', label: 'Open requests', icon: '📋' },
+  { title: 'Total Matched', value: '9', change: '+18%', label: 'Successful matches', icon: '🤝' },
+  { title: 'Value Prevented', value: '$34,500', change: '+20%', label: 'Waste value saved', icon: '💰' },
+];
+
+const mockTopDonors = [
+  { name: 'Tech Solutions Inc', totalDonationValue: 8000, donationCount: 15 },
+  { name: 'ABC Manufacturing Ltd', totalDonationValue: 5700, donationCount: 10 },
+  { name: 'Fresh Foods Factory', totalDonationValue: 4200, donationCount: 8 },
+  { name: 'Green Valley Community', totalDonationValue: 3000, donationCount: 5 },
+];
+
+const mockRecentActivity = [
+  { item: 'School Supplies', donor: 'ABC Manufacturing Ltd', recipient: 'Hope Children\'s Home', value: '$2,500', status: 'Completed' },
+  { item: 'Office Furniture', donor: 'Fresh Foods Factory', recipient: 'Unclaimed', value: '$3,200', status: 'Listed' },
+  { item: 'Canned Food', donor: 'Green Valley Community', recipient: 'Unclaimed', value: '$4,200', status: 'Listed' },
+  { item: 'Winter Clothing', donor: 'Tech Solutions Inc', recipient: 'Helping Hands NGO', value: '$3,000', status: 'In Transit' },
+  { item: 'Laptops', donor: 'Tech Solutions Inc', recipient: 'Unclaimed', value: '$8,000', status: 'Listed' },
+];
+
+const mockVerifications = [
+  { _id: 'mock-verify-1', org: 'ABC Manufacturing Ltd', type: 'Donor', contact: 'contact@abc.com', status: 'Verified', isVerified: true },
+  { _id: 'mock-verify-2', org: 'Hope Children\'s Home', type: 'Recipient', contact: 'info@hope.org', status: 'Verified', isVerified: true },
+  { _id: 'mock-verify-3', org: 'Tech Solutions Inc', type: 'Donor', contact: 'admin@tech.com', status: 'Pending', isVerified: false },
+  { _id: 'mock-verify-4', org: 'Green Valley Community', type: 'Recipient', contact: 'support@green.org', status: 'Unverified', isVerified: false },
+  { _id: 'mock-verify-5', org: 'Fresh Foods Factory', type: 'Donor', contact: 'sales@fresh.com', status: 'Pending', isVerified: false },
+  { _id: 'mock-verify-6', org: 'Helping Hands NGO', type: 'Recipient', contact: 'help@hands.org', status: 'Verified', isVerified: true },
+  { _id: 'mock-verify-7', org: 'John Smith', type: 'People', contact: 'john@email.com', status: 'Unverified', isVerified: false },
+  { _id: 'mock-verify-8', org: 'Sarah Johnson', type: 'People', contact: 'sarah@email.com', status: 'Pending', isVerified: false },
+];
+
+const mockUsers = [
+  { _id: 'mock-user-1', name: 'Admin User', email: 'admin@resourcematch.com', role: 'admin', isBanned: false },
+  { _id: 'mock-user-2', name: 'Tech Solutions Inc', email: 'admin@tech.com', role: 'donor', isBanned: false },
+  { _id: 'mock-user-3', name: 'Hope Children\'s Home', email: 'info@hope.org', role: 'recipient', isBanned: false },
+  { _id: 'mock-user-4', name: 'ABC Manufacturing Ltd', email: 'contact@abc.com', role: 'donor', isBanned: false },
+  { _id: 'mock-user-5', name: 'Green Valley Community', email: 'support@green.org', role: 'recipient', isBanned: false },
+  { _id: 'mock-user-6', name: 'Fresh Foods Factory', email: 'sales@fresh.com', role: 'donor', isBanned: false },
+  { _id: 'mock-user-7', name: 'Helping Hands NGO', email: 'help@hands.org', role: 'recipient', isBanned: false },
+  { _id: 'mock-user-8', name: 'John Smith', email: 'john@email.com', role: 'community', isBanned: false },
+];
+
+const mockDonations = [
+  { item: 'School Supplies', donor: 'ABC Manufacturing Ltd', recipient: 'Hope Children\'s Home', value: '$2,500', status: 'Completed' },
+  { item: 'Office Furniture', donor: 'Fresh Foods Factory', recipient: 'Unclaimed', value: '$3,200', status: 'Listed' },
+  { item: 'Canned Food', donor: 'Green Valley Community', recipient: 'Unclaimed', value: '$4,200', status: 'Listed' },
+  { item: 'Winter Clothing', donor: 'Tech Solutions Inc', recipient: 'Helping Hands NGO', value: '$3,000', status: 'In Transit' },
+  { item: 'Laptops', donor: 'Tech Solutions Inc', recipient: 'Unclaimed', value: '$8,000', status: 'Listed' },
+];
+
+export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,61 +85,8 @@ export default function AdminDashboardPage({ navigate, user, onLogout }) {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [isRotating, setIsRotating] = useState(false);
 
-  // Fallback mock data (used when API fails or database is empty)
-  const mockStats = [
-    { title: 'Total Donations', value: '18', change: '+12%', label: 'All time donations', icon: '📦' },
-    { title: 'Active Requests', value: '7', change: '+24%', label: 'Open requests', icon: '📋' },
-    { title: 'Total Matched', value: '9', change: '+18%', label: 'Successful matches', icon: '🤝' },
-    { title: 'Value Prevented', value: '$34,500', change: '+20%', label: 'Waste value saved', icon: '💰' },
-  ];
-
-  const mockTopDonors = [
-    { name: 'Tech Solutions Inc', totalDonationValue: 8000, donationCount: 15 },
-    { name: 'ABC Manufacturing Ltd', totalDonationValue: 5700, donationCount: 10 },
-    { name: 'Fresh Foods Factory', totalDonationValue: 4200, donationCount: 8 },
-    { name: 'Green Valley Community', totalDonationValue: 3000, donationCount: 5 },
-  ];
-
-  const mockRecentActivity = [
-    { item: 'School Supplies', donor: 'ABC Manufacturing Ltd', recipient: 'Hope Children\'s Home', value: '$2,500', status: 'Completed' },
-    { item: 'Office Furniture', donor: 'Fresh Foods Factory', recipient: 'Unclaimed', value: '$3,200', status: 'Listed' },
-    { item: 'Canned Food', donor: 'Green Valley Community', recipient: 'Unclaimed', value: '$4,200', status: 'Listed' },
-    { item: 'Winter Clothing', donor: 'Tech Solutions Inc', recipient: 'Helping Hands NGO', value: '$3,000', status: 'In Transit' },
-    { item: 'Laptops', donor: 'Tech Solutions Inc', recipient: 'Unclaimed', value: '$8,000', status: 'Listed' },
-  ];
-
-  const mockVerifications = [
-    { _id: 'mock-verify-1', org: 'ABC Manufacturing Ltd', type: 'Donor', contact: 'contact@abc.com', status: 'Verified', isVerified: true },
-    { _id: 'mock-verify-2', org: 'Hope Children\'s Home', type: 'Recipient', contact: 'info@hope.org', status: 'Verified', isVerified: true },
-    { _id: 'mock-verify-3', org: 'Tech Solutions Inc', type: 'Donor', contact: 'admin@tech.com', status: 'Pending', isVerified: false },
-    { _id: 'mock-verify-4', org: 'Green Valley Community', type: 'Recipient', contact: 'support@green.org', status: 'Unverified', isVerified: false },
-    { _id: 'mock-verify-5', org: 'Fresh Foods Factory', type: 'Donor', contact: 'sales@fresh.com', status: 'Pending', isVerified: false },
-    { _id: 'mock-verify-6', org: 'Helping Hands NGO', type: 'Recipient', contact: 'help@hands.org', status: 'Verified', isVerified: true },
-    { _id: 'mock-verify-7', org: 'John Smith', type: 'People', contact: 'john@email.com', status: 'Unverified', isVerified: false },
-    { _id: 'mock-verify-8', org: 'Sarah Johnson', type: 'People', contact: 'sarah@email.com', status: 'Pending', isVerified: false },
-  ];
-
-  const mockUsers = [
-    { _id: 'mock-user-1', name: 'Admin User', email: 'admin@resourcematch.com', role: 'admin', isBanned: false },
-    { _id: 'mock-user-2', name: 'Tech Solutions Inc', email: 'admin@tech.com', role: 'donor', isBanned: false },
-    { _id: 'mock-user-3', name: 'Hope Children\'s Home', email: 'info@hope.org', role: 'recipient', isBanned: false },
-    { _id: 'mock-user-4', name: 'ABC Manufacturing Ltd', email: 'contact@abc.com', role: 'donor', isBanned: false },
-    { _id: 'mock-user-5', name: 'Green Valley Community', email: 'support@green.org', role: 'recipient', isBanned: false },
-    { _id: 'mock-user-6', name: 'Fresh Foods Factory', email: 'sales@fresh.com', role: 'donor', isBanned: false },
-    { _id: 'mock-user-7', name: 'Helping Hands NGO', email: 'help@hands.org', role: 'recipient', isBanned: false },
-    { _id: 'mock-user-8', name: 'John Smith', email: 'john@email.com', role: 'community', isBanned: false },
-  ];
-
-  const mockDonations = [
-    { item: 'School Supplies', donor: 'ABC Manufacturing Ltd', recipient: 'Hope Children\'s Home', value: '$2,500', status: 'Completed' },
-    { item: 'Office Furniture', donor: 'Fresh Foods Factory', recipient: 'Unclaimed', value: '$3,200', status: 'Listed' },
-    { item: 'Canned Food', donor: 'Green Valley Community', recipient: 'Unclaimed', value: '$4,200', status: 'Listed' },
-    { item: 'Winter Clothing', donor: 'Tech Solutions Inc', recipient: 'Helping Hands NGO', value: '$3,000', status: 'In Transit' },
-    { item: 'Laptops', donor: 'Tech Solutions Inc', recipient: 'Unclaimed', value: '$8,000', status: 'Listed' },
-  ];
-
   // Fetch all data from API
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     setError(null);
     setIsRotating(true);
@@ -128,11 +128,11 @@ export default function AdminDashboardPage({ navigate, user, onLogout }) {
       setLoading(false);
       setTimeout(() => setIsRotating(false), 600);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [fetchAllData]);
 
   const handleBanUser = async (userId) => {
     const isMock = !userId || typeof userId !== 'string' || userId.startsWith('mock-');
