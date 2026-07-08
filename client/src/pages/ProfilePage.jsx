@@ -3,6 +3,20 @@ import { useState, useEffect } from 'react';
 import { getStats } from '../services/api';
 
 export default function ProfilePage({ user, navigate }) {
+  const getRoleDetails = () => {
+    switch (user?.role) {
+      case 'admin':
+        return { label: '🔑 Admin', color: '#a78bfa', bg: 'rgba(167, 139, 250, 0.2)' };
+      case 'donor':
+        return { label: '💰 Donor', color: '#34d399', bg: 'rgba(16, 185, 129, 0.2)' };
+      case 'recipient':
+        return { label: '🙋 Recipient', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.2)' };
+      default:
+        return { label: '🌐 Client', color: 'var(--text-accent)', bg: 'rgba(99, 102, 241, 0.2)' };
+    }
+  };
+  const roleDetails = getRoleDetails();
+
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     name: user?.name || 'Alex Johnson',
@@ -81,8 +95,8 @@ export default function ProfilePage({ user, navigate }) {
             <div style={{ flex: 1, paddingBottom: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
                 <h1 style={{ fontSize: '28px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', margin: 0 }}>{form.name}</h1>
-                <span style={{ padding: '4px 12px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', background: user?.role === 'donor' ? 'rgba(16,185,129,0.2)' : 'rgba(99,102,241,0.2)', color: user?.role === 'donor' ? '#34d399' : 'var(--text-accent)', border: '1px solid currentColor', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  {user?.role === 'donor' ? '💰 Donor' : '🙋 Client'}
+                <span style={{ padding: '4px 12px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700', background: roleDetails.bg, color: roleDetails.color, border: '1px solid currentColor', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {roleDetails.label}
                 </span>
                 <span style={{ fontSize: '12px', color: '#10b981', fontWeight: '700', background: 'rgba(16,185,129,0.1)', padding: '4px 12px', borderRadius: '9999px' }}>✓ Verified Account</span>
               </div>

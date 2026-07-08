@@ -34,6 +34,7 @@ export default function Navbar({ currentPage, navigate, user }) {
 
   const pageLabels = {
     dashboard: "Dashboard",
+    "admin-dashboard": "Admin Dashboard",
     browse: "Browse Listings",
     "post-request": "Post a Request",
     matches: "My Matches",

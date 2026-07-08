@@ -30,8 +30,14 @@ const communityNavItems = [
   { id: "profile", icon: "👤", label: "My Profile" },
 ];
 
+const adminNavItems = [
+  { id: "admin-dashboard", icon: "🛡️", label: "Admin Dashboard" },
+  { id: "profile", icon: "👤", label: "My Profile" },
+];
+
 function getNavItems(role) {
   switch (role) {
+    case 'admin': return adminNavItems;
     case 'donor': return donorNavItems;
     case 'recipient': return recipientNavItems;
     case 'community':
@@ -151,12 +157,14 @@ export default function Sidebar({ currentPage, navigate, user, onLogout }) {
               color:
                 user?.role === "donor"
                   ? "var(--secondary-light)"
+                  : user?.role === "admin"
+                  ? "#a78bfa"
                   : "var(--primary-light)",
               fontWeight: "600",
               textTransform: "capitalize",
             }}
           >
-            {user?.role === "donor" ? "💰 Donor" : user?.role === "recipient" ? "🙋 Recipient" : "🌐 Community"}
+            {user?.role === "donor" ? "💰 Donor" : user?.role === "recipient" ? "🙋 Recipient" : user?.role === "admin" ? "🔑 Admin" : "🌐 Community"}
           </div>
         </div>
       </div>
