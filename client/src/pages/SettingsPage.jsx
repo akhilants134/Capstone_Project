@@ -86,6 +86,36 @@ export default function SettingsPage({
     localStorage.setItem("sys_trustedDevices", JSON.stringify(trustedDevices));
   }, [trustedDevices]);
 
+  // Tab 7: Activity Log State
+  const [activityLog, setActivityLog] = useState(() => {
+    const saved = localStorage.getItem("sys_activityLog");
+    if (saved) return JSON.parse(saved);
+    return [
+      { title: "Login successful", desc: "Browser Session · Your Location", ip: "10.0.0.22", time: "Jul 8, 2026, 11:01 AM", icon: "➡️", bg: "rgba(99,102,241,0.1)" },
+      { title: "Account created", desc: "Chrome on Windows · New York, US", ip: "192.168.1.1", time: "Jan 10, 2026, 02:53 PM", icon: "✨", bg: "rgba(16,185,129,0.1)" },
+      { title: "Password changed", desc: "Chrome on Windows · New York, US", ip: "192.168.1.1", time: "Jan 25, 2026, 07:35 PM", icon: "🔒", bg: "rgba(245,158,11,0.1)" },
+      { title: "Login successful", desc: "Safari on iPhone · New York, US", ip: "10.0.0.55", time: "Mar 6, 2026, 01:40 PM", icon: "➡️", bg: "rgba(99,102,241,0.1)" }
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("sys_activityLog", JSON.stringify(activityLog));
+  }, [activityLog]);
+
+  const addActivityLog = (title, icon, bg) => {
+    const systemOS = navigator.platform?.includes("Mac") ? "macOS" : navigator.platform?.includes("Win") ? "Windows" : "Linux";
+    const systemBrowser = navigator.userAgent?.includes("Chrome") ? "Chrome" : navigator.userAgent?.includes("Safari") ? "Safari" : "Firefox";
+    const newEvent = {
+      title,
+      desc: `${systemBrowser} on ${systemOS} · Your Location`,
+      ip: "10.0.0.22",
+      time: new Date().toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      icon,
+      bg
+    };
+    setActivityLog(prev => [newEvent, ...prev]);
+  };
+
   // Synchronize state when user details update
   useEffect(() => {
     if (user) {
@@ -176,6 +206,7 @@ export default function SettingsPage({
       const res = await updateMe(profileForm);
       if (res.status === "success") {
         setSuccessMsg("Profile updated successfully!");
+        addActivityLog("Profile updated", "👤", "rgba(99,102,241,0.1)");
         if (onUserUpdate) onUserUpdate(res.data.user);
         setTimeout(() => setSuccessMsg(""), 3000);
       }
@@ -194,6 +225,7 @@ export default function SettingsPage({
       const res = await updateMe({ verificationDetails: verificationText });
       if (res.status === "success") {
         setSuccessMsg("Verification details submitted for review.");
+        addActivityLog("Verification submitted", "🛡️", "rgba(245,158,11,0.1)");
         if (onUserUpdate) onUserUpdate(res.data.user);
         setTimeout(() => setSuccessMsg(""), 3000);
       }
@@ -220,6 +252,7 @@ export default function SettingsPage({
       });
       if (res.status === "success") {
         setSuccessMsg("Password changed successfully.");
+        addActivityLog("Password changed", "🔒", "rgba(245,158,11,0.1)");
         setPasswordForm({ currentPassword: "", newPassword: "", confirmNewPassword: "" });
         setTimeout(() => setSuccessMsg(""), 3000);
       }
@@ -244,6 +277,7 @@ export default function SettingsPage({
     setIsPinSet(true);
     setPinForm({ newPin: "", confirmPin: "" });
     setSuccessMsg("Security PIN configured successfully.");
+    addActivityLog("Security PIN configured", "📌", "rgba(16,185,129,0.1)");
     setTimeout(() => setSuccessMsg(""), 3000);
   };
 
@@ -287,6 +321,7 @@ export default function SettingsPage({
       setBackupCodes(res.data.backupCodes);
       setTwoFAEnabled(true);
       setStep2FA("enabled");
+      addActivityLog("2FA Enabled", "🛡️", "rgba(16,185,129,0.1)");
       
       // Update global user
       if (user) {
@@ -309,6 +344,7 @@ export default function SettingsPage({
       setTwoFAEnabled(false);
       setDisableCode("");
       setStep2FA("idle");
+      addActivityLog("2FA Disabled", "🔓", "rgba(239,68,68,0.1)");
 
       // Update global user
       if (user) {
@@ -901,6 +937,7 @@ export default function SettingsPage({
                       const next = !loginAlerts;
                       setLoginAlerts(next);
                       localStorage.setItem("sys_loginAlerts", String(next));
+                      addActivityLog(`Login alerts toggled ${next ? 'on' : 'off'}`, "🔔", "rgba(99,102,241,0.1)");
                       setSuccessMsg("Security configuration saved.");
                       setTimeout(() => setSuccessMsg(""), 2000);
                     }}
@@ -932,6 +969,7 @@ export default function SettingsPage({
                     onChange={(e) => {
                       setSessionTimeout(e.target.value);
                       localStorage.setItem("sys_sessionTimeout", e.target.value);
+                      addActivityLog(`Session timeout changed to: ${e.target.value}`, "⏳", "rgba(99,102,241,0.1)");
                       setSuccessMsg("Inactivity timeout saved.");
                       setTimeout(() => setSuccessMsg(""), 2000);
                     }}
@@ -1011,6 +1049,7 @@ export default function SettingsPage({
                   onChange={(e) => {
                     setProfileVisibility(e.target.value);
                     localStorage.setItem("sys_profileVisibility", e.target.value);
+                    addActivityLog(`Profile visibility set to: ${e.target.value}`, "👁", "rgba(99,102,241,0.1)");
                     setSuccessMsg("Privacy visibility saved.");
                     setTimeout(() => setSuccessMsg(""), 2000);
                   }}
@@ -1034,6 +1073,7 @@ export default function SettingsPage({
                       const next = !showDonationHistory;
                       setShowDonationHistory(next);
                       localStorage.setItem("sys_showDonationHistory", String(next));
+                      addActivityLog(`Donation history toggled ${next ? 'on' : 'off'}`, "👁", "rgba(99,102,241,0.1)");
                     }}
                     style={{
                       width: "46px", height: "24px", borderRadius: "12px", border: "none", cursor: "pointer",
@@ -1060,6 +1100,7 @@ export default function SettingsPage({
                       const next = !showContactInfo;
                       setShowContactInfo(next);
                       localStorage.setItem("sys_showContactInfo", String(next));
+                      addActivityLog(`Contact visibility toggled ${next ? 'on' : 'off'}`, "📞", "rgba(99,102,241,0.1)");
                     }}
                     style={{
                       width: "46px", height: "24px", borderRadius: "12px", border: "none", cursor: "pointer",
@@ -1086,6 +1127,7 @@ export default function SettingsPage({
                       const next = !allowDirectMessages;
                       setAllowDirectMessages(next);
                       localStorage.setItem("sys_allowDirectMessages", String(next));
+                      addActivityLog(`Direct messages toggled ${next ? 'on' : 'off'}`, "💬", "rgba(99,102,241,0.1)");
                     }}
                     style={{
                       width: "46px", height: "24px", borderRadius: "12px", border: "none", cursor: "pointer",
@@ -1215,12 +1257,7 @@ export default function SettingsPage({
               </p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                {[
-                  { title: "Login successful", desc: "Browser Session · Your Location", ip: "10.0.0.22", time: "Jul 8, 2026, 11:01 AM", icon: "➡️", bg: "rgba(99,102,241,0.1)" },
-                  { title: "Account created", desc: "Chrome on Windows · New York, US", ip: "192.168.1.1", time: "Jan 10, 2026, 02:53 PM", icon: "✨", bg: "rgba(16,185,129,0.1)" },
-                  { title: "Password changed", desc: "Chrome on Windows · New York, US", ip: "192.168.1.1", time: "Jan 25, 2026, 07:35 PM", icon: "🔒", bg: "rgba(245,158,11,0.1)" },
-                  { title: "Login successful", desc: "Safari on iPhone · New York, US", ip: "10.0.0.55", time: "Mar 6, 2026, 01:40 PM", icon: "➡️", bg: "rgba(99,102,241,0.1)" }
-                ].map((item, idx) => (
+                {activityLog.map((item, idx) => (
                   <div
                     key={idx}
                     style={{
