@@ -55,6 +55,60 @@ export default function RecipientDashboard({ navigate, user: initialUser }) {
 
   return (
     <div style={{ animation: 'fadeInUp 0.5s ease' }}>
+      {/* Verification Warning Banner */}
+      {!user?.isVerified && (
+        <div style={{
+          background: '#fffbeb',
+          border: '1px solid #fde68a',
+          borderRadius: '16px',
+          padding: '16px 24px',
+          marginBottom: '28px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px',
+          boxShadow: '0 4px 12px rgba(245,158,11,0.05)',
+          animation: 'fadeInUp 0.3s ease'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', color: '#d97706', flexShrink: 0 }}>
+              🛡️
+            </div>
+            <div>
+              <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: '#92400e' }}>Please verify your organization.</h4>
+              <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#b45309', fontWeight: '500' }}>To ensure a safe environment, we require all organizations to be verified.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              localStorage.setItem('settings_initial_tab', 'verification');
+              navigate('settings');
+            }}
+            style={{
+              padding: '10px 20px',
+              background: 'white',
+              border: '1px solid #d97706',
+              borderRadius: '10px',
+              color: '#d97706',
+              fontSize: '13px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(217,119,6,0.05)',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = '#fef3c7';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'white';
+            }}
+          >
+            Submit for Verification
+          </button>
+        </div>
+      )}
+
       {/* Welcome banner */}
       <div style={{
         background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',

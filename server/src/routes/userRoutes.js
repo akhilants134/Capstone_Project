@@ -28,5 +28,7 @@ router.post('/2fa/setup',         authController.protect, authController.setup2F
 router.post('/2fa/enable',        authController.protect, authController.enable2FA);
 router.post('/2fa/disable',       authController.protect, authController.disable2FA);
 router.post('/2fa/backup-codes',  authController.protect, authController.regenerateBackupCodes);
+router.patch('/updateMe',         authController.protect, authController.updateMe);
+router.patch('/updatePassword',   authController.protect, authController.updatePassword);
 
 module.exports = router;

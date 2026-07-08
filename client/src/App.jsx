@@ -138,6 +138,11 @@ function App() {
           <SettingsPage
             navigate={navigate}
             user={user}
+            onUserUpdate={(updatedUser) => {
+              const profile = normalizeStoredUser(updatedUser);
+              setUser(profile);
+              localStorage.setItem("user", JSON.stringify(profile));
+            }}
             themeMode={themeMode}
             onThemeChange={setThemeMode}
           />

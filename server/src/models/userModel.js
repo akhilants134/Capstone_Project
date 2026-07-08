@@ -44,6 +44,8 @@ const userSchema = new mongoose.Schema({
     bio: String,
     location: String,
     phone: String,
+    website: String,
+    verificationDetails: String,
     points: {
         type: Number,
         default: 0

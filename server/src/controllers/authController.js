@@ -525,3 +525,51 @@ exports.regenerateBackupCodes = async (req, res) => {
     res.status(500).json({ status: "fail", message: err.message });
   }
 };
+
+exports.updateMe = async (req, res) => {
+  try {
+    const filteredBody = {};
+    const allowedFields = ['name', 'email', 'bio', 'location', 'phone', 'category', 'website', 'verificationDetails'];
+    Object.keys(req.body).forEach(el => {
+      if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
+      new: true,
+      runValidators: true
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: updatedUser
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'fail', message: err.message });
+  }
+};
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ status: 'fail', message: 'Current password and new password are required.' });
+    }
+
+    const user = await User.findById(req.user._id).select('+password');
+    if (!(await user.correctPassword(currentPassword, user.password))) {
+      return res.status(401).json({ status: 'fail', message: 'Incorrect current password.' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password updated successfully'
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'fail', message: err.message });
+  }
+};

@@ -37,6 +37,11 @@ export const signup = (data) =>
 export const register = signup;
 export const logout = () => apiRequest("/users/logout");
 export const getMe = () => apiRequest("/users/me");
+export const updateMe = (data) =>
+  apiRequest("/users/updateMe", { method: "PATCH", body: JSON.stringify(data) });
+export const updatePassword = (data) =>
+  apiRequest("/users/updatePassword", { method: "PATCH", body: JSON.stringify(data) });
+
 
 // 2FA
 export const setup2FA = () =>
@@ -105,6 +110,8 @@ export default {
   register: signup,
   logout,
   getMe,
+  updateMe,
+  updatePassword,
   setup2FA,
   enable2FA,
   disable2FA,
