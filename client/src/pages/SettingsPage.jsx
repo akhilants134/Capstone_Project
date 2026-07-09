@@ -443,7 +443,7 @@ export default function SettingsPage({
         {/* Sync Status Info */}
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <button 
-            onClick={() => navigate("dashboard")}
+            onClick={() => navigate(user?.role === "admin" ? "admin-dashboard" : "dashboard")}
             style={{
               padding: "10px 20px", fontSize: "13px", fontWeight: "700", borderRadius: "10px",
               background: "var(--bg-input)", color: "var(--text-primary)", border: "1px solid var(--border)", cursor: "pointer",

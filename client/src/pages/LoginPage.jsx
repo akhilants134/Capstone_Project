@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { login, adminLogin } from '../services/api';
 
 export default function LoginPage({ navigate, onLogin }) {
-  const [form, setForm] = useState({ email: '', password: '', role: 'community' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -12,21 +12,26 @@ export default function LoginPage({ navigate, onLogin }) {
     if (!form.email || !form.password) { setError('Please fill in all fields.'); return; }
     setError('');
     setLoading(true);
-    
+
     try {
-      const loginFn = form.role === 'admin' ? adminLogin : login;
-      const response = await loginFn(form);
+      // Try regular login first; if that fails (e.g. admin credentials), try admin endpoint.
+      // The server always returns the correct role in the response.
+      let response;
+      try {
+        response = await login(form);
+      } catch {
+        response = await adminLogin(form);
+      }
       onLogin({ ...response.data.user, token: response.token });
     } catch (err) {
       console.error('Login failed:', err);
-      // Fallback for demo if backend is not running
-      if (err.message.includes('Failed to fetch')) {
+      if (err.message && err.message.includes('Failed to fetch')) {
         setTimeout(() => {
           setLoading(false);
-          onLogin({ name: form.email.split('@')[0], email: form.email, role: form.role, id: Date.now() });
-        }, 1000);
+          setError('Cannot connect to server. Please check your connection.');
+        }, 800);
       } else {
-        setError(err.message || 'Login failed. Please try again.');
+        setError(err.message || 'Invalid email or password. Please try again.');
         setLoading(false);
       }
     }
@@ -91,7 +96,7 @@ export default function LoginPage({ navigate, onLogin }) {
             ))}
           </div>
 
-          {/* Floating cards */}
+          {/* Floating tags */}
           <div style={{ marginTop: '40px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             {[
               { emoji: '💊', text: 'Medical Supplies' },
@@ -121,66 +126,25 @@ export default function LoginPage({ navigate, onLogin }) {
         backdropFilter: 'blur(20px)',
       }}>
         <div style={{ width: '100%', maxWidth: '380px', animation: 'fadeInUp 0.5s ease' }}>
-          <div style={{ marginBottom: '32px' }}>
+          <div style={{ marginBottom: '36px' }}>
             <h2 style={{ fontSize: '28px', fontWeight: '700', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '8px' }}>
               Welcome back 👋
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Sign in to your ResourceMatch account</p>
           </div>
 
-          {/* Role toggle */}
-          <div style={{
-            background: 'var(--bg-input)', borderRadius: '12px',
-            padding: '4px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px', marginBottom: '24px',
-            border: '1px solid var(--border)',
-          }}>
-            {[
-              { val: 'community', label: '🌍 Community', desc: 'Browse & Request' },
-              { val: 'donor', label: '💰 Donor', desc: 'Give Resources' },
-              { val: 'recipient', label: '🤝 Recipient', desc: 'Receive Resources' },
-              { val: 'admin', label: '⚙️ Admin', desc: 'Manage Platform' }
-            ].map(r => (
-              <button
-                key={r.val}
-                onClick={() => setForm(p => ({ ...p, role: r.val }))}
-                style={{
-                  padding: '12px 8px', border: 'none', borderRadius: '8px', cursor: 'pointer',
-                  fontFamily: 'Inter,sans-serif', transition: 'all 0.2s ease',
-                  background: form.role === r.val ? 'var(--gradient-btn)' : 'transparent',
-                  color: form.role === r.val ? 'white' : 'var(--text-secondary)',
-                  fontSize: '12px', fontWeight: '600', textAlign: 'center',
-                }}
-              >
-                <div>{r.label}</div>
-                <div style={{ fontSize: '10px', fontWeight: '400', opacity: 0.8 }}>{r.desc}</div>
-              </button>
-            ))}
-          </div>
-
-          {/* Role description */}
-          {form.role === 'admin' && (
-            <div style={{
-              background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)',
-              borderRadius: '8px', padding: '12px', marginBottom: '20px',
-            }}>
-              <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--primary)', marginBottom: '6px' }}>Admin Platform</div>
-              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-                • Manage all users<br />
-                • View platform analytics<br />
-                • System configuration
-              </div>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit}>
             {/* Email */}
             <div className="form-group">
               <label className="form-label">Email Address</label>
               <input
-                type="email" className="form-input"
+                id="login-email"
+                type="email"
+                className="form-input"
                 placeholder="you@example.com"
                 value={form.email}
                 onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                autoComplete="email"
               />
             </div>
 
@@ -188,15 +152,23 @@ export default function LoginPage({ navigate, onLogin }) {
             <div className="form-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <label className="form-label">Password</label>
-                <span style={{ fontSize: '12px', color: '#6366f1', cursor: 'pointer', fontWeight: '500' }}>Forgot password?</span>
+                <span
+                  style={{ fontSize: '12px', color: '#6366f1', cursor: 'pointer', fontWeight: '500' }}
+                  onClick={() => {/* future: navigate to forgot-password */}}
+                >
+                  Forgot password?
+                </span>
               </div>
               <div style={{ position: 'relative' }}>
                 <input
-                  type={showPass ? 'text' : 'password'} className="form-input"
+                  id="login-password"
+                  type={showPass ? 'text' : 'password'}
+                  className="form-input"
                   placeholder="Enter your password"
                   value={form.password}
                   onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
                   style={{ paddingRight: '44px' }}
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -213,61 +185,27 @@ export default function LoginPage({ navigate, onLogin }) {
             )}
 
             <button
-              type="submit" className="btn btn-primary btn-full btn-lg"
+              id="login-submit"
+              type="submit"
+              className="btn btn-primary btn-full btn-lg"
               disabled={loading}
-              style={{ marginBottom: '16px' }}
+              style={{ marginBottom: '20px' }}
             >
               {loading ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                   Signing in...
                 </span>
-              ) : form.role === 'admin' ? 'Sign In as Admin →' : 'Sign In →'}
+              ) : 'Sign In →'}
             </button>
-
-            {/* Divider */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500' }}>OR</span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-            </div>
-
-            {/* Demo login */}
-            <button
-              type="button"
-              onClick={() => {
-                const demoUsers = {
-                  community: { name: 'Community User', email: 'community@demo.com', role: 'community', id: 1 },
-                  donor: { name: 'Donor User', email: 'donor@demo.com', role: 'donor', id: 2 },
-                  recipient: { name: 'Recipient User', email: 'recipient@demo.com', role: 'recipient', id: 3 },
-                  admin: { name: 'Admin', email: 'admin@resourcematch.com', role: 'admin', id: 4 },
-                };
-                onLogin(demoUsers[form.role]);
-              }}
-              className="btn btn-secondary btn-full"
-              style={{ marginBottom: '16px' }}
-            >
-              🚀 Continue with Demo Account
-            </button>
-
-            {/* Demo credentials */}
-            <div style={{
-              background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.2)',
-              borderRadius: '8px', padding: '12px', marginBottom: '16px', fontSize: '11px',
-              color: 'var(--text-secondary)',
-            }}>
-              <div style={{ fontWeight: '600', marginBottom: '8px', color: 'var(--text-primary)' }}>Demo Credentials:</div>
-              <div style={{ display: 'grid', gap: '6px' }}>
-                <div>🌍 <strong>Community:</strong> user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>community</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>demo123</span></div>
-                <div>💰 <strong>Donor:</strong> user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>donor</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>demo123</span></div>
-                <div>🤝 <strong>Recipient:</strong> user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>recipient</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>demo123</span></div>
-                <div>⚙️ <strong>Admin:</strong> user: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>admin</span> | pass: <span style={{ fontFamily: 'monospace', background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: '4px' }}>admin123</span></div>
-              </div>
-            </div>
 
             <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)' }}>
               Don't have an account?{' '}
-              <span style={{ color: 'var(--text-accent)', fontWeight: '600', cursor: 'pointer' }} onClick={() => navigate('register')}>
+              <span
+                id="go-to-register"
+                style={{ color: 'var(--text-accent)', fontWeight: '600', cursor: 'pointer' }}
+                onClick={() => navigate('register')}
+              >
                 Sign up free
               </span>
             </p>

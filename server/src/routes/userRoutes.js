@@ -16,6 +16,7 @@ const twoFARateLimit = rateLimit({
 // ── Standard auth routes ───────────────────────────────────────────────────
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
+router.post('/admin-login', authController.adminLogin);
 router.get('/logout', authController.logout);
 router.get('/me', authController.protect, authController.getMe);
 
