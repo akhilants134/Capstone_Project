@@ -20,6 +20,8 @@ import SettingsPage from "./pages/SettingsPage";
 import TwoFAChallengePage from "./pages/TwoFAChallengePage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function App() {
   const getInitialTheme = () => {
@@ -63,6 +65,7 @@ function App() {
   const [themeMode, setThemeMode] = useState(getInitialTheme);
   // 2FA pending state — set when login responds with requires2FA
   const [pending2FA, setPending2FA] = useState(null); // { preAuthToken, partialUser }
+  const [resetToken, setResetToken] = useState(null);
 
   useEffect(() => {
     document.documentElement.dataset.theme = themeMode;
@@ -70,12 +73,41 @@ function App() {
     localStorage.setItem("themeMode", themeMode);
   }, [themeMode]);
 
+  // Listen for system theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      // Only auto-switch if user hasn't manually set a preference
+      if (!localStorage.getItem("themeMode")) {
+        setThemeMode(e.matches ? 'dark' : 'light');
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  // Extract reset token from URL on mount
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.startsWith('/reset-password/')) {
+      const token = path.split('/reset-password/')[1];
+      if (token) {
+        setResetToken(token);
+        setCurrentPage('reset-password');
+      }
+    }
+  }, []);
+
   // Simple routing logic
-  const navigate = (page) => {
+  const navigate = (page, params = {}) => {
     if (page === "admin-dashboard" && user?.role !== "admin") {
       setCurrentPage(user ? "dashboard" : "admin-login");
     } else {
       setCurrentPage(page);
+      if (params.token) {
+        setResetToken(params.token);
+      }
     }
     if (window.innerWidth <= 768) {
       setIsSidebarOpen(false);
@@ -113,7 +145,7 @@ function App() {
 
   const renderPage = () => {
     // Auth Guard
-    if (!user && currentPage !== "login" && currentPage !== "register" && currentPage !== "admin-login") {
+    if (!user && currentPage !== "login" && currentPage !== "register" && currentPage !== "admin-login" && currentPage !== "forgot-password" && !currentPage.startsWith("reset-password")) {
       return <LoginPage navigate={navigate} onLogin={handleLogin} />;
     }
 
@@ -124,6 +156,10 @@ function App() {
         return <AdminLoginPage navigate={navigate} onLogin={handleLogin} />;
       case "register":
         return <RegisterPage navigate={navigate} onLogin={handleLogin} />;
+      case "forgot-password":
+        return <ForgotPasswordPage navigate={navigate} />;
+      case "reset-password":
+        return <ResetPasswordPage navigate={navigate} token={resetToken} onLogin={handleLogin} />;
       case "dashboard":
         return <DashboardPage navigate={navigate} user={user} />;
       case "browse":
@@ -177,7 +213,7 @@ function App() {
   }
 
   // Auth pages layout
-  if (currentPage === "login" || currentPage === "register" || currentPage === "admin-login") {
+  if (currentPage === "login" || currentPage === "register" || currentPage === "admin-login" || currentPage === "forgot-password" || currentPage === "reset-password") {
     return <div className="auth-wrapper">{renderPage()}</div>;
   }
 

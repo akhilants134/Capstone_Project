@@ -144,7 +144,7 @@ export default function LoginPage({ navigate, onLogin }) {
                 <label className="form-label">Password</label>
                 <span
                   style={{ fontSize: '12px', color: '#6366f1', cursor: 'pointer', fontWeight: '500' }}
-                  onClick={() => {/* future: navigate to forgot-password */}}
+                  onClick={() => navigate('forgot-password')}
                 >
                   Forgot password?
                 </span>

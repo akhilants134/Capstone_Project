@@ -573,3 +573,102 @@ exports.updatePassword = async (req, res) => {
     res.status(500).json({ status: 'fail', message: err.message });
   }
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Forgot Password - Request reset token
+// ─────────────────────────────────────────────────────────────────────────────
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ status: 'fail', message: 'Please provide your email address.' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Don't reveal if email exists for security
+      return res.status(200).json({
+        status: 'success',
+        message: 'If an account exists with this email, a password reset link has been sent.'
+      });
+    }
+
+    // Generate reset token
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    // In production, send email with reset link
+    // For development, return the token in response
+    const resetURL = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+
+    if (process.env.NODE_ENV === 'production') {
+      // TODO: Implement email sending here
+      // await sendEmail({
+      //   email: user.email,
+      //   subject: 'Your password reset token (valid for 10 minutes)',
+      //   message: `Forgot your password? Submit a PATCH request with your new password to ${resetURL}.\nIf you didn't forget your password, please ignore this email!`
+      // });
+      
+      res.status(200).json({
+        status: 'success',
+        message: 'If an account exists with this email, a password reset link has been sent.'
+      });
+    } else {
+      // Development mode: return token for testing
+      res.status(200).json({
+        status: 'success',
+        message: 'Password reset token generated (development mode)',
+        resetToken,
+        resetURL
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ status: 'fail', message: err.message });
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Reset Password - Validate token and update password
+// ─────────────────────────────────────────────────────────────────────────────
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ status: 'fail', message: 'Please provide a new password.' });
+    }
+
+    // Hash the token to compare with stored token
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() }
+    }).select('+password');
+
+    if (!user) {
+      return res.status(400).json({ status: 'fail', message: 'Token is invalid or has expired.' });
+    }
+
+    // Update password
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+    // Log user in by sending new JWT
+    const newToken = signToken(user._id);
+    setAuthCookie(res, newToken);
+    user.password = undefined;
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password has been reset successfully',
+      token: newToken,
+      data: { user }
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'fail', message: err.message });
+  }
+};

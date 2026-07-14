@@ -19,6 +19,8 @@ router.post('/login', authController.login);
 router.post('/admin-login', authController.adminLogin);
 router.get('/logout', authController.logout);
 router.get('/me', authController.protect, authController.getMe);
+router.post('/forgot-password', authController.forgotPassword);
+router.patch('/reset-password/:token', authController.resetPassword);
 
 // ── 2FA routes ────────────────────────────────────────────────────────────
 // Called with pre-auth token (no session yet) — rate limited
