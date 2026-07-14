@@ -1,11 +1,15 @@
 /**
  * Seed Script — creates default users for all roles
- * Run: node seed.js
+ * Run: node seed.js  (from server/ directory)
  */
+require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('./src/models/userModel');
 
-const DB = 'mongodb://127.0.0.1:27017/resourcematcher';
+const DB =
+  process.env.MONGODB_URI ||
+  process.env.DATABASE_URL ||
+  'mongodb://127.0.0.1:27017/resourcematcher';
 
 const seedUsers = [
   {

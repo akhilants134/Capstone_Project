@@ -19,6 +19,7 @@ import ShareSomethingPage from "./pages/ShareSomethingPage";
 import SettingsPage from "./pages/SettingsPage";
 import TwoFAChallengePage from "./pages/TwoFAChallengePage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminLoginPage from "./pages/AdminLoginPage";
 
 function App() {
   const getInitialTheme = () => {
@@ -71,7 +72,11 @@ function App() {
 
   // Simple routing logic
   const navigate = (page) => {
-    setCurrentPage(page);
+    if (page === "admin-dashboard" && user?.role !== "admin") {
+      setCurrentPage(user ? "dashboard" : "admin-login");
+    } else {
+      setCurrentPage(page);
+    }
     if (window.innerWidth <= 768) {
       setIsSidebarOpen(false);
     }
@@ -108,13 +113,15 @@ function App() {
 
   const renderPage = () => {
     // Auth Guard
-    if (!user && currentPage !== "login" && currentPage !== "register") {
+    if (!user && currentPage !== "login" && currentPage !== "register" && currentPage !== "admin-login") {
       return <LoginPage navigate={navigate} onLogin={handleLogin} />;
     }
 
     switch (currentPage) {
       case "login":
         return <LoginPage navigate={navigate} onLogin={handleLogin} />;
+      case "admin-login":
+        return <AdminLoginPage navigate={navigate} onLogin={handleLogin} />;
       case "register":
         return <RegisterPage navigate={navigate} onLogin={handleLogin} />;
       case "dashboard":
@@ -148,6 +155,7 @@ function App() {
           />
         );
       case "admin-dashboard":
+        if (user?.role !== "admin") return <DashboardPage navigate={navigate} user={user} />;
         return <AdminDashboardPage navigate={navigate} user={user} onLogout={handleLogout} />;
       default:
         return <DashboardPage navigate={navigate} user={user} />;
@@ -169,7 +177,7 @@ function App() {
   }
 
   // Auth pages layout
-  if (currentPage === "login" || currentPage === "register") {
+  if (currentPage === "login" || currentPage === "register" || currentPage === "admin-login") {
     return <div className="auth-wrapper">{renderPage()}</div>;
   }
 

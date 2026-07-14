@@ -80,8 +80,12 @@ app.get("/", (req, res) => {
   res.json({ message: "Resource & Donation Matcher API (Lite) is running..." });
 });
 
-// Database Connection - Force local MongoDB for development
-const DB = "mongodb://127.0.0.1:27017/resourcematcher";
+// Database Connection — Atlas via env, local fallback for dev without .env
+const DB =
+  process.env.MONGODB_URI ||
+  process.env.DATABASE_URL ||
+  "mongodb://127.0.0.1:27017/resourcematcher";
+
 mongoose
   .connect(DB)
   .then(() => console.log("✅ MongoDB connection successful"))

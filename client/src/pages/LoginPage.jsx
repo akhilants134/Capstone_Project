@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { login, adminLogin } from '../services/api';
+import { login } from '../services/api';
 
 export default function LoginPage({ navigate, onLogin }) {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -14,26 +14,16 @@ export default function LoginPage({ navigate, onLogin }) {
     setLoading(true);
 
     try {
-      // Try regular login first; if that fails (e.g. admin credentials), try admin endpoint.
-      // The server always returns the correct role in the response.
-      let response;
-      try {
-        response = await login(form);
-      } catch {
-        response = await adminLogin(form);
-      }
+      const response = await login(form);
       onLogin({ ...response.data.user, token: response.token });
     } catch (err) {
       console.error('Login failed:', err);
       if (err.message && err.message.includes('Failed to fetch')) {
-        setTimeout(() => {
-          setLoading(false);
-          setError('Cannot connect to server. Please check your connection.');
-        }, 800);
+        setError('Cannot connect to server. Please check your connection.');
       } else {
         setError(err.message || 'Invalid email or password. Please try again.');
-        setLoading(false);
       }
+      setLoading(false);
     }
   };
 
@@ -199,7 +189,7 @@ export default function LoginPage({ navigate, onLogin }) {
               ) : 'Sign In →'}
             </button>
 
-            <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)' }}>
+            <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
               Don't have an account?{' '}
               <span
                 id="go-to-register"
@@ -209,6 +199,26 @@ export default function LoginPage({ navigate, onLogin }) {
                 Sign up free
               </span>
             </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500' }}>ADMIN</span>
+              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigate('admin-login')}
+              className="btn btn-full"
+              style={{
+                background: 'transparent',
+                color: '#f59e0b',
+                border: '1px dashed rgba(245,158,11,0.4)',
+                fontWeight: '600',
+              }}
+            >
+              🛡️ Administrator Sign In
+            </button>
           </form>
         </div>
       </div>
