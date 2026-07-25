@@ -1,8 +1,8 @@
 /* ===== Profile Page ===== */
 import { useState, useEffect } from 'react';
-import { getStats } from '../services/api';
+import { getStats, updateMe } from '../services/api';
 
-export default function ProfilePage({ user, navigate }) {
+export default function ProfilePage({ user, navigate, onUserUpdate }) {
   const getRoleDetails = () => {
     switch (user?.role) {
       case 'admin':
@@ -19,13 +19,13 @@ export default function ProfilePage({ user, navigate }) {
 
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
-    name: user?.name || 'Alex Johnson',
-    email: user?.email || 'alex@example.com',
-    bio: 'Passionate about connecting communities with resources they need. Working to bridge the gap between donors and those in need.',
-    location: 'Mumbai, India',
-    phone: '+91 98765 43210',
-    category: 'Technology',
-    website: 'https://alexjohnson.dev',
+    name: user?.name ?? 'Alex Johnson',
+    email: user?.email ?? 'alex@example.com',
+    bio: user?.bio ?? 'Passionate about connecting communities with resources they need. Working to bridge the gap between donors and those in need.',
+    location: user?.location ?? 'Mumbai, India',
+    phone: user?.phone ?? '+91 98765 43210',
+    category: user?.category ?? 'Technology',
+    website: user?.website ?? 'https://alexjohnson.dev',
   });
   const [saved, setSaved] = useState(false);
   const [profileStats, setProfileStats] = useState({
@@ -34,6 +34,20 @@ export default function ProfilePage({ user, navigate }) {
     delivered: '24',
     score: '94'
   });
+
+  useEffect(() => {
+    if (user) {
+      setForm({
+        name: user.name ?? 'Alex Johnson',
+        email: user.email ?? 'alex@example.com',
+        bio: user.bio ?? 'Passionate about connecting communities with resources they need. Working to bridge the gap between donors and those in need.',
+        location: user.location ?? 'Mumbai, India',
+        phone: user.phone ?? '+91 98765 43210',
+        category: user.category ?? 'Technology',
+        website: user.website ?? 'https://alexjohnson.dev',
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -54,10 +68,19 @@ export default function ProfilePage({ user, navigate }) {
     fetchStats();
   }, []);
 
-  const handleSave = () => {
-    setSaved(true);
-    setEditing(false);
-    setTimeout(() => setSaved(false), 3000);
+  const handleSave = async () => {
+    try {
+      const res = await updateMe(form);
+      if (res.status === 'success') {
+        setSaved(true);
+        setEditing(false);
+        if (onUserUpdate) onUserUpdate(res.data.user);
+        setTimeout(() => setSaved(false), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to update profile:', err);
+      alert(err.message || 'Failed to update profile.');
+    }
   };
 
   const stats = [

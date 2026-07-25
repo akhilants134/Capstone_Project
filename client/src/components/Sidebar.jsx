@@ -45,7 +45,7 @@ function getNavItems(role) {
   }
 }
 
-export default function Sidebar({ currentPage, navigate, user, onLogout }) {
+export default function Sidebar({ currentPage, navigate, user, onLogout, matchCount = 0, messageCount = 0 }) {
   const isSettingsActive = currentPage === "settings";
   const navItems = getNavItems(user?.role);
 
@@ -256,7 +256,7 @@ export default function Sidebar({ currentPage, navigate, user, onLogout }) {
               >
                 {item.label}
               </span>
-              {item.id === "matches" && (
+              {item.id === "matches" && matchCount > 0 && (
                 <span
                   style={{
                     marginLeft: "auto",
@@ -268,10 +268,10 @@ export default function Sidebar({ currentPage, navigate, user, onLogout }) {
                     padding: "1px 6px",
                   }}
                 >
-                  3
+                  {matchCount}
                 </span>
               )}
-              {item.id === "messages" && (
+              {item.id === "messages" && messageCount > 0 && (
                 <span
                   style={{
                     marginLeft: "auto",
@@ -283,7 +283,7 @@ export default function Sidebar({ currentPage, navigate, user, onLogout }) {
                     padding: "1px 6px",
                   }}
                 >
-                  5
+                  {messageCount}
                 </span>
               )}
             </button>

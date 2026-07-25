@@ -27,10 +27,19 @@ export default function MatchesPage({ navigate }) {
       setLoading(true);
       const data = await getMyMatches();
       const matchList = data.data?.matches || data.matches || [];
-      setMatches(matchList.length > 0 ? matchList : defaultMatches);
+      
+      const getMockMatches = () => {
+        const stored = localStorage.getItem('mock_matches');
+        if (stored) return JSON.parse(stored);
+        localStorage.setItem('mock_matches', JSON.stringify(defaultMatches));
+        return defaultMatches;
+      };
+
+      setMatches(matchList.length > 0 ? matchList : getMockMatches());
     } catch (err) {
       console.error('Failed to fetch matches:', err);
-      setMatches(defaultMatches);
+      const stored = localStorage.getItem('mock_matches');
+      setMatches(stored ? JSON.parse(stored) : defaultMatches);
     } finally {
       setLoading(false);
     }
@@ -51,7 +60,11 @@ export default function MatchesPage({ navigate }) {
         fetchMatches(); // Refresh list from server
       } else {
         // Fallback for mock/default matches
-        setMatches(prev => prev.map(m => m.id === matchId ? { ...m, status: newStatus } : m));
+        const stored = localStorage.getItem('mock_matches');
+        const currentMockMatches = stored ? JSON.parse(stored) : defaultMatches;
+        const updated = currentMockMatches.map(m => m.id === matchId ? { ...m, status: newStatus } : m);
+        localStorage.setItem('mock_matches', JSON.stringify(updated));
+        setMatches(updated);
       }
       
       setMessage(`Match ${newStatus} successfully!`);

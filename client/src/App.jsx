@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import { getMyMatches, getConversations } from "./services/api";
 
 // Components
 import Sidebar from "./components/Sidebar";
@@ -99,6 +100,58 @@ function App() {
     }
   }, []);
 
+  const [matchCount, setMatchCount] = useState(0);
+  const [messageCount, setMessageCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) {
+      setMatchCount(0);
+      setMessageCount(0);
+      return;
+    }
+
+    const fetchCounts = async () => {
+      try {
+        // Fetch matches
+        const matchesRes = await getMyMatches().catch(() => ({ data: { matches: [] } }));
+        const matchList = matchesRes.data?.matches || matchesRes.matches || [];
+        
+        // Load mock matches from localStorage if database is empty
+        let activeMockMatches = [];
+        const storedMockMatches = localStorage.getItem('mock_matches');
+        if (storedMockMatches) {
+          activeMockMatches = JSON.parse(storedMockMatches);
+        } else {
+          // Initialize mock matches in localStorage if they don't exist
+          const defaultMatches = [
+            { id: 1, resource: 'MacBook Pro 2021', donor: 'TechCorp Inc.', donorInitial: 'T', category: '💻', value: '$1,200', status: 'pending', matchScore: 97, date: '2 hrs ago', desc: 'A perfect match for your tech resource request. The donor has confirmed availability.' },
+            { id: 2, resource: '50 Medical Kits', donor: 'HealthFirst NGO', donorInitial: 'H', category: '💊', value: '$800', status: 'accepted', matchScore: 91, date: '1 day ago', desc: 'Your medical supplies request has been accepted. Awaiting delivery coordination.' },
+          ];
+          localStorage.setItem('mock_matches', JSON.stringify(defaultMatches));
+          activeMockMatches = defaultMatches;
+        }
+
+        const totalMatchesCount = matchList.length > 0 ? matchList.length : activeMockMatches.length;
+        setMatchCount(totalMatchesCount);
+
+        // Fetch conversations
+        const convosRes = await getConversations().catch(() => ({ data: { conversations: [] } }));
+        const convosList = convosRes.data?.conversations || [];
+        
+        // Sum unread messages in conversations
+        const totalUnread = convosList.reduce((acc, c) => acc + (c.unread || 0), 0);
+        setMessageCount(totalUnread);
+      } catch (err) {
+        console.error("Error fetching counts:", err);
+      }
+    };
+
+    fetchCounts();
+    // Poll counts every 10 seconds or fetch on component mounting/page change
+    const interval = setInterval(fetchCounts, 10000);
+    return () => clearInterval(interval);
+  }, [user, currentPage]);
+
   // Simple routing logic
   const navigate = (page, params = {}) => {
     if (page === "admin-dashboard" && user?.role !== "admin") {
@@ -169,7 +222,17 @@ function App() {
       case "matches":
         return <MatchesPage navigate={navigate} user={user} />;
       case "profile":
-        return <ProfilePage navigate={navigate} user={user} />;
+        return (
+          <ProfilePage
+            navigate={navigate}
+            user={user}
+            onUserUpdate={(updatedUser) => {
+              const profile = normalizeStoredUser(updatedUser);
+              setUser(profile);
+              localStorage.setItem("user", JSON.stringify(profile));
+            }}
+          />
+        );
       case "messages":
         return <MessagesPage navigate={navigate} user={user} />;
       case "donations":
@@ -224,6 +287,8 @@ function App() {
         navigate={navigate}
         user={user}
         onLogout={handleLogout}
+        matchCount={matchCount}
+        messageCount={messageCount}
         className={isSidebarOpen ? "open" : ""}
       />
       <div className="app-main">
