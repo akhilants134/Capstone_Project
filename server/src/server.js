@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const hpp = require("hpp");
 require("dotenv").config();
 
 const userRouter = require("./routes/userRoutes");
@@ -66,6 +67,9 @@ app.use((req, res, next) => {
   sanitizeNoSqlInput(req.query);
   next();
 });
+
+// Protect against HTTP Parameter Pollution
+app.use(hpp());
 
 // Routes
 app.use("/api/v1/users", userRouter);
