@@ -12,3 +12,6 @@ server/.env
 server/dist
 server/.DS_Store
 node_modules
+.next
+client/.next
+server/.next
