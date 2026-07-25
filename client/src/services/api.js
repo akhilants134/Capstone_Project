@@ -1,7 +1,7 @@
 /* ===== API Service (Fetch-based) ===== */
 
 const API_BASE_URL =
-  (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) || "http://localhost:5000/api/v1";
+  (typeof globalThis.process !== "undefined" && globalThis.process.env?.NEXT_PUBLIC_API_URL) || "http://localhost:5000/api/v1";
 
 const handleResponse = async (response) => {
   if (!response.ok) {

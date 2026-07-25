@@ -29,11 +29,11 @@ export default function AppLayoutWrapper({ children }) {
     if (page === "admin-dashboard" && user?.role !== "admin") {
       router.push(user ? "/dashboard" : "/admin-login");
     } else {
-      if (page.startsWith("/")) {
-        router.push(page);
-      } else {
-        router.push("/" + page);
+      let target = page.startsWith("/") ? page : "/" + page;
+      if (page === "reset-password" && params?.token) {
+        target = `/reset-password/${params.token}`;
       }
+      router.push(target);
     }
     if (window.innerWidth <= 768) {
       setIsSidebarOpen(false);
