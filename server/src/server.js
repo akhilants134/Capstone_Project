@@ -4,6 +4,8 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
+const morgan = require("morgan");
+const { xss } = require("express-xss-sanitizer");
 require("dotenv").config();
 
 const userRouter = require("./routes/userRoutes");
@@ -19,6 +21,8 @@ app.set("trust proxy", 1);
 
 // Basic Middlewares
 app.use(helmet());
+app.use(morgan("dev"));
+app.use(xss());
 
 // Rate Limiting
 const limiter = rateLimit({
