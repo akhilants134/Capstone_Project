@@ -22,10 +22,18 @@ export default function AdminDashboardRoute() {
     router.push("/login");
   };
 
+  const navigate = (page, params = {}) => {
+    let target = page.startsWith("/") ? page : "/" + page;
+    if (page === "reset-password" && params?.token) {
+      target = `/reset-password/${params.token}`;
+    }
+    router.push(target);
+  };
+
   if (user?.role !== "admin") {
     return (
       <AppLayoutWrapper>
-        <DashboardPage user={user} />
+        <DashboardPage user={user} navigate={navigate} />
       </AppLayoutWrapper>
     );
   }
