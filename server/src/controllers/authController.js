@@ -159,7 +159,8 @@ exports.login = async (req, res) => {
       return res.status(400).json({ status: "fail", message: "Please provide email and password!" });
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const cleanEmail = String(email).toLowerCase().trim();
+    const user = await User.findOne({ email: cleanEmail }).select("+password");
     if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({ status: "fail", message: "Incorrect email or password" });
     }
@@ -200,7 +201,8 @@ exports.adminLogin = async (req, res) => {
       return res.status(400).json({ status: "fail", message: "Please provide email and password!" });
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const cleanEmail = String(email).toLowerCase().trim();
+    const user = await User.findOne({ email: cleanEmail }).select("+password");
     if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({ status: "fail", message: "Incorrect email or password" });
     }
