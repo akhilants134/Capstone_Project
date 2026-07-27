@@ -339,16 +339,16 @@ export default function LandingPage() {
 
             <div style={{ display: "flex", gap: "40px", marginTop: "32px", borderTop: "1px solid var(--border)", paddingTop: "32px" }}>
               <div>
-                <div className="stat-number">1.2k+</div>
-                <div style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 500 }}>Active Members</div>
+                <div className="stat-number">100%</div>
+                <div style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 500 }}>Direct Peer Matching</div>
               </div>
               <div>
-                <div className="stat-number">98.4%</div>
-                <div style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 500 }}>Successful Hand-offs</div>
+                <div className="stat-number">Real-Time</div>
+                <div style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 500 }}>Listing Updates</div>
               </div>
               <div>
-                <div className="stat-number">&lt; 30m</div>
-                <div style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 500 }}>Average Match Time</div>
+                <div className="stat-number">Verified</div>
+                <div style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 500 }}>Organization Accounts</div>
               </div>
             </div>
           </div>

@@ -81,9 +81,9 @@ export default function LoginPage({ navigate, onLogin }) {
           {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
             {[
-              { num: '2,400+', label: 'Resources Listed' },
-              { num: '850+',   label: 'Active Donors' },
-              { num: '94%',    label: 'Match Rate' },
+              { num: 'Direct', label: 'Peer Matching' },
+              { num: 'Verified', label: 'Organizations' },
+              { num: 'Instant', label: 'Notifications' },
             ].map(stat => (
               <div key={stat.label} style={{
                 background: 'rgba(99,102,241,0.08)', border: '1px solid var(--border)',
