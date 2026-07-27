@@ -16,7 +16,7 @@ const uBg = { urgent: 'rgba(239,68,68,0.15)', high: 'rgba(245,158,11,0.15)', low
 
 const statusColor = { active: '#6366f1', matched: '#f59e0b', completed: '#10b981' };
 
-export default function BrowsePage({ navigate }) {
+export default function BrowsePage({ navigate, user }) {
   const [search, setSearch] = useState('');
   const [cat, setCat] = useState('all');
   const [sort, setSort] = useState('recent');
@@ -49,8 +49,10 @@ export default function BrowsePage({ navigate }) {
     return () => clearTimeout(timer);
   }, [cat, search]);
 
-  const items = listings
-    .sort((a, b) => sort === 'matches' ? b.matches - a.matches : 0);
+  const items = [...listings].sort((a, b) => {
+    if (sort === 'matches') return (b.matches || 0) - (a.matches || 0);
+    return new Date(b.createdAt || Date.now()) - new Date(a.createdAt || Date.now());
+  });
 
   return (
     <div style={{ animation: 'fadeInUp 0.4s ease' }}>
@@ -70,7 +72,12 @@ export default function BrowsePage({ navigate }) {
             <option value="recent">Sort: Recent</option>
             <option value="matches">Sort: Most Matches</option>
           </select>
-          <button className="btn btn-primary btn-sm" onClick={() => navigate('share-something')}>🎁 Share Something</button>
+          {user?.role === 'donor' && (
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('share-something')}>🎁 Share Something</button>
+          )}
+          {user?.role === 'recipient' && (
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('post-request')}>🙋 Post Request</button>
+          )}
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {CATS.map(c => (
