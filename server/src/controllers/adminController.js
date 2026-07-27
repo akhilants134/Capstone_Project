@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const Listing = require('../models/listingModel');
+const SystemConfig = require('../models/systemConfigModel');
 
 // Get all users for admin dashboard
 exports.getAllUsers = async (req, res) => {
@@ -195,6 +196,55 @@ exports.getTopDonors = async (req, res) => {
         res.status(200).json({
             status: 'success',
             data: { donors: donorsWithValue.sort((a, b) => b.totalDonationValue - a.totalDonationValue) }
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: err.message
+        });
+    }
+};
+
+// Get system configuration
+exports.getSystemConfig = async (req, res) => {
+    try {
+        let config = await SystemConfig.findOne();
+        if (!config) {
+            config = await SystemConfig.create({});
+        }
+        res.status(200).json({
+            status: 'success',
+            data: { config }
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: err.message
+        });
+    }
+};
+
+// Update system configuration
+exports.updateSystemConfig = async (req, res) => {
+    try {
+        let config = await SystemConfig.findOne();
+        if (!config) {
+            config = await SystemConfig.create({});
+        }
+
+        const { maintenanceMode, allowRegistration, autoMatchEnabled, emailNotifications, notificationEmail } = req.body;
+
+        if (maintenanceMode !== undefined) config.maintenanceMode = maintenanceMode;
+        if (allowRegistration !== undefined) config.allowRegistration = allowRegistration;
+        if (autoMatchEnabled !== undefined) config.autoMatchEnabled = autoMatchEnabled;
+        if (emailNotifications !== undefined) config.emailNotifications = emailNotifications;
+        if (notificationEmail !== undefined) config.notificationEmail = notificationEmail;
+
+        await config.save();
+
+        res.status(200).json({
+            status: 'success',
+            data: { config }
         });
     } catch (err) {
         res.status(500).json({

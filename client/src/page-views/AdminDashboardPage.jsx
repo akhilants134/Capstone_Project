@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+
 import {
   adminGetAllUsers,
   adminToggleBanUser,
@@ -6,7 +7,9 @@ import {
   adminGetStats,
   adminGetUnverifiedUsers,
   adminToggleUserVerification,
-  adminGetTopDonors
+  adminGetTopDonors,
+  adminGetSystemConfig,
+  adminUpdateSystemConfig
 } from '../services/api';
 
 // Fallback mock data (used when API fails or database is empty)
@@ -91,12 +94,13 @@ export default function AdminDashboardPage() {
     setError(null);
     setIsRotating(true);
     try {
-      const [usersRes, listingsRes, statsRes, verificationsRes, topDonorsRes] = await Promise.all([
+      const [usersRes, listingsRes, statsRes, verificationsRes, topDonorsRes, configRes] = await Promise.all([
         adminGetAllUsers().catch(() => ({ data: { users: [] } })),
         adminGetAllListings().catch(() => ({ data: { listings: [] } })),
         adminGetStats().catch(() => ({ data: null })),
         adminGetUnverifiedUsers().catch(() => ({ data: { users: [] } })),
-        adminGetTopDonors().catch(() => ({ data: { donors: [] } }))
+        adminGetTopDonors().catch(() => ({ data: { donors: [] } })),
+        adminGetSystemConfig().catch(() => null)
       ]);
 
       const fetchedUsers = usersRes.data?.users || [];
@@ -114,6 +118,15 @@ export default function AdminDashboardPage() {
         setStats(statsRes.data);
       } else {
         setStats(null);
+      }
+
+      if (configRes?.data?.config) {
+        const cfg = configRes.data.config;
+        setMaintenanceMode(cfg.maintenanceMode);
+        setAllowRegistration(cfg.allowRegistration);
+        setAutoMatchEnabled(cfg.autoMatchEnabled);
+        setEmailNotifications(cfg.emailNotifications);
+        setNotificationEmail(cfg.notificationEmail || 'noreply@resourcematch.com');
       }
     } catch (err) {
       console.error('Error fetching admin data:', err);
@@ -176,13 +189,25 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleSaveSettings = () => {
-    localStorage.setItem('sys_maintenanceMode', maintenanceMode);
-    localStorage.setItem('sys_allowRegistration', allowRegistration);
-    localStorage.setItem('sys_emailNotifications', emailNotifications);
-    localStorage.setItem('sys_autoMatchEnabled', autoMatchEnabled);
-    localStorage.setItem('sys_notificationEmail', notificationEmail);
-    alert('Platform configuration saved successfully!');
+  const handleSaveSettings = async () => {
+    try {
+      await adminUpdateSystemConfig({
+        maintenanceMode,
+        allowRegistration,
+        autoMatchEnabled,
+        emailNotifications,
+        notificationEmail
+      });
+      localStorage.setItem('sys_maintenanceMode', maintenanceMode);
+      localStorage.setItem('sys_allowRegistration', allowRegistration);
+      localStorage.setItem('sys_emailNotifications', emailNotifications);
+      localStorage.setItem('sys_autoMatchEnabled', autoMatchEnabled);
+      localStorage.setItem('sys_notificationEmail', notificationEmail);
+      alert('Platform configuration saved successfully!');
+    } catch (err) {
+      console.error('Error saving system config:', err);
+      alert(`Failed to save settings: ${err.message || 'Unknown error'}`);
+    }
   };
 
   const tabs = [

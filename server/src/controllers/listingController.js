@@ -20,7 +20,81 @@ exports.createListing = async (req, res) => {
             await user.save();
         }
 
-        // Notification logic could be added here too
+        // Intelligent Auto-Matching logic
+        try {
+            const SystemConfig = require('../models/systemConfigModel');
+            const config = await SystemConfig.findOne();
+            if (config && config.autoMatchEnabled) {
+                const oppositeType = type === 'donation' ? 'request' : 'donation';
+                
+                // Find potential matches
+                const potentialMatches = await Listing.find({
+                    type: oppositeType,
+                    category: category,
+                    status: 'active',
+                    user: { $ne: req.user.id }
+                });
+
+                if (potentialMatches.length > 0) {
+                    const notificationController = require('./notificationController');
+                    
+                    for (const otherListing of potentialMatches) {
+                        // Calculate match score
+                        let score = 85;
+                        if (location && otherListing.location && location.toLowerCase() === otherListing.location.toLowerCase()) {
+                            score += 10;
+                        }
+                        
+                        // Tag intersection
+                        if (tags && otherListing.tags && Array.isArray(tags) && Array.isArray(otherListing.tags)) {
+                            const intersection = tags.filter(t => otherListing.tags.includes(t));
+                            if (intersection.length > 0) {
+                                score += 5;
+                            }
+                        }
+                        score = Math.min(100, score);
+
+                        // Add match to new listing
+                        newListing.matches.push({
+                            user: otherListing.user,
+                            score,
+                            status: 'pending'
+                        });
+
+                        // Add match to the other listing
+                        otherListing.matches.push({
+                            user: req.user.id,
+                            score,
+                            status: 'pending'
+                        });
+                        await otherListing.save();
+
+                        // Notify other user
+                        await notificationController.createNotification(
+                            otherListing.user,
+                            'match',
+                            'Instant Match Found! ⚡',
+                            `A new matching listing "${title}" has been posted in "${category}"!`,
+                            '/matches'
+                        );
+
+                        // Notify current user
+                        await notificationController.createNotification(
+                            req.user.id,
+                            'match',
+                            'Instant Match Found! ⚡',
+                            `We automatically found a match with "${otherListing.title}" (Score: ${score}%)!`,
+                            '/matches'
+                        );
+                    }
+                    
+                    // Save newListing with all added matches
+                    await newListing.save();
+                }
+            }
+        } catch (matchErr) {
+            console.error('Auto-matching error:', matchErr);
+        }
 
         res.status(201).json({
             status: 'success',

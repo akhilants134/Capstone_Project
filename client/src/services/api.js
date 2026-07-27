@@ -8,7 +8,9 @@ const handleResponse = async (response) => {
     const error = await response
       .json()
       .catch(() => ({ message: "An error occurred" }));
-    throw new Error(error.message || response.statusText);
+    const err = new Error(error.message || response.statusText);
+    err.status = response.status;
+    throw err;
   }
   return response.json();
 };
@@ -103,6 +105,9 @@ export const adminGetUnverifiedUsers = () => apiRequest("/admin/verifications");
 export const adminToggleUserVerification = (userId, action) =>
   apiRequest(`/admin/verifications/${userId}/verify`, { method: "PATCH", body: JSON.stringify({ action }) });
 export const adminGetTopDonors = () => apiRequest("/admin/top-donors");
+export const adminGetSystemConfig = () => apiRequest("/admin/config");
+export const adminUpdateSystemConfig = (data) =>
+  apiRequest("/admin/config", { method: "PATCH", body: JSON.stringify(data) });
 
 export default {
   login,
@@ -138,4 +143,6 @@ export default {
   adminGetUnverifiedUsers,
   adminToggleUserVerification,
   adminGetTopDonors,
+  adminGetSystemConfig,
+  adminUpdateSystemConfig,
 };

@@ -27,4 +27,9 @@ router.patch('/verifications/:userId/verify', adminController.toggleUserVerifica
 // Top donors
 router.get('/top-donors', adminController.getTopDonors);
 
+// System Configuration
+router.route('/config')
+    .get(adminController.getSystemConfig)
+    .patch(adminController.updateSystemConfig);
+
 module.exports = router;

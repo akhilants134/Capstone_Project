@@ -122,6 +122,15 @@ const verifyBackupCode = async (plainCode, hashedCodes) => {
 // ─────────────────────────────────────────────────────────────────────────────
 exports.signup = async (req, res) => {
   try {
+    const SystemConfig = require("../models/systemConfigModel");
+    const config = await SystemConfig.findOne();
+    if (config && !config.allowRegistration) {
+      return res.status(403).json({
+        status: "fail",
+        message: "User registrations are currently disabled by the administrator.",
+      });
+    }
+
     const newUser = await User.create({
       name: req.body.name,
       email: req.body.email,
