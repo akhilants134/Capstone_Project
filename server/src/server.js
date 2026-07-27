@@ -34,7 +34,7 @@ app.use("/api", limiter);
 
 app.use(
   cors({
-    origin: (process.env.CLIENT_URL || "http://localhost:5173")
+    origin: (process.env.CLIENT_URL || "http://localhost:3000,http://localhost:5173")
       .split(",")
       .map((origin) => origin.trim()),
     credentials: true,
