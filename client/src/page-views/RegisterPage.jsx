@@ -3,7 +3,7 @@ import { register } from '../services/api';
 
 export default function RegisterPage({ navigate, onLogin }) {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'community', category: '', bio: '', location: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'community', category: '', bio: '', location: '', recipientType: 'individual', verificationDetails: '' });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -35,7 +35,8 @@ export default function RegisterPage({ navigate, onLogin }) {
         role: form.role,
         category: form.category,
         bio: form.bio,
-        location: form.location
+        location: form.location,
+        verificationDetails: form.role === 'recipient' && form.recipientType === 'organization' ? form.verificationDetails : ''
       });
       if (data.status === 'success') {
         onLogin({ ...data.data.user, token: data.token });
@@ -136,6 +137,31 @@ export default function RegisterPage({ navigate, onLogin }) {
 
         {step === 3 && (
           <form onSubmit={handleSubmit}>
+            {form.role === 'recipient' && (
+              <div style={{ marginBottom: '20px', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', background: 'rgba(255,255,255,0.01)' }}>
+                <label className="form-label" style={{ marginBottom: '10px', display: 'block', fontWeight: '600' }}>Who are you requesting assistance for?</label>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                  <button type="button" onClick={() => setForm(p => ({ ...p, recipientType: 'individual' }))}
+                    style={{ flex: 1, padding: '10px', border: `2px solid ${form.recipientType === 'individual' ? '#6366f1' : 'var(--border)'}`, borderRadius: '8px', background: form.recipientType === 'individual' ? 'rgba(99,102,241,0.15)' : 'var(--bg-card)', cursor: 'pointer', fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>
+                    🙋 Individual
+                  </button>
+                  <button type="button" onClick={() => setForm(p => ({ ...p, recipientType: 'organization' }))}
+                    style={{ flex: 1, padding: '10px', border: `2px solid ${form.recipientType === 'organization' ? '#6366f1' : 'var(--border)'}`, borderRadius: '8px', background: form.recipientType === 'organization' ? 'rgba(99,102,241,0.15)' : 'var(--bg-card)', cursor: 'pointer', fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>
+                    🏢 Org / Shelter
+                  </button>
+                </div>
+
+                {form.recipientType === 'organization' && (
+                  <div style={{ animation: 'fadeInUp 0.3s ease' }}>
+                    <label className="form-label">Verification Credentials / Tax Registration ID / Website</label>
+                    <textarea className="form-input" placeholder="e.g. 501(c)(3) ID, NGO Registration link, or organization portal URL..." style={{ minHeight: '80px', marginBottom: '10px' }} value={form.verificationDetails} onChange={e => setForm(p => ({ ...p, verificationDetails: e.target.value }))} />
+                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.4', fontStyle: 'italic' }}>
+                      💡 Local platform administrators review documentation and credentials submitted during recipient registration. Verified badges are awarded to legitimate nonprofits, shelters, and centers to protect donor transparency.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
             <div className="form-group">
               <label className="form-label">Short Bio</label>
               <textarea className="form-input" placeholder="Tell us about yourself..." style={{ minHeight: '90px' }} value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} />

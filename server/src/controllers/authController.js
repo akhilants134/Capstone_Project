@@ -139,6 +139,7 @@ exports.signup = async (req, res) => {
       category: req.body.category,
       bio: req.body.bio,
       location: req.body.location,
+      verificationDetails: req.body.verificationDetails,
     });
 
     const token = signToken(newUser._id);
@@ -161,13 +162,6 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email }).select("+password");
     if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({ status: "fail", message: "Incorrect email or password" });
-    }
-
-    if (user.role === "admin") {
-      return res.status(403).json({
-        status: "fail",
-        message: "Admin accounts must sign in through the admin portal.",
-      });
     }
 
     if (user.isBanned) {

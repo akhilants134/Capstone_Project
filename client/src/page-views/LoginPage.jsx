@@ -51,8 +51,17 @@ export default function LoginPage({ navigate, onLogin }) {
               width: '52px', height: '52px', borderRadius: '14px',
               background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '26px', boxShadow: '0 8px 30px rgba(99,102,241,0.4)',
-            }}>🌐</div>
+              boxShadow: '0 8px 30px rgba(99,102,241,0.4)', flexShrink: 0,
+            }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="3" fill="white"/>
+                <circle cx="5" cy="6" r="2" fill="rgba(255,255,255,0.85)"/>
+                <circle cx="19" cy="6" r="2" fill="rgba(255,255,255,0.85)"/>
+                <circle cx="12" cy="20" r="2" fill="rgba(255,255,255,0.85)"/>
+                <line x1="7" y1="7.4" x2="10.2" y2="10.2" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="17" y1="7.4" x2="13.8" y2="10.2" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="12" y1="15" x2="12" y2="18" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg></div>
             <div>
               <div style={{ fontSize: '22px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)' }}>ResourceMatch</div>
               <div style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>Platform</div>
@@ -189,7 +198,7 @@ export default function LoginPage({ navigate, onLogin }) {
               ) : 'Sign In →'}
             </button>
 
-            <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+            <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>
               Don't have an account?{' '}
               <span
                 id="go-to-register"
@@ -200,26 +209,8 @@ export default function LoginPage({ navigate, onLogin }) {
               </span>
             </p>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500' }}>ADMIN</span>
-              <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-            </div>
-
-            <button
-              type="button"
-              onClick={() => navigate('admin-login')}
-              className="btn btn-full"
-              style={{
-                background: 'transparent',
-                color: '#f59e0b',
-                border: '1px dashed rgba(245,158,11,0.4)',
-                fontWeight: '600',
-              }}
-            >
-              🛡️ Administrator Sign In
-            </button>
           </form>
+
         </div>
       </div>
     </div>

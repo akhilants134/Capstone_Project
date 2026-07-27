@@ -1,31 +1,20 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../providers";
-import AdminLoginPage from "../../page-views/AdminLoginPage";
 
-export default function AdminLoginRoute() {
+/**
+ * /admin-login is no longer a separate entry point.
+ * Administrators sign in through the unified /login form.
+ * The backend returns a role in the JWT; the client redirects
+ * to /admin-dashboard automatically when role === "admin".
+ */
+export default function AdminLoginRedirect() {
   const router = useRouter();
-  const { login } = useAuth();
 
-  const navigate = (page) => {
-    router.push("/" + page);
-  };
+  useEffect(() => {
+    router.replace("/login");
+  }, [router]);
 
-  const handleLogin = (userData) => {
-    const result = login(userData);
-    if (!result.requires2FA) {
-      if (result.role === "admin") {
-        router.push("/admin-dashboard");
-      } else {
-        router.push("/dashboard");
-      }
-    }
-  };
-
-  return (
-    <div className="auth-wrapper">
-      <AdminLoginPage navigate={navigate} onLogin={handleLogin} />
-    </div>
-  );
+  return null;
 }
