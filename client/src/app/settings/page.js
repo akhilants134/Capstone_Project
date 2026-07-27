@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import AppLayoutWrapper from "../../components/AppLayoutWrapper";
 import SettingsPage from "../../page-views/SettingsPage";
 import { useAuth, useTheme } from "../providers";
@@ -7,6 +8,15 @@ import { useAuth, useTheme } from "../providers";
 export default function SettingsRoute() {
   const { user, setUser } = useAuth();
   const { themeMode, setThemeMode } = useTheme();
+  const router = useRouter();
+
+  const navigate = (page, params = {}) => {
+    let target = page.startsWith("/") ? page : "/" + page;
+    if (page === "reset-password" && params?.token) {
+      target = `/reset-password/${params.token}`;
+    }
+    router.push(target);
+  };
 
   const handleUserUpdate = (updatedUser) => {
     if (!updatedUser) return;
@@ -22,6 +32,7 @@ export default function SettingsRoute() {
         onUserUpdate={handleUserUpdate}
         themeMode={themeMode}
         onThemeChange={setThemeMode}
+        navigate={navigate}
       />
     </AppLayoutWrapper>
   );

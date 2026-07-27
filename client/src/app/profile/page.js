@@ -1,11 +1,21 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import AppLayoutWrapper from "../../components/AppLayoutWrapper";
 import ProfilePage from "../../page-views/ProfilePage";
 import { useAuth } from "../providers";
 
 export default function ProfileRoute() {
   const { user, setUser } = useAuth();
+  const router = useRouter();
+
+  const navigate = (page, params = {}) => {
+    let target = page.startsWith("/") ? page : "/" + page;
+    if (page === "reset-password" && params?.token) {
+      target = `/reset-password/${params.token}`;
+    }
+    router.push(target);
+  };
 
   const handleUserUpdate = (updatedUser) => {
     if (!updatedUser) return;
@@ -16,7 +26,7 @@ export default function ProfileRoute() {
 
   return (
     <AppLayoutWrapper>
-      <ProfilePage user={user} onUserUpdate={handleUserUpdate} />
+      <ProfilePage user={user} onUserUpdate={handleUserUpdate} navigate={navigate} />
     </AppLayoutWrapper>
   );
 }
