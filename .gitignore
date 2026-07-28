@@ -15,3 +15,5 @@ node_modules
 .next
 client/.next
 server/.next
+logs/
+backups/
