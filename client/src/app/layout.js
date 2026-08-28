@@ -1,6 +1,7 @@
 import "../index.css";
 import "../App.css";
 import { Providers } from "./providers";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="en" data-theme="dark">
       <body>
         <Providers>{children}</Providers>
+        <SpeedInsights />
         <Analytics />
       </body>
     </html>
