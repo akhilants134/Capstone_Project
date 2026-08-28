@@ -155,7 +155,7 @@ mongoose
   .then(() => console.log("✅ MongoDB connection successful"))
   .catch(async (err) => {
     console.error("❌ MongoDB connection error:", err.message);
-    if (DB !== "mongodb://127.0.0.1:27017/resourcematcher") {
+    if (process.env.NODE_ENV !== "production" && DB !== "mongodb://127.0.0.1:27017/resourcematcher") {
       console.log("🔄 Attempting fallback connection to local MongoDB...");
       try {
         await mongoose.connect("mongodb://127.0.0.1:27017/resourcematcher", { serverSelectionTimeoutMS: 5000 });
