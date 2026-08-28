@@ -2,6 +2,7 @@ import "../index.css";
 import "../App.css";
 import { Providers } from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "ResourceMatch — AI-Powered Redistribution",
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
       <body>
         <Providers>{children}</Providers>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
