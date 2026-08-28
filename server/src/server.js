@@ -151,9 +151,9 @@ const DB =
   "mongodb://127.0.0.1:27017/resourcematcher";
 
 mongoose
-  .connect(DB)
+  .connect(DB, { serverSelectionTimeoutMS: 5000 })
   .then(() => console.log("✅ MongoDB connection successful"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .catch((err) => console.error("❌ MongoDB connection error:", err.message));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

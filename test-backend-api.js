@@ -123,14 +123,18 @@ async function runApiTests() {
   } finally {
     // Cleanup: Connect to MongoDB and delete the test user
     console.log('- Cleaning up test data from MongoDB...');
-    const DB =
-      process.env.MONGODB_URI ||
-      process.env.DATABASE_URL ||
-      'mongodb://127.0.0.1:27017/resourcematcher';
-    await mongoose.connect(DB);
-    await User.deleteOne({ email: testEmail });
-    await mongoose.disconnect();
-    console.log('✅ Cleanup completed!');
+    try {
+      const DB =
+        process.env.MONGODB_URI ||
+        process.env.DATABASE_URL ||
+        'mongodb://127.0.0.1:27017/resourcematcher';
+      await mongoose.connect(DB, { serverSelectionTimeoutMS: 3000 });
+      await User.deleteOne({ email: testEmail });
+      await mongoose.disconnect();
+      console.log('✅ Cleanup completed!');
+    } catch (err) {
+      console.warn('⚠️ Cleanup skipped (MongoDB connection unreachable):', err.message);
+    }
   }
 }
 
