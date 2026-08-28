@@ -45,8 +45,12 @@ export default function LoginPage({ navigate, onLogin }) {
         alignItems: 'center', padding: '60px', position: 'relative',
       }} className="hide-mobile">
         <div style={{ maxWidth: '460px', animation: 'fadeInUp 0.7s ease' }}>
-          {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '48px' }}>
+          {/* Logo / Home Button */}
+          <div 
+            onClick={() => navigate('')}
+            style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '48px', cursor: 'pointer' }}
+            title="Go to Home"
+          >
             <div style={{
               width: '52px', height: '52px', borderRadius: '14px',
               background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
@@ -125,6 +129,20 @@ export default function LoginPage({ navigate, onLogin }) {
         backdropFilter: 'blur(20px)',
       }}>
         <div style={{ width: '100%', maxWidth: '380px', animation: 'fadeInUp 0.5s ease' }}>
+          <button
+            type="button"
+            onClick={() => navigate('')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              background: 'none', border: 'none', color: 'var(--text-secondary)',
+              cursor: 'pointer', fontSize: '13px', fontWeight: '600', marginBottom: '20px',
+              padding: '0', transition: 'color 0.2s',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
+            onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+          >
+            ← Back to Home
+          </button>
           <div style={{ marginBottom: '36px' }}>
             <h2 style={{ fontSize: '28px', fontWeight: '700', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '8px' }}>
               Welcome back 👋

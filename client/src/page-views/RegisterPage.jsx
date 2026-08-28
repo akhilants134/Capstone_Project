@@ -61,6 +61,20 @@ export default function RegisterPage({ navigate, onLogin }) {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gradient-hero)', padding: '40px 20px' }}>
       <div style={{ width: '100%', maxWidth: '520px', background: 'var(--bg-glass)', border: '1px solid var(--border)', borderRadius: '24px', padding: '40px', animation: 'fadeInUp 0.5s ease' }}>
+        <button
+          type="button"
+          onClick={() => navigate('')}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            background: 'none', border: 'none', color: 'var(--text-secondary)',
+            cursor: 'pointer', fontSize: '13px', fontWeight: '600', marginBottom: '20px',
+            padding: '0', transition: 'color 0.2s',
+          }}
+          onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
+          onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+        >
+          ← Back to Home
+        </button>
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{ fontSize: '36px', marginBottom: '10px' }}>🌐</div>
           <h2 style={{ fontSize: '24px', fontWeight: '800', fontFamily: 'Outfit,sans-serif', color: 'var(--text-primary)', marginBottom: '4px' }}>Create your account</h2>
