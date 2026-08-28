@@ -29,8 +29,8 @@ export default function RegisterPage({ navigate, onLogin }) {
     setLoading(true);
     try {
       const data = await register({
-        name: form.name,
-        email: form.email,
+        name: form.name.trim(),
+        email: form.email.trim(),
         password: form.password,
         role: form.role,
         category: form.category,
@@ -43,7 +43,7 @@ export default function RegisterPage({ navigate, onLogin }) {
       }
     } catch (err) {
       console.error('Registration failed:', err);
-      alert('Registration failed. Email might already exist.');
+      alert(err.message || 'Registration failed. Email might already exist.');
     } finally {
       setLoading(false);
     }

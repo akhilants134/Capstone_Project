@@ -131,15 +131,35 @@ exports.signup = async (req, res) => {
       });
     }
 
+    const { name, email, password, role, category, bio, location, verificationDetails } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Please provide name, email, and password.",
+      });
+    }
+
+    const cleanEmail = String(email).toLowerCase().trim();
+
+    // Check if user already exists in DB
+    const existingUser = await User.findOne({ email: cleanEmail });
+    if (existingUser) {
+      return res.status(400).json({
+        status: "fail",
+        message: "An account with this email address already exists.",
+      });
+    }
+
     const newUser = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      role: ['community', 'donor', 'recipient'].includes(req.body.role) ? req.body.role : 'community',
-      category: req.body.category,
-      bio: req.body.bio,
-      location: req.body.location,
-      verificationDetails: req.body.verificationDetails,
+      name: name.trim(),
+      email: cleanEmail,
+      password: password,
+      role: ['community', 'donor', 'recipient'].includes(role) ? role : 'community',
+      category: category,
+      bio: bio,
+      location: location,
+      verificationDetails: verificationDetails,
     });
 
     const token = signToken(newUser._id);
@@ -148,6 +168,12 @@ exports.signup = async (req, res) => {
 
     res.status(201).json({ status: "success", token, data: { user: newUser } });
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({
+        status: "fail",
+        message: "An account with this email address already exists.",
+      });
+    }
     res.status(400).json({ status: "fail", message: err.message });
   }
 };
@@ -539,6 +565,14 @@ exports.updateMe = async (req, res) => {
       if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
     });
 
+    if (filteredBody.email) {
+      filteredBody.email = String(filteredBody.email).toLowerCase().trim();
+      const existingUser = await User.findOne({ email: filteredBody.email, _id: { $ne: req.user._id } });
+      if (existingUser) {
+        return res.status(400).json({ status: 'fail', message: 'This email address is already in use by another account.' });
+      }
+    }
+
     const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
       new: true,
       runValidators: true
@@ -551,6 +585,9 @@ exports.updateMe = async (req, res) => {
       }
     });
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ status: 'fail', message: 'This email address is already in use by another account.' });
+    }
     res.status(500).json({ status: 'fail', message: err.message });
   }
 };
