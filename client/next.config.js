@@ -7,9 +7,9 @@ const __dirname = path.dirname(__filename);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // turbopack: {
-  //   root: path.resolve(__dirname, '..'),
-  // },
+  turbopack: {
+    root: path.resolve(__dirname, '..'),
+  },
 };
 
 export default nextConfig;

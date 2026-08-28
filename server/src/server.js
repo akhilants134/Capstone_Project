@@ -153,7 +153,18 @@ const DB =
 mongoose
   .connect(DB, { serverSelectionTimeoutMS: 5000 })
   .then(() => console.log("✅ MongoDB connection successful"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err.message));
+  .catch(async (err) => {
+    console.error("❌ MongoDB connection error:", err.message);
+    if (DB !== "mongodb://127.0.0.1:27017/resourcematcher") {
+      console.log("🔄 Attempting fallback connection to local MongoDB...");
+      try {
+        await mongoose.connect("mongodb://127.0.0.1:27017/resourcematcher", { serverSelectionTimeoutMS: 5000 });
+        console.log("✅ Connected to local MongoDB fallback");
+      } catch (localErr) {
+        console.error("❌ Local MongoDB fallback also failed:", localErr.message);
+      }
+    }
+  });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
