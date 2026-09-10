@@ -2,8 +2,11 @@ const express = require('express');
 const User = require('../models/User');
 const Donation = require('../models/Donation');
 const Request = require('../models/Request');
+const { apiLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
+
+router.use(apiLimiter);
 
 router.post('/', async (req, res) => {
   try {

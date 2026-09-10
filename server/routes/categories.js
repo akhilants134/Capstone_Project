@@ -1,8 +1,11 @@
 const express = require('express');
 const Donation = require('../models/Donation');
 const { protect, adminOnly } = require('../middleware/auth');
+const { apiLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
+
+router.use(apiLimiter);
 
 router.get('/', protect, adminOnly, async (req, res) => {
   try {

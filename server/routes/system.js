@@ -1,8 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { protect, adminOnly } = require('../middleware/auth');
+const { apiLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
+
+router.use(apiLimiter);
 
 router.get('/status', protect, adminOnly, async (req, res) => {
   const dbState = mongoose.connection.readyState;

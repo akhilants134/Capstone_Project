@@ -1,8 +1,11 @@
 const express = require('express');
 const User = require('../models/User');
 const { protect, adminOnly } = require('../middleware/auth');
+const { apiLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
+
+router.use(apiLimiter);
 
 router.get('/', protect, adminOnly, async (req, res) => {
   try {

@@ -50,7 +50,7 @@ export default function SettingsPage({
     newPin: "",
     confirmPin: "",
   });
-  const [isPinSet, setIsPinSet] = useState(() => !!localStorage.getItem("security_pin"));
+  const [isPinSet, setIsPinSet] = useState(() => localStorage.getItem("is_pin_configured") === "true");
 
   // Tab 4: Security States
   const [twoFAEnabled, setTwoFAEnabled] = useState(user?.twoFactorEnabled || false);
@@ -265,7 +265,7 @@ export default function SettingsPage({
       setErrorMsg("PIN codes do not match.");
       return;
     }
-    localStorage.setItem("security_pin", pinForm.newPin);
+    localStorage.setItem("is_pin_configured", "true");
     setIsPinSet(true);
     setPinForm({ newPin: "", confirmPin: "" });
     setSuccessMsg("Security PIN configured successfully.");

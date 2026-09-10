@@ -108,13 +108,19 @@ exports.createListing = async (req, res) => {
 exports.getAllListings = async (req, res) => {
     try {
         const filter = {};
-        if (req.query.type) filter.type = req.query.type;
-        if (req.query.category) filter.category = req.query.category;
-        if (req.query.urgency) filter.urgency = req.query.urgency;
+        if (typeof req.query.type === 'string' && req.query.type.trim()) {
+            filter.type = { $eq: req.query.type.trim() };
+        }
+        if (typeof req.query.category === 'string' && req.query.category.trim()) {
+            filter.category = { $eq: req.query.category.trim() };
+        }
+        if (typeof req.query.urgency === 'string' && req.query.urgency.trim()) {
+            filter.urgency = { $eq: req.query.urgency.trim() };
+        }
         
         // Search functionality (escape regex special chars to prevent ReDoS)
-        if (req.query.search) {
-            const escaped = req.query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        if (typeof req.query.search === 'string' && req.query.search.trim()) {
+            const escaped = req.query.search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             filter.$or = [
                 { title: { $regex: escaped, $options: 'i' } },
                 { description: { $regex: escaped, $options: 'i' } }
