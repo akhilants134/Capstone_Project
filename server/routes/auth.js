@@ -2,8 +2,11 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
+const { authLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
+
+router.use(authLimiter);
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -16,8 +19,10 @@ router.post('/login', async (req, res) => {
     if (!username || !password) {
       return res.status(400).json({ message: 'Username and password are required' });
     }
-    const user = await User.findOne({ username });
-    if (!user || !(await user.comparePassword(password))) {
+    const safeUsername = String(username).trim();
+    const safePassword = String(password);
+    const user = await User.findOne({ username: safeUsername });
+    if (!user || !(await user.comparePassword(safePassword))) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
     const token = signToken(user._id);

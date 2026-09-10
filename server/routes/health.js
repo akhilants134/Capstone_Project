@@ -6,6 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const { apiLimiter } = require('../middleware/rateLimiter');
+
+router.use(apiLimiter);
 
 router.get('/', (req, res) => {
   const dbState = mongoose.connection.readyState;

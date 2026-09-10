@@ -1,19 +1,42 @@
+# Dependencies
 **/node_modules
-
-**/.env
-**/dist
-**/.DS_Store
-client/node_modules
-client/.env
-client/dist
-client/.DS_Store
-server/node_modules
-server/.env
-server/dist
-server/.DS_Store
 node_modules
+client/node_modules
+server/node_modules
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+!*.env.example
+!client/.env.production
+**/.env
+**/.env.local
+**/.env.*.local
+client/.env
+server/.env
+*.pem
+*.key
+*.cert
+
+# Build artifacts & caches
+**/dist
+dist
 .next
 client/.next
 server/.next
+client/dist
+server/dist
+
+# Operating System & IDE files
+**/.DS_Store
+client/.DS_Store
+server/.DS_Store
+.vscode/
+.idea/
+
+# Logs & temporary files
 logs/
+*.log
 backups/
+scratch/
