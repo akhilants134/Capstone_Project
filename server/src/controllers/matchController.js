@@ -1,11 +1,16 @@
 const Listing = require('../models/listingModel');
+const mongoose = require('mongoose');
 
 exports.createMatch = async (req, res) => {
     try {
         const { listingId, score } = req.body;
         const userId = req.user.id;
+        const normalizedListingId = String(listingId || '');
+        if (!mongoose.Types.ObjectId.isValid(normalizedListingId)) {
+            return res.status(400).json({ status: 'fail', message: 'Invalid listing ID' });
+        }
 
-        const listing = await Listing.findById(listingId);
+        const listing = await Listing.findOne({ _id: { $eq: normalizedListingId } });
         if (!listing) {
             return res.status(404).json({ status: 'fail', message: 'Listing not found' });
         }
@@ -39,8 +44,13 @@ exports.updateMatchStatus = async (req, res) => {
     try {
         const { listingId, matchUserId, status } = req.body;
         const currentUserId = req.user.id;
+        const normalizedListingId = String(listingId || '');
+        const normalizedMatchUserId = String(matchUserId || '');
+        if (!mongoose.Types.ObjectId.isValid(normalizedListingId) || !mongoose.Types.ObjectId.isValid(normalizedMatchUserId)) {
+            return res.status(400).json({ status: 'fail', message: 'Invalid match identifiers' });
+        }
 
-        const listing = await Listing.findById(listingId);
+        const listing = await Listing.findOne({ _id: { $eq: normalizedListingId } });
         if (!listing) {
             return res.status(404).json({ status: 'fail', message: 'Listing not found' });
         }
@@ -50,7 +60,7 @@ exports.updateMatchStatus = async (req, res) => {
             return res.status(403).json({ status: 'fail', message: 'Only the owner can update match status' });
         }
 
-        const match = listing.matches.find(m => m.user.toString() === matchUserId);
+        const match = listing.matches.find(m => m.user.toString() === normalizedMatchUserId);
         if (!match) {
             return res.status(404).json({ status: 'fail', message: 'Match not found for this user' });
         }
@@ -76,12 +86,12 @@ exports.updateMatchStatus = async (req, res) => {
             }
             
             // Award matched user
-            const matchedUser = await User.findById(matchUserId);
+            const matchedUser = await User.findOne({ _id: { $eq: normalizedMatchUserId } });
             if (matchedUser) {
                 matchedUser.points += 30;
                 await matchedUser.save();
                 await notificationController.createNotification(
-                    matchUserId, 'match', 'Resource Match Found!', 
+                    normalizedMatchUserId, 'match', 'Resource Match Found!', 
                     `Your application for ${listing.title} has been accepted!`, '/matches'
                 );
             }

@@ -95,6 +95,14 @@ const clearAuthCookie = (res) => {
   });
 };
 
+const hasUnsafeMongoKeys = (value) => {
+  if (!value || typeof value !== "object") return false;
+  if (Array.isArray(value)) return value.some(hasUnsafeMongoKeys);
+  return Object.keys(value).some((key) =>
+    key.startsWith("$") || key.includes(".") || hasUnsafeMongoKeys(value[key])
+  );
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Backup code helpers
 // ─────────────────────────────────────────────────────────────────────────────
@@ -564,16 +572,19 @@ exports.updateMe = async (req, res) => {
     Object.keys(req.body).forEach(el => {
       if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
     });
+    if (hasUnsafeMongoKeys(filteredBody)) {
+      return res.status(400).json({ status: "fail", message: "Invalid profile payload." });
+    }
 
     if (filteredBody.email) {
       filteredBody.email = String(filteredBody.email).toLowerCase().trim();
-      const existingUser = await User.findOne({ email: filteredBody.email, _id: { $ne: req.user._id } });
+      const existingUser = await User.findOne({ email: { $eq: filteredBody.email }, _id: { $ne: req.user._id } });
       if (existingUser) {
         return res.status(400).json({ status: 'fail', message: 'This email address is already in use by another account.' });
       }
     }
 
-    const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
+    const updatedUser = await User.findOneAndUpdate({ _id: { $eq: req.user._id } }, { $set: filteredBody }, {
       new: true,
       runValidators: true
     });
@@ -625,8 +636,9 @@ exports.forgotPassword = async (req, res) => {
     if (!email) {
       return res.status(400).json({ status: 'fail', message: 'Please provide your email address.' });
     }
+    const normalizedEmail = String(email).toLowerCase().trim();
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: { $eq: normalizedEmail } });
     if (!user) {
       // Don't reveal if email exists for security
       return res.status(200).json({

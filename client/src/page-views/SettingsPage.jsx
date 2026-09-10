@@ -73,18 +73,10 @@ export default function SettingsPage({
   const [allowDirectMessages, setAllowDirectMessages] = useState(() => localStorage.getItem("sys_allowDirectMessages") !== "false");
 
   // Tab 6: Devices State
-  const [trustedDevices, setTrustedDevices] = useState(() => {
-    const saved = localStorage.getItem("sys_trustedDevices");
-    if (saved) return JSON.parse(saved);
-    return [
-      { id: "device-1", name: "Windows PC", current: true, browser: "Chrome 122", location: "New York, US", lastUsed: "Jul 8, 2026, 11:01 AM" },
-      { id: "device-2", name: "iPhone 15", current: false, browser: "Safari 17", location: "New York, US", lastUsed: "Mar 6, 2026, 01:45 AM" }
-    ];
-  });
-
-  useEffect(() => {
-    localStorage.setItem("sys_trustedDevices", JSON.stringify(trustedDevices));
-  }, [trustedDevices]);
+  const [trustedDevices, setTrustedDevices] = useState([
+    { id: "device-1", name: "Windows PC", current: true, browser: "Chrome 122", location: "New York, US", lastUsed: "Jul 8, 2026, 11:01 AM" },
+    { id: "device-2", name: "iPhone 15", current: false, browser: "Safari 17", location: "New York, US", lastUsed: "Mar 6, 2026, 01:45 AM" }
+  ]);
 
   // Tab 7: Activity Log State
   const [activityLog, setActivityLog] = useState(() => {

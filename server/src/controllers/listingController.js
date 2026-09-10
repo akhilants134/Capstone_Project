@@ -162,9 +162,31 @@ exports.updateListing = async (req, res) => {
             return res.status(403).json({ status: 'fail', message: 'You do not own this listing' });
         }
 
-        const { title, description, category, type, urgency, quantity, estimatedValue, location, tags, status } = req.body;
+        const toSafeString = (value) => {
+            if (value === undefined || value === null) return undefined;
+            return typeof value === 'string' ? value : String(value);
+        };
+        const safeTags = Array.isArray(req.body.tags)
+            ? req.body.tags.filter((tag) => typeof tag === 'string')
+            : undefined;
+
+        const updates = {
+            title: toSafeString(req.body.title),
+            description: toSafeString(req.body.description),
+            category: toSafeString(req.body.category),
+            type: toSafeString(req.body.type),
+            urgency: toSafeString(req.body.urgency),
+            quantity: Number.isFinite(Number(req.body.quantity)) ? Number(req.body.quantity) : undefined,
+            estimatedValue: Number.isFinite(Number(req.body.estimatedValue)) ? Number(req.body.estimatedValue) : undefined,
+            location: toSafeString(req.body.location),
+            tags: safeTags,
+            status: toSafeString(req.body.status)
+        };
+
+        Object.keys(updates).forEach((key) => updates[key] === undefined && delete updates[key]);
+
         const listing = await Listing.findByIdAndUpdate(req.params.id,
-            { title, description, category, type, urgency, quantity, estimatedValue, location, tags, status },
+            { $set: updates },
             { new: true, runValidators: true }
         );
 

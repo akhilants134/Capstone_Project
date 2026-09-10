@@ -61,24 +61,24 @@ async function seed() {
         console.log(`⏭  Skipped (already exists): ${userData.email} [${userData.role}]`);
       } else {
         await User.create(userData);
-        console.log(`✅ Created: ${userData.email} [${userData.role}] — password: ${userData.password}`);
+        console.log(`✅ Created: ${userData.email} [${userData.role}]`);
       }
     }
 
     console.log('\n📋 All users:');
-    console.log('┌─────────────────────────────────┬─────────────┬──────────────┐');
-    console.log('│ Email                           │ Role        │ Password     │');
-    console.log('├─────────────────────────────────┼─────────────┼──────────────┤');
-    console.log('│ admin@resourcematch.com         │ admin       │ Admin@123    │');
-    console.log('│ donor@demo.com                  │ donor       │ demo1234     │');
-    console.log('│ recipient@demo.com              │ recipient   │ demo1234     │');
-    console.log('│ community@demo.com              │ community   │ demo1234     │');
-    console.log('└─────────────────────────────────┴─────────────┴──────────────┘');
+    console.log('┌─────────────────────────────────┬─────────────┐');
+    console.log('│ Email                           │ Role        │');
+    console.log('├─────────────────────────────────┼─────────────┤');
+    console.log('│ admin@resourcematch.com         │ admin       │');
+    console.log('│ donor@demo.com                  │ donor       │');
+    console.log('│ recipient@demo.com              │ recipient   │');
+    console.log('│ community@demo.com              │ community   │');
+    console.log('└─────────────────────────────────┴─────────────┘');
   } catch (err) {
     console.error('❌ Seed failed:', err.message);
   } finally {
     await mongoose.disconnect();
-    console.log('\n✅ Done. You can now log in with any of the credentials above.');
+    console.log('\n✅ Done.');
   }
 }
 
