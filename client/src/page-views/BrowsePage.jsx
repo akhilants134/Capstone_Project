@@ -51,7 +51,7 @@ export default function BrowsePage({ navigate, user }) {
 
   const items = [...listings].sort((a, b) => {
     if (sort === 'matches') return (b.matches || 0) - (a.matches || 0);
-    return new Date(b.createdAt || Date.now()) - new Date(a.createdAt || Date.now());
+    return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
   });
 
   return (
