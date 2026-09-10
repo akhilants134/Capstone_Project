@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.use(apiLimiter);
 
-router.post('/', async (req, res) => {
+router.post('/', apiLimiter, async (req, res) => {
   try {
     const existingAdmin = await User.findOne({ username: 'admin' });
     if (existingAdmin) {

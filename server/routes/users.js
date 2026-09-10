@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(apiLimiter);
 
-router.get('/', protect, adminOnly, async (req, res) => {
+router.get('/', apiLimiter, protect, adminOnly, async (req, res) => {
   try {
     const users = await User.find().select('-password').sort({ createdAt: -1 });
     res.json(users);

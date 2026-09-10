@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.use(apiLimiter);
 
-router.get('/', protect, adminOnly, async (req, res) => {
+router.get('/', apiLimiter, protect, adminOnly, async (req, res) => {
   try {
     const totalDonations = await Donation.countDocuments();
     const activeRequests = await Request.countDocuments({ status: 'open' });

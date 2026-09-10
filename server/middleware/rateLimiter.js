@@ -1,39 +1,42 @@
 /**
  * Layer 9: Rate Limiting
- * In-memory sliding window rate limiter middleware
+ * Standard express-rate-limit middleware recognized by CodeQL & security scanners
  */
+const rateLimit = require('express-rate-limit');
 
-const requestCounts = new Map();
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 150, // Limit each IP to 150 requests per `window`
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: {
+    success: false,
+    message: 'Too many requests, please try again later.',
+  },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 auth requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many authentication attempts, please try again later.',
+  },
+});
 
 const createRateLimiter = (options = {}) => {
-  const windowMs = options.windowMs || 15 * 60 * 1000; // 15 minutes default
-  const max = options.max || 100; // 100 requests per window default
-  const message = options.message || 'Too many requests, please try again later.';
-
-  return (req, res, next) => {
-    const ip = req.ip || req.connection.remoteAddress || 'unknown';
-    const now = Date.now();
-
-    if (!requestCounts.has(ip)) {
-      requestCounts.set(ip, []);
-    }
-
-    const timestamps = requestCounts.get(ip).filter((t) => now - t < windowMs);
-    timestamps.push(now);
-    requestCounts.set(ip, timestamps);
-
-    res.setHeader('X-RateLimit-Limit', max);
-    res.setHeader('X-RateLimit-Remaining', Math.max(0, max - timestamps.length));
-
-    if (timestamps.length > max) {
-      return res.status(429).json({ success: false, error: message });
-    }
-
-    next();
-  };
+  return rateLimit({
+    windowMs: options.windowMs || 15 * 60 * 1000,
+    max: options.max || 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+      success: false,
+      message: options.message || 'Too many requests, please try again later.',
+    },
+  });
 };
-
-const apiLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 150 });
-const authLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 20, message: 'Too many authentication attempts.' });
 
 module.exports = { apiLimiter, authLimiter, createRateLimiter };
