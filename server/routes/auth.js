@@ -13,7 +13,7 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN || '90d',
   });
 
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -42,7 +42,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/me', protect, async (req, res) => {
+router.get('/me', authLimiter, protect, async (req, res) => {
   res.json({
     user: {
       id: req.user._id,

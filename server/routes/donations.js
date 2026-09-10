@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(apiLimiter);
 
-router.get('/', protect, adminOnly, async (req, res) => {
+router.get('/', apiLimiter, protect, adminOnly, async (req, res) => {
   try {
     const donations = await Donation.find().sort({ createdAt: -1 });
     res.json(donations);
@@ -16,7 +16,7 @@ router.get('/', protect, adminOnly, async (req, res) => {
   }
 });
 
-router.get('/top-donors', protect, adminOnly, async (req, res) => {
+router.get('/top-donors', apiLimiter, protect, adminOnly, async (req, res) => {
   try {
     const topDonors = await Donation.aggregate([
       {

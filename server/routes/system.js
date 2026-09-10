@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(apiLimiter);
 
-router.get('/status', protect, adminOnly, async (req, res) => {
+router.get('/status', apiLimiter, protect, adminOnly, async (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatusMap = { 0: 'Disconnected', 1: 'Operational', 2: 'Connecting', 3: 'Disconnecting' };
 
@@ -19,7 +19,7 @@ router.get('/status', protect, adminOnly, async (req, res) => {
   });
 });
 
-router.post('/reset', protect, adminOnly, async (req, res) => {
+router.post('/reset', apiLimiter, protect, adminOnly, async (req, res) => {
   try {
     const collections = mongoose.connection.collections;
     for (const key in collections) {

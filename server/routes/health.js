@@ -10,7 +10,7 @@ const { apiLimiter } = require('../middleware/rateLimiter');
 
 router.use(apiLimiter);
 
-router.get('/', (req, res) => {
+router.get('/', apiLimiter, (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatus = {
     0: 'disconnected',
