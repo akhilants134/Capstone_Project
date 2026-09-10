@@ -101,7 +101,15 @@ app.use(async (req, res, next) => {
           if (rawName) cookies[rawName.trim()] = decodeURIComponent(rest.join("=") || "");
           return cookies;
         }, {});
-        token = cookies["jwt"];
+        const rawCookieToken = cookies["jwt"];
+        if (rawCookieToken) {
+          try {
+            const { decryptSecret } = require("./controllers/authController");
+            token = decryptSecret ? decryptSecret(rawCookieToken) : rawCookieToken;
+          } catch {
+            token = rawCookieToken;
+          }
+        }
       }
 
       if (token && token !== "undefined" && token !== "null") {

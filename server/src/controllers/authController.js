@@ -84,7 +84,8 @@ const signPreAuthToken = (id) =>
   jwt.sign({ id, pre2fa: true }, JWT_SECRET, { expiresIn: "10m" });
 
 const setAuthCookie = (res, token) => {
-  res.cookie(cookieName, token, cookieOptions);
+  const encryptedToken = encryptSecret(token);
+  res.cookie(cookieName, encryptedToken, cookieOptions);
 };
 
 const clearAuthCookie = (res) => {
@@ -285,7 +286,14 @@ exports.protect = async (req, res, next) => {
     }
     if (!token && req.headers.cookie) {
       const cookies = parseCookies(req.headers.cookie);
-      token = cookies[cookieName];
+      const rawCookieToken = cookies[cookieName];
+      if (rawCookieToken) {
+        try {
+          token = decryptSecret(rawCookieToken);
+        } catch {
+          token = rawCookieToken;
+        }
+      }
     }
     if (!token || token === "undefined" || token === "null") {
       return res.status(401).json({ status: "fail", message: "You are not logged in!" });
@@ -726,3 +734,6 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ status: 'fail', message: err.message });
   }
 };
+
+exports.encryptSecret = encryptSecret;
+exports.decryptSecret = decryptSecret;
