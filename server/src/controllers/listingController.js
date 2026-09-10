@@ -29,8 +29,8 @@ exports.createListing = async (req, res) => {
                 
                 // Find potential matches
                 const potentialMatches = await Listing.find({
-                    type: oppositeType,
-                    category: category,
+                    type: { $eq: oppositeType },
+                    category: { $eq: category },
                     status: 'active',
                     user: { $ne: req.user.id }
                 });
