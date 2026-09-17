@@ -1,7 +1,7 @@
 # Layer 5: Hosting & Deployment - Multi-stage Production Dockerfile
 
 # Stage 1: Build Client
-FROM node:18-alpine AS client-builder
+FROM node:20-alpine AS client-builder
 WORKDIR /app/client
 COPY client/package*.json ./
 RUN npm ci
@@ -9,7 +9,7 @@ COPY client/ ./
 RUN npm run build || mkdir -p dist
 
 # Stage 2: Production Server Setup
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
