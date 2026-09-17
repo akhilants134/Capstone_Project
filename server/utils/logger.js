@@ -16,7 +16,14 @@ const combinedLogPath = path.join(logDir, 'combined.log');
 
 const formatMessage = (level, message, meta = {}) => {
   const timestamp = new Date().toISOString();
-  const metaString = Object.keys(meta).length ? JSON.stringify(meta) : '';
+  let metaString = '';
+  if (meta instanceof Error) {
+    metaString = meta.stack || meta.message;
+  } else if (meta && typeof meta === 'object' && Object.keys(meta).length) {
+    metaString = JSON.stringify(meta);
+  } else if (typeof meta === 'string') {
+    metaString = meta;
+  }
   return `[${timestamp}] [${level.toUpperCase()}] ${message} ${metaString}\n`;
 };
 
