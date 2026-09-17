@@ -11,6 +11,11 @@
     "dev": "npx concurrently \"npm run server\" \"npm run client\"",
     "test": "node test-sanity.js"
   },
+  "dependencies": {
+    "next": "^16.2.11",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
   "devDependencies": {
     "concurrently": "^8.2.2"
   }
