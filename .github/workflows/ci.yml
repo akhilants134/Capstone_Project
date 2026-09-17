@@ -34,13 +34,13 @@ jobs:
       - name: Install & Run Backend Tests
         run: |
           cd server
-          npm ci
+          npm install
           node -e "console.log('Backend syntax check passed')"
 
       - name: Install & Build Client
         run: |
           cd client
-          npm ci
+          npm install
           npm run build || true
 
   docker-build:
