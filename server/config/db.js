@@ -7,11 +7,17 @@ const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 
 const connectDB = async () => {
-  const dbUrl = process.env.DATABASE_URL;
+  const dbUrl = process.env.DATABASE_URL || process.env.MONGODB_URI;
+
+  if (!dbUrl) {
+    const error = new Error('DATABASE_URL or MONGODB_URI environment variable is missing.');
+    logger.error(error.message);
+    throw error;
+  }
 
   const options = {
     maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
+    serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
   };
 
