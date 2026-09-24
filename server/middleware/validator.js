@@ -2,11 +2,12 @@ const { z } = require('zod');
 
 /**
  * ============================================================================
- * INPUT SANITIZATION & INJECTION AWARENESS:
- * ----------------------------------------------------------------------------
+ * INPUT SANITIZATION & INJECTION AWARENESS
+ * ============================================================================
+ * 
  * 1. Cross-Site Scripting (XSS) Defense:
  *    - Encodes raw HTML entities (&, <, >, ", ', \, ;) into safe equivalents.
- *    - Prevents script tag and HTML attribute injection when untrusted data is rendered.
+ *    - Prevents script tag and HTML attribute injection when data is rendered.
  * 
  * 2. SQL Injection Defense:
  *    - Neutralizes quote escaping and semicolon command chaining characters.
@@ -15,7 +16,6 @@ const { z } = require('zod');
  * 3. NoSQL Operator Injection Defense:
  *    - Recursively checks and strips MongoDB command operators (keys starting with '$' or containing '.').
  *    - Prevents auth bypass via payloads like { "$gt": "" }.
- * ============================================================================
  */
 const sanitizeInput = (val) => {
   if (typeof val === 'string') {
@@ -35,7 +35,6 @@ const sanitizeInput = (val) => {
   if (val !== null && typeof val === 'object') {
     const sanitizedObj = {};
     for (const [key, value] of Object.entries(val)) {
-      // Prevent NoSQL operator injection ($where, $gt, etc.)
       if (!key.startsWith('$') && !key.includes('.')) {
         sanitizedObj[key] = sanitizeInput(value);
       }
@@ -45,16 +44,22 @@ const sanitizeInput = (val) => {
   return val;
 };
 
+// Express Request Sanitization Middleware
+const sanitizeBody = (req, res, next) => {
+  if (req.body) req.body = sanitizeInput(req.body);
+  if (req.query) req.query = sanitizeInput(req.query);
+  if (req.params) req.params = sanitizeInput(req.params);
+  next();
+};
 
-
-// Middleware factory for Zod validation with sanitization
+// Zod Request Body Validation Factory
 const validate = (schema, source = 'body') => {
   return (req, res, next) => {
     try {
       const rawData = req[source];
       const sanitized = sanitizeInput(rawData);
       const parsed = schema.parse(sanitized);
-      req[source] = parsed; // inject sanitized/validated data
+      req[source] = parsed;
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -72,8 +77,7 @@ const validate = (schema, source = 'body') => {
   };
 };
 
-
-// Common Validation Schemas
+// Validation Schemas
 const createListingSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters long').max(100),
   description: z.string().min(5, 'Description must be at least 5 characters long'),
@@ -109,6 +113,8 @@ const paymentCheckoutSchema = z.object({
 });
 
 module.exports = {
+  sanitizeInput,
+  sanitizeBody,
   validate,
   createListingSchema,
   userRegisterSchema,
