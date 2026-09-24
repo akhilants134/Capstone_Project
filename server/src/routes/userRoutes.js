@@ -14,13 +14,16 @@ const twoFARateLimit = rateLimit({
 });
 
 // ── Standard auth routes ───────────────────────────────────────────────────
-router.post('/signup', authController.signup);
-router.post('/login', authController.login);
+const { validate, userRegisterSchema, userLoginSchema } = require('../middleware/validator');
+
+router.post('/signup', validate(userRegisterSchema), authController.signup);
+router.post('/login', validate(userLoginSchema), authController.login);
 router.post('/admin-login', authController.adminLogin);
 router.get('/logout', authController.logout);
 router.get('/me', authController.protect, authController.getMe);
 router.post('/forgot-password', authController.forgotPassword);
 router.patch('/reset-password/:token', authController.resetPassword);
+
 
 // ── 2FA routes ────────────────────────────────────────────────────────────
 // Called with pre-auth token (no session yet) — rate limited
