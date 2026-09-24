@@ -1,16 +1,30 @@
-# Resource_matcher
+# Resource Matcher - Frontend Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern Next.js 16 (React 19) App Router web application providing responsive layouts, Server-Side Rendering (SSR), real-time notifications via WebSockets, and client-side form validation.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Key Features
 
-## React Compiler
+* **Server-Side Rendering (SSR)**: Dynamic page generation with hydration in [`src/app/browse/page.js`](file:///Volumes/Personal%20System/capstone_project/client/src/app/browse/page.js).
+* **Responsive Layouts & Mobile Navigation**: Fluid multi-breakpoint layout system in [`src/index.css`](file:///Volumes/Personal%20System/capstone_project/client/src/index.css) supporting mobile, tablet, and desktop screens.
+* **Authentication Context**: Global session management via React Context (`useAuth`).
+* **JavaScript Core Concepts Reference**: Documented reference implementations in [`src/services/jsCoreConcepts.js`](file:///Volumes/Personal%20System/capstone_project/client/src/services/jsCoreConcepts.js) (Event loop, Promises vs. Callbacks, Hoisting & TDZ).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Scripts
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+# Start development server
+npm run dev
+
+# Lint codebase
+npm run lint
+
+# Build production bundle
+npm run build
+
+# Start production server
+npm run start
+```

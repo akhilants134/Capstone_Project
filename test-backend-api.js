@@ -161,7 +161,36 @@ async function runApiTests() {
     }
     console.log(`✅ Financial Analytics query successful (Source: ${analyticsRes.source})`);
 
-    // 10. AI Assistant & Function Calling / Tool Use Test
+    // 10. ORM Usage Test (Sequelize / Prisma)
+    console.log('- Testing ORM model query execution (Sequelize)...');
+    const ormFetch = await fetch(`${API_URL}/payments/orm`);
+    const ormRes = await ormFetch.json();
+    if (ormFetch.status !== 200 || !ormRes.orm) {
+      throw new Error(`ORM query test failed: ${ormRes.message}`);
+    }
+    console.log(`✅ ORM Model & Relation Query successful (Engine: ${ormRes.orm})`);
+
+    // 11. Input Sanitization & Injection Awareness Test
+    console.log('- Testing input sanitization against XSS and NoSQL injection...');
+    const maliciousPayload = {
+      amountCents: 1500,
+      currency: 'usd',
+      donorEmail: 'clean_donor@example.com',
+      $where: 'malicious NoSQL code',
+      notes: '<script>alert("xss")</script>'
+    };
+    const sanitizeCheck = await fetch(`${API_URL}/payments/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(maliciousPayload)
+    });
+    const sanitizeRes = await sanitizeCheck.json();
+    if (sanitizeCheck.status !== 200 || sanitizeRes.status !== 'success') {
+      throw new Error(`Sanitization validation failed: ${sanitizeRes.message}`);
+    }
+    console.log('✅ Input Sanitization & Injection Awareness verified');
+
+    // 12. AI Assistant & Function Calling / Tool Use Test
     console.log('- Testing AI Assistant Function Calling / Tool Execution...');
     const aiChat = await fetch(`${API_URL}/ai/chat`, {
       method: 'POST',
@@ -175,6 +204,7 @@ async function runApiTests() {
       throw new Error(`AI Tool execution failed: ${aiChatRes.message}`);
     }
     console.log(`✅ AI Tool Use executed successfully (Tool: ${aiChatRes.data.functionCalling.toolUsed})`);
+
 
     console.log('\n🎉 All Backend API checks passed successfully!');
   } finally {

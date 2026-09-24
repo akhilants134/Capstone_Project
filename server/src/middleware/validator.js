@@ -1,11 +1,37 @@
 const { z } = require('zod');
 
-// Middleware factory for Zod validation
+// Input Sanitization & Injection Awareness helper
+const sanitizeInput = (val) => {
+
+  if (typeof val === 'string') {
+    return val
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // XSS script tag stripping
+      .replace(/['";\\]/g, '') // SQL escape char sanitization
+      .trim();
+  }
+  if (Array.isArray(val)) {
+    return val.map(sanitizeInput);
+  }
+  if (val !== null && typeof val === 'object') {
+    const sanitizedObj = {};
+    for (const [key, value] of Object.entries(val)) {
+      // Prevent NoSQL operator injection ($where, $gt, etc.)
+      if (!key.startsWith('$') && !key.includes('.')) {
+        sanitizedObj[key] = sanitizeInput(value);
+      }
+    }
+    return sanitizedObj;
+  }
+  return val;
+};
+
+// Middleware factory for Zod validation with sanitization
 const validate = (schema, source = 'body') => {
   return (req, res, next) => {
     try {
-      const dataToValidate = req[source];
-      const parsed = schema.parse(dataToValidate);
+      const rawData = req[source];
+      const sanitized = sanitizeInput(rawData);
+      const parsed = schema.parse(sanitized);
       req[source] = parsed; // inject sanitized/validated data
       next();
     } catch (error) {
@@ -23,6 +49,7 @@ const validate = (schema, source = 'body') => {
     }
   };
 };
+
 
 // Common Validation Schemas
 const createListingSchema = z.object({

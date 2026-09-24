@@ -8,5 +8,7 @@ const authController = require('../controllers/authController');
 router.post('/checkout', validate(paymentCheckoutSchema), paymentController.createDonationCheckout);
 router.post('/record', paymentController.recordMonetaryDonation);
 router.get('/analytics', paymentController.getFinancialAnalytics);
+router.get('/orm', paymentController.getTransactionsViaOrm);
 
 module.exports = router;
+
