@@ -2,11 +2,15 @@ const { z } = require('zod');
 
 // Input Sanitization & Injection Awareness helper
 const sanitizeInput = (val) => {
-
   if (typeof val === 'string') {
     return val
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // XSS script tag stripping
-      .replace(/['";\\]/g, '') // SQL escape char sanitization
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\\/g, '&#x5C;')
+      .replace(/;/g, '&#x3B;')
       .trim();
   }
   if (Array.isArray(val)) {
@@ -24,6 +28,7 @@ const sanitizeInput = (val) => {
   }
   return val;
 };
+
 
 // Middleware factory for Zod validation with sanitization
 const validate = (schema, source = 'body') => {
