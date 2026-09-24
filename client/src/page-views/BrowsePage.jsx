@@ -16,13 +16,14 @@ const uBg = { urgent: 'rgba(239,68,68,0.15)', high: 'rgba(245,158,11,0.15)', low
 
 const statusColor = { active: '#6366f1', matched: '#f59e0b', completed: '#10b981' };
 
-export default function BrowsePage({ navigate, user }) {
+export default function BrowsePage({ navigate, user, initialListings = [] }) {
   const [search, setSearch] = useState('');
   const [cat, setCat] = useState('all');
   const [sort, setSort] = useState('recent');
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [listings, setListings] = useState(initialListings);
+  const [loading, setLoading] = useState(initialListings.length === 0);
   const [error, setError] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
