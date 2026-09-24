@@ -44,11 +44,22 @@ The **Resource Matcher** platform is a full-stack donation management ecosystem 
 * **Admin Dashboard Overview**: Instant metrics displaying total donations, fulfilled requests, active users, and system health status.
 * **Leaderboards**: Top donor rankings based on contribution frequency and calculated impact score.
 * **Category Analytics**: Distribution charts and metrics breaking down donations by category (e.g., Supplies, Financial, Food, Technology).
+* **Financial Analytics & SQL Ledger**: Aggregated queries utilizing SQL JOINs, GROUP BY, and Redis caching.
 
-#### 4.4 System Monitoring & Operations
+#### 4.4 Advanced Integrations & System Capabilities
+* **Hybrid Data Architecture**: MongoDB for dynamic listings and PostgreSQL for normalized financial transactions, ACID compliance, and audit trails.
+* **Redis Caching**: Sub-25ms response times on frequently queried stats, category analytics, and active listings.
+* **Real-time WebSockets (Socket.io)**: Instant notifications for matched resources, status updates, and peer-to-peer messaging.
+* **Scheduled Cron Workers**: Automated cleanup of expired requests, cache pre-computation, and health checks.
+* **Payment Gateway Integration**: Stripe Checkout support for monetary relief donations with transaction verification.
+* **AI Tool Use & Function Calling**: LLM-driven query orchestration (`searchAvailableDonations`, `getUrgentRequests`, `calculateMatchingScore`).
+
+#### 4.5 System Monitoring & Operations
 * **System Health Probes**: `/api/health` endpoint returning database connectivity status, memory utilization, and uptime.
 * **Data Seeding & Reset**: Admin-triggered endpoints to populate demo data or reset environment state during testing and deployment.
 * **Request Logging & Rate Limiting**: Built-in HTTP request logging and endpoint rate limiting to protect auth and core resource APIs.
+* **Strict Body Validation**: Zod-powered schema validation and NoSQL/SQL injection sanitization.
+
 
 ---
 

@@ -21,4 +21,12 @@ const donationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes for query performance (Mongo)
+donationSchema.index({ category: 1, status: 1 });
+donationSchema.index({ donor: 1, createdAt: -1 });
+donationSchema.index({ recipient: 1, status: 1 });
+donationSchema.index({ status: 1, createdAt: -1 });
+donationSchema.index({ itemName: 'text', description: 'text' });
+
 module.exports = mongoose.model('Donation', donationSchema);
+

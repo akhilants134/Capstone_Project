@@ -58,5 +58,13 @@ const listingSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Indexes for query performance (Mongo)
+listingSchema.index({ type: 1, category: 1, status: 1 });
+listingSchema.index({ user: 1, createdAt: -1 });
+listingSchema.index({ status: 1, createdAt: -1 });
+listingSchema.index({ urgency: 1, status: 1 });
+listingSchema.index({ title: 'text', description: 'text' });
+
 const Listing = mongoose.model('Listing', listingSchema);
 module.exports = Listing;
+

@@ -10,19 +10,24 @@ The **Resource Matcher** platform follows a decoupled, client-server **N-Tier Ar
 
 ```mermaid
 graph TD
-    Client[React Client SPA / Browser] -->|HTTP / REST API| Proxy[Nginx / Reverse Proxy]
+    Client[Next.js SSR & React Client] -->|HTTP / REST API| Proxy[Nginx / Reverse Proxy]
+    Client <-->|WebSocket Events| SocketLayer[Socket.io Real-Time Hub]
     Proxy -->|Forward Requests| AppServer[Node.js / Express Application Server]
     
-    subgraph Express Application Server Infrastructure
-        Sec[Layer 8: Security Headers Middleware] --> Rate[Layer 9: Rate Limiter Middleware]
-        Rate --> Cache[Layer 10: In-Memory Cache Middleware]
-        Cache --> Log[Layer 12: HTTP Request Logger]
-        Log --> Routes[Layer 2: API Routes / Controllers]
+    subgraph Express Application Infrastructure
+        Sec[Security & Sanitization Middleware] --> Val[Zod Request Validator]
+        Val --> Rate[Rate Limiter Middleware]
+        Rate --> Cache[Redis Caching Layer]
+        Cache --> Routes[API Routes & Controllers]
+        Routes --> AI[AI Function Calling Engine]
     end
 
     AppServer --> Sec
-    Routes -->|Mongoose ODM| DB[(MongoDB Persistent Database)]
-    Routes -->|Health Check| Health[Layer 13: System Health Monitor]
+    Routes -->|Mongoose ODM| Mongo[(MongoDB Document Store)]
+    Routes -->|ACID Transactions| PG[(PostgreSQL Relational DB)]
+    Cron[Node-Cron Scheduled Workers] --> Mongo
+    Cron --> Cache
+    Routes --> SocketLayer
 ```
 
 ---
@@ -30,23 +35,26 @@ graph TD
 ### 2. Subsystem Descriptions
 
 #### 2.1 Presentation Tier (Frontend Client)
-* **Framework**: React 18 powered by Vite.
-* **Navigation & State**: React Router client-side routing, React Context API for global session and theme management (`useAuth`, `useTheme`).
-* **UI Components**: Modular components (Navbar, Sidebar, Stats Cards, Donation List, Leaderboards, User Management).
-* **HTTP Client**: Axios wrapper with global request/response interceptors for automatic JWT token injection and error handling.
+* **Framework**: Next.js App Router (SSR + Client Components) with React 19.
+* **Navigation & State**: Server-rendered routing with hydration, React Context API for global session and theme management (`useAuth`, `useTheme`).
+* **UI Components**: Modular responsive components (Navbar, Sidebar, Stats Cards, Donation List, Leaderboards, User Management).
+* **JavaScript Core Concepts**: Validated event loop mechanics, Promise/Callback patterns, and Hoisting/TDZ management.
 
 #### 2.2 Application Tier (Backend Express Server)
 * **Runtime**: Node.js v18+.
-* **API Gateway & Routing**: Express routes separated by concern (`auth`, `donations`, `requests`, `users`, `categories`, `stats`, `system`, `health`, `seed`).
+* **API Gateway & Routing**: Express routes separated by concern (`auth`, `listings`, `matches`, `messages`, `notifications`, `admin`, `payments`, `ai`).
 * **Middleware Pipeline**:
-  * **Security Layer**: Custom security headers (XSS filtering, frameguard, content-type protection).
-  * **Traffic Management**: Rate limiting applied to authentication (`authLimiter`) and global API endpoints (`apiLimiter`).
-  * **Caching Layer**: Route-level TTL caching for frequently requested static or aggregated endpoints (`/api/stats`, `/api/categories`).
-  * **Logging & Observability**: HTTP request duration logging and error tracking.
+  * **Security & Validation Layer**: Helmet headers, XSS sanitizer, HPP protection, and strict Zod request schema validation.
+  * **Traffic Management**: Express rate limiting applied to authentication and global API endpoints.
+  * **Caching Layer**: Redis client with in-memory fallback for hot endpoints (`/api/v1/payments/analytics`, category statistics).
+  * **Real-time WebSockets**: Socket.io server handling match alerts and live messaging.
+  * **Background Cron Workers**: Scheduled jobs handling data hygiene, cache pre-computation, and health monitoring.
+  * **AI Assistant**: LLM Function Calling engine with executable tool bindings.
 
-#### 2.3 Persistence Tier (Database)
-* **Database Engine**: MongoDB (Local instance or MongoDB Atlas cloud cluster).
-* **Object Document Mapper (ODM)**: Mongoose schemas enforcing model structure, validation rules, indexing, and virtual fields.
+#### 2.3 Persistence Tier (Hybrid Data Architecture)
+* **NoSQL Engine (MongoDB)**: High-speed flexible document store for user profiles, donation/request listings, messages, and notifications with compound/text indexing.
+* **Relational SQL Engine (PostgreSQL)**: Normalized 3NF transactional ledger (`donors`, `campaigns`, `monetary_transactions`, `audit_logs`) enforcing foreign key constraints, indexing, and multi-table ACID transactions.
+
 
 #### 2.4 Infrastructure & Container Layer
 * **Containerization**: Docker container definitions for API Server, Client, and Nginx.

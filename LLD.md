@@ -8,29 +8,32 @@
 
 ```text
 capstone_project/
-├── client/                      # React Frontend Application
+├── client/                      # Next.js 16 (SSR + React 19) Frontend Application
 │   ├── src/
-│   │   ├── app/                # Route definitions & app root
+│   │   ├── app/                # App Router (SSR & Client views)
 │   │   ├── components/         # Reusable UI components (Navbar, Sidebar, Modal, Cards)
 │   │   ├── context/            # AuthContext, ThemeContext providers
 │   │   ├── hooks/              # Custom hooks (useAuth, useTheme, useFetch)
-│   │   ├── page-views/         # Top-level view modules (Dashboard, Donations, Users)
-│   │   ├── services/           # Axios instance & API method calls (api.js)
+│   │   ├── services/           # API methods & JS Core Concepts reference implementation
 │   │   └── index.css           # Design tokens, CSS variables, utility classes
 ├── server/                      # Node.js Express Backend API
-│   ├── config/                 # DB connection setup (db.js)
-│   ├── middleware/             # Security, rate limiter, cache, error handlers
-│   ├── models/                 # Mongoose schemas (User.js, Donation.js, Request.js)
-│   ├── routes/                 # Express route handlers
-│   ├── utils/                  # Logger utility
-│   ├── index.js                # Express app initialization & server entrypoint
-│   └── seed.js                 # Database seeder logic
+│   ├── src/
+│   │   ├── config/             # PostgreSQL connection & table initialization (postgres.js)
+│   │   ├── controllers/        # Express route controllers (auth, listing, payment, ai, match)
+│   │   ├── middleware/         # Zod validator, security, rate limiters
+│   │   ├── models/             # Mongoose schemas (userModel, listingModel, messageModel)
+│   │   ├── routes/             # Express route handlers (user, listing, payment, ai)
+│   │   ├── utils/              # Redis caching (redisClient.js), WebSockets (socket.js), Cron (cronJobs.js)
+│   │   └── server.js           # Server entrypoint with HTTP, WebSockets & Cron
+├── test-sanity.js               # Sanity test runner
+├── test-backend-api.js          # API Integration & Data layer test runner
 ├── docker-compose.yml           # Multi-container orchestrator configuration
 ├── Dockerfile                   # Node app container specification
 ├── PRD.md                       # Product Requirements Document
 ├── HLD.md                       # High-Level Design
 └── LLD.md                       # Low-Level Design
 ```
+
 
 ---
 
