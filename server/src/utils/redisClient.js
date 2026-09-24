@@ -74,12 +74,14 @@ const invalidateCache = async (pattern) => {
     }
   } catch (err) {}
   
+  const cleanPattern = pattern.replace(/\*/g, '');
   for (const key of memoryCache.keys()) {
-    if (key.includes(pattern.replace('*', ''))) {
+    if (key.includes(cleanPattern)) {
       memoryCache.delete(key);
     }
   }
 };
+
 
 module.exports = {
   redisClient,
