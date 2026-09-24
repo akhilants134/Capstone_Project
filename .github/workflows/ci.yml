@@ -34,7 +34,7 @@ jobs:
       - name: Install & Run Backend Tests
         run: |
           cd server
-          npm install
+          npm ci
           node -e "console.log('Backend syntax check passed')"
 
       - name: Install & Build Client
