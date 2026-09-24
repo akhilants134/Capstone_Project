@@ -1,3 +1,4 @@
+const http = require("http");
 const express = require("express"); // restart trigger
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -8,14 +9,25 @@ const morgan = require("morgan");
 const { xss } = require("express-xss-sanitizer");
 require("dotenv").config();
 
+// Postgres, Redis & Sockets
+require("./config/postgres");
+const { initSocket } = require("./utils/socket");
+const { initCronJobs } = require("./utils/cronJobs");
+
 const userRouter = require("./routes/userRoutes");
 const listingRouter = require("./routes/listingRoutes");
 const matchRouter = require("./routes/matchRoutes");
 const messageRouter = require("./routes/messageRoutes");
 const notificationRouter = require("./routes/notificationRoutes");
 const adminRouter = require("./routes/adminRoutes");
+const paymentRouter = require("./routes/paymentRoutes");
+const aiRouter = require("./routes/aiRoutes");
 
 const app = express();
+const server = http.createServer(app);
+initSocket(server);
+initCronJobs();
+
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
@@ -146,10 +158,12 @@ app.use("/api/v1/matches", matchRouter);
 app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/notifications", notificationRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/payments", paymentRouter);
+app.use("/api/v1/ai", aiRouter);
 
 // Basic Route
 app.get("/", (req, res) => {
-  res.json({ message: "Resource & Donation Matcher API (Lite) is running..." });
+  res.json({ message: "Resource & Donation Matcher API (Enterprise) is running..." });
 });
 
 // Database Connection — Atlas via env, local fallback for dev without .env
@@ -175,6 +189,7 @@ mongoose
   });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT} with WebSockets & Cron enabled`);
 });
+

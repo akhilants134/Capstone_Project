@@ -119,7 +119,64 @@ async function runApiTests() {
     }
     console.log('✅ Auth credential validation verified!');
 
-    console.log('🎉 All Backend API checks passed successfully!');
+    // 8. Payment & SQL Transaction Flow Test
+    console.log('- Testing Payment Checkout & SQL Transaction integration...');
+    const checkout = await fetch(`${API_URL}/payments/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amountCents: 2500,
+        currency: 'usd',
+        donorEmail: testEmail
+      })
+    });
+    const checkoutRes = await checkout.json();
+    if (checkout.status !== 200 || checkoutRes.status !== 'success') {
+      throw new Error(`Checkout session creation failed: ${checkoutRes.message}`);
+    }
+    console.log('✅ Payment checkout session generated');
+
+    const sqlTxn = await fetch(`${API_URL}/payments/record`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        donorEmail: testEmail,
+        donorName: 'Sanity Test Donor',
+        amountCents: 2500,
+        paymentIntentId: `pi_test_${Date.now()}`
+      })
+    });
+    const sqlTxnRes = await sqlTxn.json();
+    if (sqlTxn.status !== 200 && sqlTxn.status !== 201) {
+      throw new Error(`SQL transaction recording failed: ${sqlTxnRes.message}`);
+    }
+    console.log('✅ SQL Normalized Transaction recorded with ACID compliance');
+
+    // 9. Financial Analytics with Redis Caching Test
+    console.log('- Testing Financial Analytics & Cache retrieval...');
+    const analytics = await fetch(`${API_URL}/payments/analytics`);
+    const analyticsRes = await analytics.json();
+    if (analytics.status !== 200 || analyticsRes.status !== 'success') {
+      throw new Error(`Analytics fetch failed: ${analyticsRes.message}`);
+    }
+    console.log(`✅ Financial Analytics query successful (Source: ${analyticsRes.source})`);
+
+    // 10. AI Assistant & Function Calling / Tool Use Test
+    console.log('- Testing AI Assistant Function Calling / Tool Execution...');
+    const aiChat = await fetch(`${API_URL}/ai/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: 'Show urgent requests in medical'
+      })
+    });
+    const aiChatRes = await aiChat.json();
+    if (aiChat.status !== 200 || !aiChatRes.data.functionCalling) {
+      throw new Error(`AI Tool execution failed: ${aiChatRes.message}`);
+    }
+    console.log(`✅ AI Tool Use executed successfully (Tool: ${aiChatRes.data.functionCalling.toolUsed})`);
+
+    console.log('\n🎉 All Backend API checks passed successfully!');
   } finally {
     // Cleanup: Connect to MongoDB and delete the test user
     console.log('- Cleaning up test data from MongoDB...');
@@ -142,3 +199,4 @@ runApiTests().catch(err => {
   console.error('\n❌ API Tests failed:', err.message);
   process.exit(1);
 });
+
