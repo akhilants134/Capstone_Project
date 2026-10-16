@@ -14,7 +14,7 @@
     "@vercel/analytics": "^2.0.1",
     "express": "^5.2.1",
     "mongoose": "^9.3.0",
-    "next": "^16.2.11",
+    "next": "^16.4.2",
     "nodemon": "^3.1.14",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
