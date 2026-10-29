@@ -1,4 +1,5 @@
 const cron = require('node-cron');
+const mongoose = require('mongoose');
 const Listing = require('../models/listingModel');
 const { setCache } = require('../utils/redisClient');
 
@@ -7,6 +8,9 @@ const initCronJobs = () => {
 
   // 1. Cron Job: Clean up expired/cancelled stale matches every midnight (0 0 * * *)
   cron.schedule('0 0 * * *', async () => {
+    if (mongoose.connection.readyState !== 1) {
+      return;
+    }
     try {
       console.log('🧹 [CRON] Running daily cleanup of stale cancelled listings...');
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -22,6 +26,9 @@ const initCronJobs = () => {
 
   // 2. Cron Job: Pre-calculate Category Analytics & Leaderboard and cache in Redis every 15 minutes (*/15 * * * *)
   cron.schedule('*/15 * * * *', async () => {
+    if (mongoose.connection.readyState !== 1) {
+      return;
+    }
     try {
       console.log('📊 [CRON] Recalculating category & donation metrics for Redis cache...');
       const categoryStats = await Listing.aggregate([

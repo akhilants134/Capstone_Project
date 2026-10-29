@@ -89,18 +89,22 @@ app.use(hpp());
 
 // Maintenance Mode Middleware
 app.use(async (req, res, next) => {
+  // Never block health check, root, or auth routes, or when MongoDB isn't connected
+  if (
+    req.path === "/" ||
+    req.path === "/health" ||
+    req.path === "/api/health" ||
+    req.path === "/api/v1/users/admin-login" ||
+    req.path === "/api/v1/users/login" ||
+    mongoose.connection.readyState !== 1
+  ) {
+    return next();
+  }
+
   try {
     const SystemConfig = require("./models/systemConfigModel");
     const config = await SystemConfig.findOne();
     if (config && config.maintenanceMode) {
-      // Allow admin login and standard login routes so administrative tasks/auth can proceed
-      if (
-        req.path === "/api/v1/users/admin-login" ||
-        req.path === "/api/v1/users/login" ||
-        req.path === "/"
-      ) {
-        return next();
-      }
 
       // Check if user is authenticated and is an admin
       let token;
@@ -161,9 +165,14 @@ app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/ai", aiRouter);
 
-// Basic Route
-app.get("/", (req, res) => {
-  res.json({ message: "Resource & Donation Matcher API (Enterprise) is running..." });
+// Basic Route & Health Check
+app.get(["/", "/health", "/api/health"], (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Resource & Donation Matcher API (Enterprise) is running...",
+    uptime: process.uptime(),
+    dbState: mongoose.connection.readyState === 1 ? "connected" : "disconnected"
+  });
 });
 
 // Database Connection — Atlas via env, local fallback for dev without .env
@@ -188,8 +197,9 @@ mongoose
     }
   });
 
+const HOST = process.env.HOST || "0.0.0.0";
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT} with WebSockets & Cron enabled`);
+server.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://${HOST}:${PORT} with WebSockets & Cron enabled`);
 });
 
