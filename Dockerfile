@@ -8,7 +8,7 @@ ENV PORT=5000
 
 # Install backend dependencies
 COPY server/package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy backend source code
 COPY server/ ./
