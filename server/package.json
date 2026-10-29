@@ -34,7 +34,7 @@
     "socket.io": "^4.8.3",
     "speakeasy": "^2.0.0",
     "stripe": "^22.6.2",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "overrides": {
     "sanitize-html": "^2.17.7"
